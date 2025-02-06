@@ -1,0 +1,2 @@
+- Character UI (HP, EXP, Level)
+- Set mine (Mines Configuration: how many mines of each type in the grid)

@@ -1,18 +1,27 @@
 using System;
+using UnityEngine;
 
-public class Player
+public class Player : MonoBehaviour
 {
     private PlayerStats m_Stats;
     private readonly int m_BaseMaxHP = 20;
     private readonly int m_HPIncreasePerLevel = 5;
 
+    public PlayerStats Stats => m_Stats;
     public event Action OnDeath;
 
-    public Player()
+    private void Awake()
     {
         m_Stats = new PlayerStats(m_BaseMaxHP);
-        
         m_Stats.OnLevelUp += HandleLevelUp;
+    }
+
+    private void OnDestroy()
+    {
+        if (m_Stats != null)
+        {
+            m_Stats.OnLevelUp -= HandleLevelUp;
+        }
     }
 
     public void TakeDamage(int _damage)

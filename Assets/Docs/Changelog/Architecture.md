@@ -77,6 +77,7 @@ class Player {
 -m_Stats: PlayerStats
 -m_BaseMaxHP: int
 -m_HPIncreasePerLevel: int
++Stats: PlayerStats
 +TakeDamage(int)
 +GainExperience(int)
 }
@@ -91,6 +92,36 @@ class PlayerStats {
 +RestoreFullHP()
 }
 Player -- PlayerStats
+
+### UI System
+```mermaid
+classDiagram
+class CharacterUIConfig {
++HPFormat: string
++EXPFormat: string
++LevelFormat: string
++HPColor: Color
++EXPColor: Color
++LevelColor: Color
++HPAnimationDuration: float
++EXPAnimationDuration: float
++LevelAnimationDuration: float
+}
+class CharacterUIView {
+-m_Config: CharacterUIConfig
+-m_PlayerStats: PlayerStats
+-m_HPText: TextMeshProUGUI
+-m_EXPText: TextMeshProUGUI
+-m_LevelText: TextMeshProUGUI
++InitializeUI()
++UpdateHP(int)
++UpdateExperience(int)
++UpdateLevel(int)
+}
+CharacterUIView --> CharacterUIConfig
+CharacterUIView --> PlayerStats
+CharacterUIView --> TextMeshProUGUI
+```
 
 ### Event System
 mermaid
