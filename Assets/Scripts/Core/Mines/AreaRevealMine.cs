@@ -1,29 +1,37 @@
 using UnityEngine;
 
-public class AreaRevealMine : BaseMine
+namespace RPGMinesweeper.Core.Mines
 {
-    public AreaRevealMine(MineData _data, Vector2Int _position) : base(_data, _position)
+    public class AreaRevealMine : BaseMine
     {
-    }
+        public override bool CanDisguise => true; // Can look like a radar device
 
-    public override void OnTrigger(Player _player)
-    {
-        if (m_IsDestroyed) return;
-
-        base.OnTrigger(_player);
-        RevealArea();
-    }
-
-    private void RevealArea()
-    {
-        int radius = Mathf.RoundToInt(m_Data.TriggerRadius);
-        
-        for (int x = -radius; x <= radius; x++)
+        public AreaRevealMine(MineData _data, Vector2Int _position) : base(_data, _position)
         {
-            for (int y = -radius; y <= radius; y++)
+        }
+
+        public override void OnTrigger(Player _player)
+        {
+            if (m_IsDestroyed) return;
+
+            RevealArea();
+            GameEvents.RaiseMineTriggered(Type);
+            OnDestroy();
+        }
+
+        private void RevealArea()
+        {
+            int radius = Mathf.RoundToInt(m_Data.TriggerRadius);
+            for (int x = -radius; x <= radius; x++)
             {
-                Vector2Int position = m_Position + new Vector2Int(x, y);
-                GameEvents.RaiseEffectApplied(position);
+                for (int y = -radius; y <= radius; y++)
+                {
+                    if (x * x + y * y <= radius * radius)
+                    {
+                        Vector2Int position = m_Position + new Vector2Int(x, y);
+                        GameEvents.RaiseCellRevealed(position);
+                    }
+                }
             }
         }
     }

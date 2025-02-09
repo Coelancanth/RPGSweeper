@@ -101,4 +101,12 @@ public class GridManager : MonoBehaviour
             cellView.ApplyEffect();
         }
     }
+
+    public GameObject GetCellObject(Vector2Int position)
+    {
+        if (!m_Grid.IsValidPosition(position))
+            return null;
+            
+        return m_CellObjects[position.x, position.y];
+    }
 } 

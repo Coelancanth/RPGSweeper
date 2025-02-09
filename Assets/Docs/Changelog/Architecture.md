@@ -47,6 +47,14 @@ class BaseMine {
 #CalculateDamage(Player)
 #ApplyEffect(EffectData)
 }
+class MineData {
++Type: MineType
++Damage: int
++TriggerRadius: float
++Effects: List~EffectData~
+-m_MineSprite: Sprite
++MineSprite: Sprite
+}
 class HealingMine {
 +OnTrigger(Player)
 #ApplyEffect(EffectData)
@@ -69,7 +77,27 @@ BaseMine <|-- HealingMine
 BaseMine <|-- ExperienceMine
 BaseMine <|-- MultiTriggerMine
 BaseMine <|-- AreaRevealMine
+BaseMine --> MineData
+
+classDiagram
+class MineManager {
+    -m_MineDatas: List<MineData>
+    -m_Mines: Dictionary<Vector2Int, IMine>
+    +CalculateCellValue(Vector2Int): int
+    +HasMine(Vector2Int): bool
+    -PlaceMines()
+    -CreateMine(MineData, Vector2Int)
+}
+class CellView {
+    -m_ValueText: TextMeshPro
+    -m_MineManager: MineManager
+    +UpdateVisuals(bool)
+    -DisplayValue(int)
+}
+CellView --> MineManager
+MineManager --> IMine
 ```
+
 ### Player System
 ```mermaid
 classDiagram
@@ -92,6 +120,7 @@ class PlayerStats {
 +RestoreFullHP()
 }
 Player -- PlayerStats
+```
 
 ### UI System
 ```mermaid
@@ -134,6 +163,33 @@ class GameEvents {
 +OnExperienceGained: Action<int>
 }
 ```
+
+### Visualization System
+```mermaid
+classDiagram
+class CellView {
+-m_FrameRenderer: SpriteRenderer
+-m_BackgroundRenderer: SpriteRenderer
+-m_MineRenderer: SpriteRenderer
+-m_Position: Vector2Int
+-m_MineSprite: Sprite
+-m_HasMine: bool
++Initialize(Vector2Int)
++SetMine(MineData)
++UpdateVisuals(bool)
++ApplyEffect()
+}
+class MineDebugger {
+-m_MineHighlightColor: Color
+-m_DebugKeyCode: KeyCode
+-m_AllCells: CellView[]
+-m_IsDebugVisible: bool
++ToggleMineVisibility()
+}
+MineDebugger --> CellView
+CellView --> MineData
+```
+
 ## Managers
 
 ### Grid Management

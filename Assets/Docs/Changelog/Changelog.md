@@ -1,4 +1,88 @@
-v0.2.0 - 2025-02-06 17:04:54
+v0.1.3 - 2025-02-10 2025-02-09 23:24:57
+# Overview
+Enhanced the mine system with adjacent value calculation, providing players with numerical hints about nearby mines based on mine type values.
+
+# Change Details
+## New Features
+### Mine Value System
+- Implemented adjacent mine value calculation
+- Added TextMeshPro display for numerical hints
+- Integrated mine-specific values into hint system
+```mermaid
+classDiagram
+class CellView {
+-SpriteRenderer m_FrameRenderer
+-SpriteRenderer m_BackgroundRenderer
+-SpriteRenderer m_MineRenderer
+-TMPro.TextMeshPro m_ValueText
+-Vector2Int m_Position
+-bool m_HasMine
++Initialize(Vector2Int)
++SetMine(MineData)
++UpdateVisuals(bool)
+}
+class MineManager {
+-Dictionary<Vector2Int, IMine> m_Mines
++CalculateCellValue(Vector2Int)
++HasMine(Vector2Int)
+}
+CellView --> MineManager
+```
+
+## Adjustments and Refactoring
+### Value Display System
+- Modified cell value calculation to use mine-specific values
+- Standardized number display with consistent red color
+- Improved visual clarity of numerical hints
+
+v0.1.2 - 2025-02-09 2025-02-09 22:25:10
+# Overview
+Enhanced the mine system with proper visualization and debugging capabilities. This update improves the visual representation of mines and adds developer tools for testing mine placement.
+
+# Change Details
+## New Features
+### Mine Visualization System
+- Implemented layered cell visualization with frame, background, and mine components
+- Added sprite support to MineData for visual representation
+- Created proper sorting order system for visual layers
+- Integrated mine sprites with cell reveal mechanics
+```mermaid
+classDiagram
+class CellView {
+    -SpriteRenderer m_FrameRenderer
+    -SpriteRenderer m_BackgroundRenderer
+    -SpriteRenderer m_MineRenderer
+    -Vector2Int m_Position
+    -bool m_HasMine
+    +Initialize(Vector2Int)
+    +SetMine(MineData)
+    +UpdateVisuals(bool)
+}
+class MineData {
+    +MineType Type
+    +int Damage
+    +float TriggerRadius
+    +List~EffectData~ Effects
+    -Sprite m_MineSprite
+    +Sprite MineSprite
+}
+CellView --> MineData
+```
+
+### Debug System
+- Added MineDebugger tool for development testing
+- Implemented F1 key shortcut for toggling mine visibility
+- Added inspector button for mine visibility toggle
+- Created color highlighting system for mine positions
+
+## Adjustments and Refactoring
+### Mine System Updates
+- Connected MineManager with CellView components
+- Improved mine placement validation
+- Added proper error handling for mine configuration
+- Enhanced grid position validation
+
+v0.1.1 - 2025-02-06 17:04:54
 # Overview
 Added character UI system to display player stats, improving game feedback and player experience. This update introduces a configurable UI system that shows HP, Experience, and Level information in real-time.
 

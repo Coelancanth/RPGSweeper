@@ -1,49 +1,59 @@
 using UnityEngine;
-using System.Collections.Generic;
 
-public abstract class BaseMine : IMine
+namespace RPGMinesweeper.Core.Mines
 {
-    protected MineData m_Data;
-    protected Vector2Int m_Position;
-    protected bool m_IsDestroyed;
-
-    public MineType Type => m_Data.Type;
-    public virtual bool CanDisguise => false;
-
-    protected BaseMine(MineData _data, Vector2Int _position)
+    public abstract class BaseMine : IMine
     {
-        m_Data = _data;
-        m_Position = _position;
-        m_IsDestroyed = false;
-    }
+        #region Protected Fields
+        protected readonly MineData m_Data;
+        protected readonly Vector2Int m_Position;
+        protected bool m_IsDestroyed;
+        #endregion
 
-    public virtual void OnTrigger(Player _player)
-    {
-        if (m_IsDestroyed) return;
+        #region Public Properties
+        public MineType Type => m_Data.Type;
+        public virtual bool CanDisguise => false;
+        public MineData GetMineData() => m_Data;
+        #endregion
 
-        int damage = CalculateDamage(_player);
-        _player.TakeDamage(damage);
-        
-        GameEvents.RaiseMineTriggered(Type);
-        
-        foreach (var effect in m_Data.Effects)
+        #region Constructor
+        protected BaseMine(MineData _data, Vector2Int _position)
         {
-            ApplyEffect(effect);
+            m_Data = _data;
+            m_Position = _position;
+            m_IsDestroyed = false;
         }
-    }
+        #endregion
 
-    protected virtual int CalculateDamage(Player _player)
-    {
-        return m_Data.Damage;
-    }
+        #region Public Methods
+        public virtual void OnTrigger(Player _player)
+        {
+            if (m_IsDestroyed) return;
 
-    protected virtual void ApplyEffect(EffectData _effect)
-    {
-        // Base effect application logic
-    }
+            foreach (var effect in m_Data.Effects)
+            {
+                ApplyEffect(effect);
+            }
 
-    public virtual void OnDestroy()
-    {
-        m_IsDestroyed = true;
+            OnDestroy();
+        }
+
+        public virtual void OnDestroy()
+        {
+            m_IsDestroyed = true;
+        }
+        #endregion
+
+        #region Protected Methods
+        protected virtual int CalculateDamage(Player _player)
+        {
+            return m_Data.Value;
+        }
+
+        protected virtual void ApplyEffect(EffectData _effect)
+        {
+            GameEvents.RaiseEffectApplied(m_Position);
+        }
+        #endregion
     }
 } 
