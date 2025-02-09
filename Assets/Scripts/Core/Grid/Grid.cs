@@ -41,4 +41,12 @@ public class Grid
             
         return m_Cells[_position.x, _position.y];
     }
+
+    public void RevealCell(Vector2Int _position)
+    {
+        if (IsValidPosition(_position))
+        {
+            m_Cells[_position.x, _position.y].Reveal();
+        }
+    }
 } 

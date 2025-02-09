@@ -103,6 +103,38 @@ class GameEvents {
 +OnExperienceGained: Action<int>
 }
 ```
+
+### Visualization System
+```mermaid
+classDiagram
+    class CellView {
+        -m_BackgroundRenderer: SpriteRenderer
+        -m_MineRenderer: SpriteRenderer
+        -m_Position: Vector2Int
+        -m_IsRevealed: bool
+        +Initialize(Vector2Int)
+        +UpdateVisuals(bool)
+        +ShowMineSprite(Sprite)
+    }
+    class MineDebugger {
+        -m_MineManager: MineManager
+        -m_CellViews: Dictionary
+        -m_IsDebugMode: bool
+        +ToggleDebugVisuals()
+    }
+    class GridManager {
+        -m_CellObjects: GameObject[,]
+        +GetCellObject(Vector2Int)
+    }
+    class MineManager {
+        -m_MineDataMap: Dictionary
+        +HasMineAt(Vector2Int)
+    }
+    MineDebugger --> CellView
+    GridManager --> CellView
+    MineManager --> CellView
+```
+
 ## Managers
 
 ### Grid Management

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f43b157a318a5ce4485df28ec691153b, type: 3}
-  m_Name: StandardMine
+  m_Name: Monster_Mouse
   m_EditorClassIdentifier: 
   Type: 0
   Value: 1

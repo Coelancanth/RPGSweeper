@@ -15,6 +15,16 @@ public class GridManager : MonoBehaviour
     public int Width => m_Width;
     public int Height => m_Height;
 
+    public GameObject GetCellObject(Vector2Int position)
+    {
+        if (position.x >= 0 && position.x < m_Width && 
+            position.y >= 0 && position.y < m_Height)
+        {
+            return m_CellObjects[position.x, position.y];
+        }
+        return null;
+    }
+
     private void Awake()
     {
         InitializeGrid();
@@ -88,8 +98,16 @@ public class GridManager : MonoBehaviour
     {
         if (m_Grid.IsValidPosition(position))
         {
-            CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
-            cellView.UpdateVisuals(true);
+            // Let the grid know this cell is revealed
+            m_Grid.RevealCell(position);
+            
+            // Only update visuals if there's no mine (MineManager will handle mine visuals)
+            var mineManager = FindObjectOfType<MineManager>();
+            if (mineManager != null && !mineManager.HasMineAt(position))
+            {
+                CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
+                cellView.UpdateVisuals(true);
+            }
         }
     }
 
