@@ -9,6 +9,10 @@ public class CellView : MonoBehaviour
     [Header("Colors")]
     [SerializeField] private Color m_HiddenColor = Color.gray;
     [SerializeField] private Color m_RevealedColor = Color.white;
+
+    [Header("Mine Sprite Settings")]
+    [SerializeField] private float m_MineScale = 0.8f; // Scale relative to cell size
+    [SerializeField] private Vector3 m_MineOffset = new Vector3(0f, 0f, -0.1f); // Offset to appear above background
     
     private Vector2Int m_Position;
     private bool m_IsRevealed;
@@ -23,6 +27,8 @@ public class CellView : MonoBehaviour
         if (m_MineRenderer != null)
         {
             m_MineRenderer.enabled = false;
+            m_MineRenderer.transform.localPosition = m_MineOffset;
+            SetMineScale(m_MineScale);
         }
 
         if (m_BackgroundRenderer != null)
@@ -63,6 +69,29 @@ public class CellView : MonoBehaviour
             m_MineRenderer.sprite = mineSprite;
             m_MineRenderer.sortingOrder = 1; // Ensure mine appears above background
             m_MineRenderer.enabled = m_IsRevealed; // Only show if cell is revealed
+            SetMineScale(m_MineScale);
+        }
+    }
+
+    private void SetMineScale(float scale)
+    {
+        if (m_MineRenderer != null)
+        {
+            // Calculate the scale based on the cell size and desired relative scale
+            float cellSize = transform.localScale.x;
+            float targetScale = cellSize * scale;
+            
+            // If we have a sprite, adjust scale based on sprite size to maintain proportions
+            if (m_MineRenderer.sprite != null)
+            {
+                float spriteSize = m_MineRenderer.sprite.bounds.size.x;
+                float scaleMultiplier = targetScale / spriteSize;
+                m_MineRenderer.transform.localScale = new Vector3(scaleMultiplier, scaleMultiplier, 1f);
+            }
+            else
+            {
+                m_MineRenderer.transform.localScale = new Vector3(targetScale, targetScale, 1f);
+            }
         }
     }
 

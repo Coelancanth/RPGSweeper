@@ -31,7 +31,7 @@ public class MineDebugger : MonoBehaviour
 
         // Cache all cell views
         var cellViews = FindObjectsOfType<CellView>();
-        Debug.Log($"MineDebugger: Found {cellViews.Length} cell views");
+        //Debug.Log($"MineDebugger: Found {cellViews.Length} cell views");
         
         foreach (var cellView in cellViews)
         {
@@ -44,7 +44,7 @@ public class MineDebugger : MonoBehaviour
         if (Input.GetKeyDown(m_DebugKey))
         {
             m_IsDebugMode = !m_IsDebugMode;
-            Debug.Log($"MineDebugger: Debug mode {(m_IsDebugMode ? "enabled" : "disabled")}");
+            //Debug.Log($"MineDebugger: Debug mode {(m_IsDebugMode ? "enabled" : "disabled")}");
             ToggleDebugVisuals();
         }
     }
@@ -67,7 +67,7 @@ public class MineDebugger : MonoBehaviour
             var cellView = kvp.Value;
             if (m_IsDebugMode && mines.ContainsKey(kvp.Key))
             {
-                Debug.Log($"MineDebugger: Highlighting mine at {kvp.Key}");
+                //Debug.Log($"MineDebugger: Highlighting mine at {kvp.Key}");
                 cellView.ShowDebugHighlight(m_HighlightColor);
             }
             else

@@ -53,7 +53,7 @@ public class MineManager : MonoBehaviour
     {
         if (m_Mines.TryGetValue(position, out IMine mine))
         {
-            Debug.Log($"MineManager: Revealing mine at position {position}");
+            //Debug.Log($"MineManager: Revealing mine at position {position}");
             
             // Show mine sprite
             if (m_MineDataMap.TryGetValue(position, out MineData mineData))
@@ -64,7 +64,7 @@ public class MineManager : MonoBehaviour
                     var cellView = cellObject.GetComponent<CellView>();
                     if (cellView != null)
                     {
-                        Debug.Log($"MineManager: Setting mine sprite for {mineData.Type} at {position}");
+                        //Debug.Log($"MineManager: Setting mine sprite for {mineData.Type} at {position}");
                         cellView.UpdateVisuals(true); // First reveal the cell
                         cellView.ShowMineSprite(mineData.MineSprite); // Then show the mine sprite
                     }
@@ -72,7 +72,7 @@ public class MineManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"MineManager: No MineData found for position {position}");
+                //Debug.LogWarning($"MineManager: No MineData found for position {position}");
             }
         }
     }
@@ -88,7 +88,7 @@ public class MineManager : MonoBehaviour
             m_Mines.Add(position, mine);
             m_MineDataMap.Add(position, randomMineData);
             
-            Debug.Log($"MineManager: Placed {randomMineData.Type} mine at position {position}");
+            //Debug.Log($"MineManager: Placed {randomMineData.Type} mine at position {position}");
         }
     }
 
