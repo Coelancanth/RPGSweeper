@@ -16,5 +16,5 @@ MonoBehaviour:
   Value: 1
   Shape: 0
   Radius: 0
-  MineSprite: {fileID: 4454631428275665778, guid: 1f3fe2883a08eef45bbda6e3401e90e4, type: 3}
+  MineSprite: {fileID: 3799158994825339902, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   Effects: []

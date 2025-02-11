@@ -1,3 +1,35 @@
+# v0.1.3 - 2025-02-12 03:55:25
+## Overview
+Improved cell state management system with better encapsulation and simplified value text handling.
+
+## Change Details
+### Adjustments and Refactoring
+#### Cell State Management
+- Removed redundant value text visibility checks
+- Consolidated visibility logic within state system
+- Improved encapsulation by removing unnecessary public property
+```mermaid
+classDiagram
+    class CellView {
+        -m_IsRevealed: bool
+        -m_ValueText: TextMeshPro
+        +UpdateVisuals(bool)
+        +SetValue(int)
+    }
+    class ICellState {
+        <<interface>>
+        +Enter(CellView)
+        +UpdateVisuals(CellView)
+    }
+    CellView --> ICellState
+    note for CellView "Simplified state management\nImproved encapsulation"
+```
+
+### Optimizations
+- Reduced code duplication in visibility management
+- Simplified state transitions
+- Improved maintainability of cell view system
+
 # v0.1.2 - 2024-02-12 02:30:13
 ## Overview
 Fixed critical visualization issues in the cell reveal system, ensuring proper visual feedback when cells are revealed.

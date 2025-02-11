@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f43b157a318a5ce4485df28ec691153b, type: 3}
-  m_Name: StandardMine
+  m_Name: Monster_Bat
   m_EditorClassIdentifier: 
   Type: 0
-  Value: 1
+  Value: 0
   Shape: 0
   Radius: 0
-  MineSprite: {fileID: 4454631428275665778, guid: 1f3fe2883a08eef45bbda6e3401e90e4, type: 3}
+  MineSprite: {fileID: 0}
   Effects: []

@@ -1,11 +1,13 @@
 using UnityEngine;
 using RPGMinesweeper.Views.States;
+using TMPro;
 
 public class CellView : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private SpriteRenderer m_BackgroundRenderer;
     [SerializeField] private SpriteRenderer m_MineRenderer;
+    [SerializeField] private TextMeshPro m_ValueText;
     
     [Header("Sprites")]
     [SerializeField] private Sprite m_HiddenSprite;
@@ -88,7 +90,6 @@ public class CellView : MonoBehaviour
             return;
         }
 
-        Debug.Log($"CellView: Updating visuals at {m_Position}, revealed: {revealed}, hasMine: {m_HasMine}");
         m_IsRevealed = revealed;
         
         if (revealed)
@@ -133,7 +134,6 @@ public class CellView : MonoBehaviour
 
     private void SetState(ICellState newState)
     {
-        Debug.Log($"CellView: Setting state to {newState.GetType().Name} at position {m_Position}");
         m_CurrentState = newState;
         m_CurrentState.Enter(this);
     }
@@ -164,8 +164,16 @@ public class CellView : MonoBehaviour
     {
         if (!m_IsRevealed)
         {
-            Debug.Log($"CellView: Clicked cell at position {m_Position}");
             GameEvents.RaiseCellRevealed(m_Position);
+        }
+    }
+
+    public void SetValue(int value)
+    {
+        if (m_ValueText != null)
+        {
+            m_ValueText.text = value > 0 ? value.ToString() : "";
+            m_ValueText.enabled = value > 0;
         }
     }
 } 

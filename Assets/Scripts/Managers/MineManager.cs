@@ -17,6 +17,15 @@ public class MineManager : MonoBehaviour
 
     public bool HasMineAt(Vector2Int position) => m_Mines.ContainsKey(position);
 
+    public MineData GetMineDataAt(Vector2Int position)
+    {
+        if (m_MineDataMap.TryGetValue(position, out MineData mineData))
+        {
+            return mineData;
+        }
+        return null;
+    }
+
     private void Start()
     {
         if (m_GridManager == null)
@@ -53,7 +62,6 @@ public class MineManager : MonoBehaviour
     {
         if (m_Mines.TryGetValue(position, out IMine mine))
         {
-            Debug.Log($"MineManager: Revealing mine at position {position}");
             
             // Show mine sprite
             if (m_MineDataMap.TryGetValue(position, out MineData mineData))
@@ -64,7 +72,6 @@ public class MineManager : MonoBehaviour
                     var cellView = cellObject.GetComponent<CellView>();
                     if (cellView != null)
                     {
-                        Debug.Log($"MineManager: Setting mine sprite for {mineData.Type} at {position}");
                         // First show the mine sprite (this sets the HasMine flag)
                         cellView.ShowMineSprite(mineData.MineSprite);
                         // Then reveal the cell (this will use the correct state based on HasMine)
@@ -96,9 +103,10 @@ public class MineManager : MonoBehaviour
             IMine mine = CreateMine(randomMineData, position);
             m_Mines.Add(position, mine);
             m_MineDataMap.Add(position, randomMineData);
-            
-            //Debug.Log($"MineManager: Placed {randomMineData.Type} mine at position {position}");
         }
+
+        // Propagate values after all mines are placed
+        MineValuePropagator.PropagateValues(this, m_GridManager);
     }
 
     private Vector2Int GetRandomEmptyPosition()

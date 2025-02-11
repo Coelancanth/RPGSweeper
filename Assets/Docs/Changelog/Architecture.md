@@ -111,12 +111,13 @@ classDiagram
         -m_BackgroundRenderer: SpriteRenderer
         -m_MineRenderer: SpriteRenderer
         -m_Position: Vector2Int
-        -m_IsRevealed: bool
-        +Initialize(Vector2Int)
+        -m_ValueText: TextMeshPro
+        -m_CurrentState: ICellState
         +UpdateVisuals(bool)
         +ShowMineSprite(Sprite)
+        +SetValue(int)
         -SetupRenderers()
-        -SetSpriteScale(SpriteRenderer, float)
+        -SetState(ICellState)
     }
     class MineDebugger {
         -m_MineManager: MineManager

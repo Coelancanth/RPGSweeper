@@ -15,6 +15,12 @@ public class GridManager : MonoBehaviour
     public int Width => m_Width;
     public int Height => m_Height;
 
+    public bool IsValidPosition(Vector2Int position)
+    {
+        return position.x >= 0 && position.x < m_Width &&
+               position.y >= 0 && position.y < m_Height;
+    }
+
     public GameObject GetCellObject(Vector2Int position)
     {
         if (position.x >= 0 && position.x < m_Width && 
@@ -98,30 +104,18 @@ public class GridManager : MonoBehaviour
     {
         if (m_Grid.IsValidPosition(position))
         {
-            Debug.Log($"GridManager: Handling cell reveal at {position}");
-            
-            // Get the cell view
             CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
             
-            // Check if there's a mine
             var mineManager = FindObjectOfType<MineManager>();
             if (mineManager != null)
             {
-                if (mineManager.HasMineAt(position))
+                if (!mineManager.HasMineAt(position))
                 {
-                    Debug.Log($"GridManager: Found mine at {position}, letting MineManager handle reveal");
-                    // MineManager will handle the reveal
-                    return;
-                }
-                else
-                {
-                    Debug.Log($"GridManager: No mine at {position}, revealing empty cell");
                     cellView.UpdateVisuals(true);
                 }
             }
             else
             {
-                Debug.LogWarning("GridManager: MineManager not found!");
                 cellView.UpdateVisuals(true);
             }
         }

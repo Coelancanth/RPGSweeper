@@ -56,7 +56,7 @@ public static class MineShapeHelper
                 }
                 break;
         }
-        
+        //Debug.Log($"MineShapeHelper: Shape {shape} with range {range} has {positions.Count} positions");
         return positions;
     }
     
