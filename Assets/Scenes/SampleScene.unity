@@ -257,6 +257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MineDatas:
   - {fileID: 11400000, guid: 5ce19249b3b7b65428e1e761806aeaed, type: 2}
+  - {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
   m_MineCount: 10
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429

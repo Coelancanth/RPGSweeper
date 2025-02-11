@@ -28,10 +28,8 @@ public static class MineValuePropagator
                 if (mineManager.HasMineAt(position))
                 {
                     var mineData = mineManager.GetMineDataAt(position);
-                    //Debug.Log($"MineValuePropagator: Found mine at position {position}");
                     if (mineData != null)
                     {
-                        //Debug.Log($"MineValuePropagator: Propagating value from mine at position {position}");
                         PropagateValueFromMine(position, mineData, cellValues, mineManager, gridManager);
                     }
                 }
@@ -39,15 +37,25 @@ public static class MineValuePropagator
         }
 
         // Second pass: Apply values to cells
-        foreach (var kvp in cellValues)
+        for (int x = 0; x < gridManager.Width; x++)
         {
-            var cellObject = gridManager.GetCellObject(kvp.Key);
-            if (cellObject != null)
+            for (int y = 0; y < gridManager.Height; y++)
             {
-                var cellView = cellObject.GetComponent<CellView>();
-                if (cellView != null)
+                var position = new Vector2Int(x, y);
+                var cellObject = gridManager.GetCellObject(position);
+                if (cellObject != null)
                 {
-                    cellView.SetValue(kvp.Value);
+                    var cellView = cellObject.GetComponent<CellView>();
+                    if (cellView != null)
+                    {
+                        // Only set a value if this cell is affected by at least one mine
+                        int value = 0;
+                        if (cellValues.TryGetValue(position, out int calculatedValue))
+                        {
+                            value = calculatedValue;
+                        }
+                        cellView.SetValue(value);
+                    }
                 }
             }
         }
@@ -55,12 +63,7 @@ public static class MineValuePropagator
 
     private static void PropagateValueFromMine(Vector2Int minePosition, MineData mineData, Dictionary<Vector2Int, int> cellValues, MineManager mineManager, GridManager gridManager)
     {
-        //Debug.Log($"MineValuePropagator: Propagating value from mine at position {minePosition}");
         var affectedPositions = MineShapeHelper.GetShapePositions(minePosition, mineData.Shape, mineData.Radius);
-        foreach (var position in affectedPositions  )
-        {
-            //Debug.Log($"MineValuePropagator: Affected position: {position}");
-        }
         foreach (var position in affectedPositions)
         {
             if (gridManager.IsValidPosition(position) && !mineManager.HasMineAt(position))
@@ -70,7 +73,6 @@ public static class MineValuePropagator
                     cellValues[position] = 0;
                 }
                 cellValues[position] += mineData.Value;
-                //Debug.Log($"MineValuePropagator: Propagating value {mineData.Value} to position {position}, total value: {cellValues[position]}");
             }
         }
     }

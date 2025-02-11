@@ -7,6 +7,7 @@ public static class GameEvents
     public static event Action<MineType> OnMineTriggered;
     public static event Action<Vector2Int> OnEffectApplied;
     public static event Action<int> OnExperienceGained;
+    public static event Action<Vector2Int> OnMineRemovalAttempted;
 
     public static void RaiseCellRevealed(Vector2Int position)
     {
@@ -26,5 +27,10 @@ public static class GameEvents
     public static void RaiseExperienceGained(int amount)
     {
         OnExperienceGained?.Invoke(amount);
+    }
+
+    public static void RaiseMineRemovalAttempted(Vector2Int position)
+    {
+        OnMineRemovalAttempted?.Invoke(position);
     }
 } 

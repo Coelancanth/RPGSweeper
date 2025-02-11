@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Monster_Bat
   m_EditorClassIdentifier: 
   Type: 0
-  Value: 0
-  Shape: 0
-  Radius: 0
-  MineSprite: {fileID: 0}
+  Value: 2
+  Shape: 2
+  Radius: 1
+  MineSprite: {fileID: 3867296298848744610, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   Effects: []

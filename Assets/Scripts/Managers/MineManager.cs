@@ -51,11 +51,13 @@ public class MineManager : MonoBehaviour
     private void SubscribeToEvents()
     {
         GameEvents.OnCellRevealed += HandleCellRevealed;
+        GameEvents.OnMineRemovalAttempted += HandleMineRemoval;
     }
 
     private void UnsubscribeFromEvents()
     {
         GameEvents.OnCellRevealed -= HandleCellRevealed;
+        GameEvents.OnMineRemovalAttempted -= HandleMineRemoval;
     }
 
     private void HandleCellRevealed(Vector2Int position)
@@ -90,6 +92,30 @@ public class MineManager : MonoBehaviour
             {
                 mine.OnTrigger(playerComponent);
             }
+        }
+    }
+
+    private void HandleMineRemoval(Vector2Int position)
+    {
+        if (m_Mines.ContainsKey(position))
+        {
+            // Remove the mine from both dictionaries
+            m_Mines.Remove(position);
+            m_MineDataMap.Remove(position);
+
+            // Get the cell view and handle the visual update
+            var cellObject = m_GridManager.GetCellObject(position);
+            if (cellObject != null)
+            {
+                var cellView = cellObject.GetComponent<CellView>();
+                if (cellView != null)
+                {
+                    cellView.HandleMineRemoval();
+                }
+            }
+
+            // Recalculate values for all cells
+            MineValuePropagator.PropagateValues(this, m_GridManager);
         }
     }
 

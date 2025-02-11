@@ -166,6 +166,21 @@ public class CellView : MonoBehaviour
         {
             GameEvents.RaiseCellRevealed(m_Position);
         }
+        else if (m_HasMine)
+        {
+            // If the cell is revealed and has a mine, try to remove it
+            GameEvents.RaiseMineRemovalAttempted(m_Position);
+        }
+    }
+
+    public void HandleMineRemoval()
+    {
+        if (m_HasMine && m_IsRevealed)
+        {
+            m_HasMine = false;
+            m_MineRenderer.enabled = false;
+            SetState(RevealedEmptyCellState.Instance);
+        }
     }
 
     public void SetValue(int value)

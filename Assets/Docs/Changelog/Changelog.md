@@ -1,3 +1,42 @@
+# v0.1.4 - 2025-02-12 04:17:50
+## Overview
+Added mine removal functionality with dynamic value recalculation, enhancing gameplay mechanics with the ability to remove revealed mines.
+
+## Change Details
+### New Features
+#### Mine Removal System
+- Added ability to remove mines by clicking on revealed mines
+- Implemented automatic value recalculation for surrounding cells
+- Added proper empty cell handling after mine removal
+```mermaid
+classDiagram
+    class CellView {
+        -m_HasMine: bool
+        +HandleMineRemoval()
+        +OnMouseDown()
+    }
+    class MineManager {
+        -m_Mines: Dictionary
+        +HandleMineRemoval(Vector2Int)
+    }
+    class MineValuePropagator {
+        +PropagateValues()
+        -PropagateValueFromMine()
+    }
+    class GameEvents {
+        +OnMineRemovalAttempted
+        +RaiseMineRemovalAttempted()
+    }
+    CellView --> GameEvents
+    MineManager --> MineValuePropagator
+    GameEvents --> MineManager
+```
+
+### Optimizations
+- Improved value propagation system to handle empty cells
+- Enhanced cell state management for mine removal
+- Optimized value recalculation for better performance
+
 # v0.1.3 - 2025-02-12 03:55:25
 ## Overview
 Improved cell state management system with better encapsulation and simplified value text handling.

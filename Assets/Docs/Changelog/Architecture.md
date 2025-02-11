@@ -64,11 +64,22 @@ class AreaRevealMine {
 +OnTrigger(Player)
 -RevealArea()
 }
+class MineValuePropagator {
++PropagateValues(MineManager, GridManager)
+-PropagateValueFromMine(Vector2Int, MineData)
+}
+class MineManager {
+-m_Mines: Dictionary
++HandleMineRemoval(Vector2Int)
++HasMineAt(Vector2Int)
+}
 IMine <|.. BaseMine
 BaseMine <|-- HealingMine
 BaseMine <|-- ExperienceMine
 BaseMine <|-- MultiTriggerMine
 BaseMine <|-- AreaRevealMine
+MineManager --> IMine
+MineManager --> MineValuePropagator
 ```
 ### Player System
 ```mermaid
@@ -93,7 +104,7 @@ class PlayerStats {
 Player -- PlayerStats
 
 ### Event System
-mermaid
+```mermaid
 classDiagram
 class GameEvents {
 <<static>>
@@ -101,6 +112,7 @@ class GameEvents {
 +OnMineTriggered: Action<MineType>
 +OnEffectApplied: Action<Vector2Int>
 +OnExperienceGained: Action<int>
++OnMineRemovalAttempted: Action<Vector2Int>
 }
 ```
 
