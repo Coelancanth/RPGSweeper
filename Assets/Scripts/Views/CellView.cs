@@ -1,5 +1,4 @@
 using UnityEngine;
-using RPGMinesweeper.Views.States;
 using TMPro;
 
 public class CellView : MonoBehaviour
@@ -23,31 +22,28 @@ public class CellView : MonoBehaviour
     
     private Vector2Int m_Position;
     private bool m_IsRevealed;
-    private ICellState m_CurrentState;
     private Sprite m_CurrentMineSprite;
     private bool m_HasMine;
 
-    // Properties for state classes
+    // Public properties
+    public Vector2Int GridPosition => m_Position;
+    public bool IsRevealed => m_IsRevealed;
+    public bool HasMine => m_HasMine;
+    
+    // Properties needed by MineDebugger
     public SpriteRenderer BackgroundRenderer => m_BackgroundRenderer;
     public SpriteRenderer MineRenderer => m_MineRenderer;
-    public Sprite HiddenSprite => m_HiddenSprite;
-    public Sprite RevealedEmptySprite => m_RevealedEmptySprite;
-    public Sprite RevealedMineSprite => m_RevealedMineSprite;
-    public Sprite CurrentMineSprite => m_CurrentMineSprite;
-
-    public Vector2Int GridPosition => m_Position;
 
     private void Awake()
     {
         SetupRenderers();
-        SetState(HiddenCellState.Instance);
+        ResetCell();
     }
 
     private void SetupRenderers()
     {
         if (m_BackgroundRenderer != null)
         {
-            // Set background sprite renderer properties
             m_BackgroundRenderer.enabled = true;
             m_BackgroundRenderer.sortingOrder = m_BackgroundSortingOrder;
             SetSpriteScale(m_BackgroundRenderer, m_CellSize);
@@ -55,7 +51,6 @@ public class CellView : MonoBehaviour
 
         if (m_MineRenderer != null)
         {
-            // Set mine sprite renderer properties
             m_MineRenderer.enabled = false;
             m_MineRenderer.sortingOrder = m_MineSortingOrder;
             m_MineRenderer.transform.localPosition = m_MineOffset;
@@ -76,66 +71,81 @@ public class CellView : MonoBehaviour
     public void Initialize(Vector2Int position)
     {
         m_Position = position;
+        ResetCell();
+    }
+
+    private void ResetCell()
+    {
         m_IsRevealed = false;
-        m_CurrentMineSprite = null;
         m_HasMine = false;
-        SetState(HiddenCellState.Instance);
+        m_CurrentMineSprite = null;
+        UpdateVisuals();
     }
 
     public void UpdateVisuals(bool revealed)
     {
-        // If already in the desired state, do nothing
-        if (m_IsRevealed == revealed)
-        {
-            return;
-        }
-
+        if (m_IsRevealed == revealed) return;
         m_IsRevealed = revealed;
-        
-        if (revealed)
+        UpdateVisuals();
+    }
+
+    private void UpdateVisuals()
+    {
+        // Update background sprite
+        if (m_BackgroundRenderer != null)
         {
-            if (m_HasMine)
+            m_BackgroundRenderer.enabled = true;
+            if (!m_IsRevealed)
             {
-                SetState(RevealedMineCellState.Instance);
+                m_BackgroundRenderer.sprite = m_HiddenSprite;
+            }
+            else if (m_HasMine)
+            {
+                m_BackgroundRenderer.sprite = m_RevealedMineSprite;
             }
             else
             {
-                SetState(RevealedEmptyCellState.Instance);
+                m_BackgroundRenderer.sprite = m_RevealedEmptySprite;
             }
         }
-        else
+
+        // Update mine sprite
+        if (m_MineRenderer != null)
         {
-            SetState(HiddenCellState.Instance);
+            m_MineRenderer.enabled = m_IsRevealed && m_HasMine && m_CurrentMineSprite != null;
         }
     }
 
     public void ShowMineSprite(Sprite mineSprite)
     {
-        if (m_MineRenderer != null && mineSprite != null)
-        {
-            m_HasMine = true;
-            m_CurrentMineSprite = mineSprite;
-            m_MineRenderer.sprite = mineSprite;
-            
-            // Calculate mine scale
-            float targetMineSize = m_CellSize * m_MineScale;
-            SetSpriteScale(m_MineRenderer, targetMineSize);
+        if (m_MineRenderer == null || mineSprite == null) return;
 
-            // Show mine sprite if cell is revealed
-            m_MineRenderer.enabled = m_IsRevealed;
-            
-            // Update state if revealed
-            if (m_IsRevealed)
-            {
-                SetState(RevealedMineCellState.Instance);
-            }
-        }
+        m_HasMine = true;
+        m_CurrentMineSprite = mineSprite;
+        m_MineRenderer.sprite = mineSprite;
+        
+        float targetMineSize = m_CellSize * m_MineScale;
+        SetSpriteScale(m_MineRenderer, targetMineSize);
+
+        UpdateVisuals();
     }
 
-    private void SetState(ICellState newState)
+    public void HandleMineRemoval()
     {
-        m_CurrentState = newState;
-        m_CurrentState.Enter(this);
+        if (!m_HasMine || !m_IsRevealed) return;
+
+        m_HasMine = false;
+        m_CurrentMineSprite = null;
+        UpdateVisuals();
+    }
+
+    public void SetValue(int value)
+    {
+        if (m_ValueText != null)
+        {
+            m_ValueText.text = value > 0 ? value.ToString() : "";
+            m_ValueText.enabled = value > 0;
+        }
     }
 
     public void ShowDebugHighlight(Color highlightColor)
@@ -151,13 +161,8 @@ public class CellView : MonoBehaviour
         if (m_BackgroundRenderer != null)
         {
             m_BackgroundRenderer.color = Color.white;
-            m_CurrentState.UpdateVisuals(this);
+            UpdateVisuals();
         }
-    }
-
-    public void ApplyEffect()
-    {
-        Debug.Log($"Effect applied at position {m_Position}");
     }
 
     private void OnMouseDown()
@@ -168,27 +173,12 @@ public class CellView : MonoBehaviour
         }
         else if (m_HasMine)
         {
-            // If the cell is revealed and has a mine, try to remove it
             GameEvents.RaiseMineRemovalAttempted(m_Position);
         }
     }
 
-    public void HandleMineRemoval()
+    public void ApplyEffect()
     {
-        if (m_HasMine && m_IsRevealed)
-        {
-            m_HasMine = false;
-            m_MineRenderer.enabled = false;
-            SetState(RevealedEmptyCellState.Instance);
-        }
-    }
-
-    public void SetValue(int value)
-    {
-        if (m_ValueText != null)
-        {
-            m_ValueText.text = value > 0 ? value.ToString() : "";
-            m_ValueText.enabled = value > 0;
-        }
+        Debug.Log($"Effect applied at position {m_Position}");
     }
 } 

@@ -17,9 +17,27 @@ public static class MineValuePropagator
             return;
         }
 
+        // First pass: Reset all cell values to 0
+        for (int x = 0; x < gridManager.Width; x++)
+        {
+            for (int y = 0; y < gridManager.Height; y++)
+            {
+                var position = new Vector2Int(x, y);
+                var cellObject = gridManager.GetCellObject(position);
+                if (cellObject != null)
+                {
+                    var cellView = cellObject.GetComponent<CellView>();
+                    if (cellView != null)
+                    {
+                        cellView.SetValue(0);
+                    }
+                }
+            }
+        }
+
         var cellValues = new Dictionary<Vector2Int, int>();
 
-        // First pass: Calculate values for all cells
+        // Second pass: Calculate values for cells affected by mines
         for (int x = 0; x < gridManager.Width; x++)
         {
             for (int y = 0; y < gridManager.Height; y++)
@@ -36,26 +54,16 @@ public static class MineValuePropagator
             }
         }
 
-        // Second pass: Apply values to cells
-        for (int x = 0; x < gridManager.Width; x++)
+        // Third pass: Apply calculated values to cells
+        foreach (var kvp in cellValues)
         {
-            for (int y = 0; y < gridManager.Height; y++)
+            var cellObject = gridManager.GetCellObject(kvp.Key);
+            if (cellObject != null)
             {
-                var position = new Vector2Int(x, y);
-                var cellObject = gridManager.GetCellObject(position);
-                if (cellObject != null)
+                var cellView = cellObject.GetComponent<CellView>();
+                if (cellView != null)
                 {
-                    var cellView = cellObject.GetComponent<CellView>();
-                    if (cellView != null)
-                    {
-                        // Only set a value if this cell is affected by at least one mine
-                        int value = 0;
-                        if (cellValues.TryGetValue(position, out int calculatedValue))
-                        {
-                            value = calculatedValue;
-                        }
-                        cellView.SetValue(value);
-                    }
+                    cellView.SetValue(kvp.Value);
                 }
             }
         }
@@ -63,7 +71,12 @@ public static class MineValuePropagator
 
     private static void PropagateValueFromMine(Vector2Int minePosition, MineData mineData, Dictionary<Vector2Int, int> cellValues, MineManager mineManager, GridManager gridManager)
     {
+        //Debug.Log($"MineValuePropagator: Propagating value from mine at position {minePosition}");
         var affectedPositions = MineShapeHelper.GetShapePositions(minePosition, mineData.Shape, mineData.Radius);
+        foreach (var position in affectedPositions  )
+        {
+            //Debug.Log($"MineValuePropagator: Affected position: {position}");
+        }
         foreach (var position in affectedPositions)
         {
             if (gridManager.IsValidPosition(position) && !mineManager.HasMineAt(position))
@@ -73,6 +86,7 @@ public static class MineValuePropagator
                     cellValues[position] = 0;
                 }
                 cellValues[position] += mineData.Value;
+                //Debug.Log($"MineValuePropagator: Propagating value {mineData.Value} to position {position}, total value: {cellValues[position]}");
             }
         }
     }

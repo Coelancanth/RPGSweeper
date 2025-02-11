@@ -7,6 +7,7 @@ public class MineDebugger : MonoBehaviour
     #region Inspector Fields
     [SerializeField] private MineManager m_MineManager;
     [SerializeField] private KeyCode m_DebugKey = KeyCode.D;
+    [SerializeField] private KeyCode m_InspectKey = KeyCode.I;  // New key for cell inspection
     [SerializeField] private Color m_HighlightColor = Color.red;
     #endregion
 
@@ -47,6 +48,12 @@ public class MineDebugger : MonoBehaviour
             //Debug.Log($"MineDebugger: Debug mode {(m_IsDebugMode ? "enabled" : "disabled")}");
             ToggleDebugVisuals();
         }
+
+        // Add cell inspection on key press
+        if (Input.GetKeyDown(m_InspectKey))
+        {
+            InspectCellUnderMouse();
+        }
     }
     #endregion
 
@@ -73,6 +80,26 @@ public class MineDebugger : MonoBehaviour
             else
             {
                 cellView.HideDebugHighlight();
+            }
+        }
+    }
+
+    private void InspectCellUnderMouse()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if (hit.collider != null)
+        {
+            var cellView = hit.collider.GetComponent<CellView>();
+            if (cellView != null)
+            {
+                Debug.Log($"Cell at position {cellView.GridPosition}:\n" +
+                         $"IsRevealed: {cellView.GetType().GetField("m_IsRevealed", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(cellView)}\n" +
+                         $"HasMine: {cellView.GetType().GetField("m_HasMine", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(cellView)}\n" +
+                         $"CurrentState: {cellView.GetType().GetField("m_CurrentState", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(cellView)}\n" +
+                         $"BackgroundRenderer enabled: {cellView.BackgroundRenderer?.enabled}\n" +
+                         $"MineRenderer enabled: {cellView.MineRenderer?.enabled}");
             }
         }
     }

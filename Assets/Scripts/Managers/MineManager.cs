@@ -114,8 +114,8 @@ public class MineManager : MonoBehaviour
                 }
             }
 
-            // Recalculate values for all cells
-            MineValuePropagator.PropagateValues(this, m_GridManager);
+            // Update all grid values
+            UpdateAllGridValues();
         }
     }
 
@@ -131,8 +131,8 @@ public class MineManager : MonoBehaviour
             m_MineDataMap.Add(position, randomMineData);
         }
 
-        // Propagate values after all mines are placed
-        MineValuePropagator.PropagateValues(this, m_GridManager);
+        // Update all grid values after placing mines
+        UpdateAllGridValues();
     }
 
     private Vector2Int GetRandomEmptyPosition()
@@ -159,5 +159,10 @@ public class MineManager : MonoBehaviour
                 Debug.LogWarning($"Mine type {mineData.Type} not implemented yet. Using StandardMine as fallback.");
                 return new StandardMine(mineData, position);
         }
+    }
+
+    private void UpdateAllGridValues()
+    {
+        MineValuePropagator.PropagateValues(this, m_GridManager);
     }
 } 
