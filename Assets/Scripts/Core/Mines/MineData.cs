@@ -12,6 +12,9 @@ public class MineData : ScriptableObject
     public MineShape Shape;
     public int Radius;
 
+    [Header("Spawn Properties")]
+    public MineSpawnStrategyType SpawnStrategy = MineSpawnStrategyType.Random;
+
     [Header("Visual Properties")]
     public Sprite MineSprite;
     

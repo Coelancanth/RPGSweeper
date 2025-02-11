@@ -47,40 +47,37 @@ class BaseMine {
 #CalculateDamage(Player)
 #ApplyEffect(EffectData)
 }
-class HealingMine {
-+OnTrigger(Player)
-#ApplyEffect(EffectData)
+class IMineSpawnStrategy {
+<<interface>>
++GetSpawnPosition(GridManager, Dictionary)
 }
-class ExperienceMine {
-+CanDisguise: bool
-+OnTrigger(Player)
+class RandomMineSpawnStrategy {
++GetSpawnPosition(GridManager, Dictionary)
 }
-class MultiTriggerMine {
--m_TriggerCount: int
--m_RequiredTriggers: int
-+OnTrigger(Player)
+class EdgeMineSpawnStrategy {
++GetSpawnPosition(GridManager, Dictionary)
 }
-class AreaRevealMine {
-+OnTrigger(Player)
--RevealArea()
-}
-class MineValuePropagator {
-+PropagateValues(MineManager, GridManager)
--PropagateValueFromMine(Vector2Int, MineData)
+class MineData {
++Type: MineType
++Value: int
++Shape: MineShape
++SpawnStrategy: MineSpawnStrategyType
 }
 class MineManager {
 -m_Mines: Dictionary
+-m_SpawnStrategies: Dictionary
 +HandleMineRemoval(Vector2Int)
 +HasMineAt(Vector2Int)
+-GetSpawnPosition(MineData)
 }
 IMine <|.. BaseMine
-BaseMine <|-- HealingMine
-BaseMine <|-- ExperienceMine
-BaseMine <|-- MultiTriggerMine
-BaseMine <|-- AreaRevealMine
+IMineSpawnStrategy <|.. RandomMineSpawnStrategy
+IMineSpawnStrategy <|.. EdgeMineSpawnStrategy
 MineManager --> IMine
-MineManager --> MineValuePropagator
+MineManager --> IMineSpawnStrategy
+MineData --> MineSpawnStrategyType
 ```
+
 ### Player System
 ```mermaid
 classDiagram

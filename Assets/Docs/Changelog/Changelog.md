@@ -1,3 +1,43 @@
+# v0.1.5 - 2025-02-12 07:40:50
+## Overview
+Implemented strategy pattern for mine spawning system, enhancing flexibility and extensibility of mine placement mechanics.
+
+## Change Details
+### Adjustments and Refactoring
+#### Mine Spawn System
+- Introduced strategy pattern for mine spawning
+- Added random and edge spawn strategies
+- Enhanced MineData with spawn strategy selection
+```mermaid
+classDiagram
+    class IMineSpawnStrategy {
+        <<interface>>
+        +GetSpawnPosition(GridManager, Dictionary)
+    }
+    class RandomMineSpawnStrategy {
+        +GetSpawnPosition(GridManager, Dictionary)
+    }
+    class EdgeMineSpawnStrategy {
+        +GetSpawnPosition(GridManager, Dictionary)
+    }
+    class MineData {
+        +SpawnStrategy: MineSpawnStrategyType
+    }
+    class MineManager {
+        -m_SpawnStrategies: Dictionary
+        +GetSpawnPosition(MineData)
+    }
+    IMineSpawnStrategy <|.. RandomMineSpawnStrategy
+    IMineSpawnStrategy <|.. EdgeMineSpawnStrategy
+    MineManager --> IMineSpawnStrategy
+    MineData --> MineSpawnStrategyType
+```
+
+### Architecture Improvements
+- Enhanced modularity of mine spawning system
+- Improved extensibility for future spawn strategies
+- Better separation of concerns in mine placement logic
+
 # v0.1.4 - 2025-02-12 04:17:50
 ## Overview
 Added mine removal functionality with dynamic value recalculation, enhancing gameplay mechanics with the ability to remove revealed mines.

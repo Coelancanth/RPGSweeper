@@ -10,20 +10,20 @@ public class MineManager : MonoBehaviour
     
     private Dictionary<Vector2Int, IMine> m_Mines = new Dictionary<Vector2Int, IMine>();
     private Dictionary<Vector2Int, MineData> m_MineDataMap = new Dictionary<Vector2Int, MineData>();
+    private Dictionary<MineSpawnStrategyType, IMineSpawnStrategy> m_SpawnStrategies;
 
-    #if UNITY_EDITOR
-    public IReadOnlyDictionary<Vector2Int, IMine> GetMines() => m_Mines;
-    #endif
-
-    public bool HasMineAt(Vector2Int position) => m_Mines.ContainsKey(position);
-
-    public MineData GetMineDataAt(Vector2Int position)
+    private void Awake()
     {
-        if (m_MineDataMap.TryGetValue(position, out MineData mineData))
+        InitializeSpawnStrategies();
+    }
+
+    private void InitializeSpawnStrategies()
+    {
+        m_SpawnStrategies = new Dictionary<MineSpawnStrategyType, IMineSpawnStrategy>
         {
-            return mineData;
-        }
-        return null;
+            { MineSpawnStrategyType.Random, new RandomMineSpawnStrategy() },
+            { MineSpawnStrategyType.Edge, new EdgeMineSpawnStrategy() }
+        };
     }
 
     private void Start()
@@ -64,7 +64,6 @@ public class MineManager : MonoBehaviour
     {
         if (m_Mines.TryGetValue(position, out IMine mine))
         {
-            
             // Show mine sprite
             if (m_MineDataMap.TryGetValue(position, out MineData mineData))
             {
@@ -124,7 +123,7 @@ public class MineManager : MonoBehaviour
         for (int i = 0; i < m_MineCount; i++)
         {
             MineData randomMineData = m_MineDatas[Random.Range(0, m_MineDatas.Count)];
-            Vector2Int position = GetRandomEmptyPosition();
+            Vector2Int position = GetSpawnPosition(randomMineData);
             
             IMine mine = CreateMine(randomMineData, position);
             m_Mines.Add(position, mine);
@@ -135,18 +134,15 @@ public class MineManager : MonoBehaviour
         UpdateAllGridValues();
     }
 
-    private Vector2Int GetRandomEmptyPosition()
+    private Vector2Int GetSpawnPosition(MineData mineData)
     {
-        Vector2Int position;
-        do
+        if (m_SpawnStrategies.TryGetValue(mineData.SpawnStrategy, out IMineSpawnStrategy strategy))
         {
-            position = new Vector2Int(
-                Random.Range(0, m_GridManager.Width),
-                Random.Range(0, m_GridManager.Height)
-            );
-        } while (m_Mines.ContainsKey(position));
-
-        return position;
+            return strategy.GetSpawnPosition(m_GridManager, m_Mines);
+        }
+        
+        Debug.LogWarning($"MineManager: No spawn strategy found for {mineData.SpawnStrategy}, falling back to random strategy");
+        return m_SpawnStrategies[MineSpawnStrategyType.Random].GetSpawnPosition(m_GridManager, m_Mines);
     }
 
     private IMine CreateMine(MineData mineData, Vector2Int position)
@@ -164,5 +160,20 @@ public class MineManager : MonoBehaviour
     private void UpdateAllGridValues()
     {
         MineValuePropagator.PropagateValues(this, m_GridManager);
+    }
+
+    #if UNITY_EDITOR
+    public IReadOnlyDictionary<Vector2Int, IMine> GetMines() => m_Mines;
+    #endif
+
+    public bool HasMineAt(Vector2Int position) => m_Mines.ContainsKey(position);
+
+    public MineData GetMineDataAt(Vector2Int position)
+    {
+        if (m_MineDataMap.TryGetValue(position, out MineData mineData))
+        {
+            return mineData;
+        }
+        return null;
     }
 } 
