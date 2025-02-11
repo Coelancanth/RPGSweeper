@@ -98,14 +98,30 @@ public class GridManager : MonoBehaviour
     {
         if (m_Grid.IsValidPosition(position))
         {
-            // Let the grid know this cell is revealed
-            m_Grid.RevealCell(position);
+            Debug.Log($"GridManager: Handling cell reveal at {position}");
             
-            // Only update visuals if there's no mine (MineManager will handle mine visuals)
+            // Get the cell view
+            CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
+            
+            // Check if there's a mine
             var mineManager = FindObjectOfType<MineManager>();
-            if (mineManager != null && !mineManager.HasMineAt(position))
+            if (mineManager != null)
             {
-                CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
+                if (mineManager.HasMineAt(position))
+                {
+                    Debug.Log($"GridManager: Found mine at {position}, letting MineManager handle reveal");
+                    // MineManager will handle the reveal
+                    return;
+                }
+                else
+                {
+                    Debug.Log($"GridManager: No mine at {position}, revealing empty cell");
+                    cellView.UpdateVisuals(true);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("GridManager: MineManager not found!");
                 cellView.UpdateVisuals(true);
             }
         }

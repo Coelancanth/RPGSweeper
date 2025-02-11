@@ -1,3 +1,45 @@
+# v0.1.2 - 2024-02-12 02:30:13
+## Overview
+Fixed critical visualization issues in the cell reveal system, ensuring proper visual feedback when cells are revealed.
+
+## Change Details
+### Bug Fixes
+#### Cell Visualization System
+- Fixed sprite renderers not being enabled when cells are revealed
+- Added proper renderer state management in cell state transitions
+- Ensured consistent visual feedback for cell reveals
+```mermaid
+classDiagram
+    class CellView {
+        -m_BackgroundRenderer: SpriteRenderer
+        -m_MineRenderer: SpriteRenderer
+        +SetupRenderers()
+        +UpdateVisuals(bool)
+    }
+    class ICellState {
+        <<interface>>
+        +Enter(CellView)
+        +UpdateVisuals(CellView)
+    }
+    class HiddenCellState {
+        +Enter(CellView)
+        +UpdateVisuals(CellView)
+    }
+    class RevealedEmptyCellState {
+        +Enter(CellView)
+        +UpdateVisuals(CellView)
+    }
+    ICellState <|.. HiddenCellState
+    ICellState <|.. RevealedEmptyCellState
+    CellView --> ICellState
+```
+
+### Optimizations
+#### Visual System Improvements
+- Optimized sprite renderer state management
+- Improved visual state transitions
+- Enhanced error handling for missing renderers
+
 # v0.1.1 - 2024-02-10 2025-02-10 02:32:41
 ## Overview
 Enhanced the mine visualization system with proper sprite rendering and debug support. This update improves the visual feedback for mines and adds development tools for better debugging.

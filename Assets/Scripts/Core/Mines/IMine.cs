@@ -4,6 +4,6 @@ public interface IMine
 {
     MineType Type { get; }
     bool CanDisguise { get; }
-    void OnTrigger(Player player);
+    void OnTrigger(PlayerComponent player);
     void OnDestroy();
 } 

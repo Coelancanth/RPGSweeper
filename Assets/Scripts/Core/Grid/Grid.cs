@@ -46,7 +46,11 @@ public class Grid
     {
         if (IsValidPosition(_position))
         {
-            m_Cells[_position.x, _position.y].Reveal();
+            var cell = m_Cells[_position.x, _position.y];
+            if (!cell.IsRevealed)
+            {
+                cell.Reveal();
+            }
         }
     }
 } 

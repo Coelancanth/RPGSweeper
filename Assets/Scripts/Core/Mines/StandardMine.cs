@@ -24,7 +24,7 @@ public class StandardMine : IMine
     #endregion
 
     #region IMine Implementation
-    public void OnTrigger(Player _player)
+    public void OnTrigger(PlayerComponent _player)
     {
         _player.TakeDamage(m_Data.Value);
         
@@ -44,7 +44,7 @@ public class StandardMine : IMine
     #endregion
 
     #region Private Methods
-    private void ApplyEffect(Player _player, EffectData _effect)
+    private void ApplyEffect(PlayerComponent _player, EffectData _effect)
     {
         switch (_effect.Type)
         {

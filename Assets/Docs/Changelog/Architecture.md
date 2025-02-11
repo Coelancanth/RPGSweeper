@@ -115,6 +115,8 @@ classDiagram
         +Initialize(Vector2Int)
         +UpdateVisuals(bool)
         +ShowMineSprite(Sprite)
+        -SetupRenderers()
+        -SetSpriteScale(SpriteRenderer, float)
     }
     class MineDebugger {
         -m_MineManager: MineManager
@@ -133,6 +135,8 @@ classDiagram
     MineDebugger --> CellView
     GridManager --> CellView
     MineManager --> CellView
+
+    note for CellView "Manages sprite renderer states\nEnsures proper visual transitions"
 ```
 
 ## Managers

@@ -1,4 +1,5 @@
 using UnityEngine;
+using RPGMinesweeper.Views.States;
 
 public class CellView : MonoBehaviour
 {
@@ -6,34 +7,67 @@ public class CellView : MonoBehaviour
     [SerializeField] private SpriteRenderer m_BackgroundRenderer;
     [SerializeField] private SpriteRenderer m_MineRenderer;
     
-    [Header("Colors")]
-    [SerializeField] private Color m_HiddenColor = Color.gray;
-    [SerializeField] private Color m_RevealedColor = Color.white;
+    [Header("Sprites")]
+    [SerializeField] private Sprite m_HiddenSprite;
+    [SerializeField] private Sprite m_RevealedEmptySprite;
+    [SerializeField] private Sprite m_RevealedMineSprite;
 
-    [Header("Mine Sprite Settings")]
-    [SerializeField] private float m_MineScale = 0.8f; // Scale relative to cell size
-    [SerializeField] private Vector3 m_MineOffset = new Vector3(0f, 0f, -0.1f); // Offset to appear above background
+    [Header("Visual Settings")]
+    [SerializeField] private float m_CellSize = 1f;
+    [SerializeField] private float m_MineScale = 0.8f;
+    [SerializeField] private Vector3 m_MineOffset = new Vector3(0f, 0f, -0.1f);
+    [SerializeField] private int m_BackgroundSortingOrder = 0;
+    [SerializeField] private int m_MineSortingOrder = 1;
     
     private Vector2Int m_Position;
     private bool m_IsRevealed;
-    private Color m_OriginalBackgroundColor;
-    private Sprite m_MineSprite;
+    private ICellState m_CurrentState;
+    private Sprite m_CurrentMineSprite;
+    private bool m_HasMine;
+
+    // Properties for state classes
+    public SpriteRenderer BackgroundRenderer => m_BackgroundRenderer;
+    public SpriteRenderer MineRenderer => m_MineRenderer;
+    public Sprite HiddenSprite => m_HiddenSprite;
+    public Sprite RevealedEmptySprite => m_RevealedEmptySprite;
+    public Sprite RevealedMineSprite => m_RevealedMineSprite;
+    public Sprite CurrentMineSprite => m_CurrentMineSprite;
 
     public Vector2Int GridPosition => m_Position;
 
     private void Awake()
     {
-        // Hide mine sprite initially
-        if (m_MineRenderer != null)
-        {
-            m_MineRenderer.enabled = false;
-            m_MineRenderer.transform.localPosition = m_MineOffset;
-            SetMineScale(m_MineScale);
-        }
+        SetupRenderers();
+        SetState(HiddenCellState.Instance);
+    }
 
+    private void SetupRenderers()
+    {
         if (m_BackgroundRenderer != null)
         {
-            m_OriginalBackgroundColor = m_BackgroundRenderer.color;
+            // Set background sprite renderer properties
+            m_BackgroundRenderer.enabled = true;
+            m_BackgroundRenderer.sortingOrder = m_BackgroundSortingOrder;
+            SetSpriteScale(m_BackgroundRenderer, m_CellSize);
+        }
+
+        if (m_MineRenderer != null)
+        {
+            // Set mine sprite renderer properties
+            m_MineRenderer.enabled = false;
+            m_MineRenderer.sortingOrder = m_MineSortingOrder;
+            m_MineRenderer.transform.localPosition = m_MineOffset;
+        }
+    }
+
+    private void SetSpriteScale(SpriteRenderer renderer, float targetWorldSize)
+    {
+        if (renderer.sprite != null)
+        {
+            float pixelsPerUnit = renderer.sprite.pixelsPerUnit;
+            float spriteSize = renderer.sprite.rect.width / pixelsPerUnit;
+            float scale = targetWorldSize / spriteSize;
+            renderer.transform.localScale = new Vector3(scale, scale, 1f);
         }
     }
 
@@ -41,23 +75,36 @@ public class CellView : MonoBehaviour
     {
         m_Position = position;
         m_IsRevealed = false;
-        m_MineSprite = null;
-        UpdateVisuals(false);
+        m_CurrentMineSprite = null;
+        m_HasMine = false;
+        SetState(HiddenCellState.Instance);
     }
 
     public void UpdateVisuals(bool revealed)
     {
-        m_IsRevealed = revealed;
-        if (m_BackgroundRenderer != null)
+        // If already in the desired state, do nothing
+        if (m_IsRevealed == revealed)
         {
-            m_BackgroundRenderer.color = revealed ? m_RevealedColor : m_HiddenColor;
-            m_OriginalBackgroundColor = m_BackgroundRenderer.color;
+            return;
         }
 
-        // Show mine sprite if it exists and cell is revealed
-        if (m_MineRenderer != null && m_MineSprite != null)
+        Debug.Log($"CellView: Updating visuals at {m_Position}, revealed: {revealed}, hasMine: {m_HasMine}");
+        m_IsRevealed = revealed;
+        
+        if (revealed)
         {
-            m_MineRenderer.enabled = revealed;
+            if (m_HasMine)
+            {
+                SetState(RevealedMineCellState.Instance);
+            }
+            else
+            {
+                SetState(RevealedEmptyCellState.Instance);
+            }
+        }
+        else
+        {
+            SetState(HiddenCellState.Instance);
         }
     }
 
@@ -65,34 +112,30 @@ public class CellView : MonoBehaviour
     {
         if (m_MineRenderer != null && mineSprite != null)
         {
-            m_MineSprite = mineSprite;
+            m_HasMine = true;
+            m_CurrentMineSprite = mineSprite;
             m_MineRenderer.sprite = mineSprite;
-            m_MineRenderer.sortingOrder = 1; // Ensure mine appears above background
-            m_MineRenderer.enabled = m_IsRevealed; // Only show if cell is revealed
-            SetMineScale(m_MineScale);
+            
+            // Calculate mine scale
+            float targetMineSize = m_CellSize * m_MineScale;
+            SetSpriteScale(m_MineRenderer, targetMineSize);
+
+            // Show mine sprite if cell is revealed
+            m_MineRenderer.enabled = m_IsRevealed;
+            
+            // Update state if revealed
+            if (m_IsRevealed)
+            {
+                SetState(RevealedMineCellState.Instance);
+            }
         }
     }
 
-    private void SetMineScale(float scale)
+    private void SetState(ICellState newState)
     {
-        if (m_MineRenderer != null)
-        {
-            // Calculate the scale based on the cell size and desired relative scale
-            float cellSize = transform.localScale.x;
-            float targetScale = cellSize * scale;
-            
-            // If we have a sprite, adjust scale based on sprite size to maintain proportions
-            if (m_MineRenderer.sprite != null)
-            {
-                float spriteSize = m_MineRenderer.sprite.bounds.size.x;
-                float scaleMultiplier = targetScale / spriteSize;
-                m_MineRenderer.transform.localScale = new Vector3(scaleMultiplier, scaleMultiplier, 1f);
-            }
-            else
-            {
-                m_MineRenderer.transform.localScale = new Vector3(targetScale, targetScale, 1f);
-            }
-        }
+        Debug.Log($"CellView: Setting state to {newState.GetType().Name} at position {m_Position}");
+        m_CurrentState = newState;
+        m_CurrentState.Enter(this);
     }
 
     public void ShowDebugHighlight(Color highlightColor)
@@ -107,13 +150,13 @@ public class CellView : MonoBehaviour
     {
         if (m_BackgroundRenderer != null)
         {
-            m_BackgroundRenderer.color = m_IsRevealed ? m_RevealedColor : m_HiddenColor;
+            m_BackgroundRenderer.color = Color.white;
+            m_CurrentState.UpdateVisuals(this);
         }
     }
 
     public void ApplyEffect()
     {
-        // Add visual effect (e.g., particle system)
         Debug.Log($"Effect applied at position {m_Position}");
     }
 
@@ -121,6 +164,7 @@ public class CellView : MonoBehaviour
     {
         if (!m_IsRevealed)
         {
+            Debug.Log($"CellView: Clicked cell at position {m_Position}");
             GameEvents.RaiseCellRevealed(m_Position);
         }
     }
