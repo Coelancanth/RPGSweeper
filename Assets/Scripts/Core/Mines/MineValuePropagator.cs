@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using RPGMinesweeper.Grid;
+using RPGMinesweeper.Effects;
 
 public static class MineValuePropagator
 {
@@ -18,25 +19,17 @@ public static class MineValuePropagator
             return;
         }
 
-        // First pass: Reset all cell values to 0
+        var cellValues = new Dictionary<Vector2Int, int>();
+
+        // First pass: Calculate base values for all cells
         for (int x = 0; x < gridManager.Width; x++)
         {
             for (int y = 0; y < gridManager.Height; y++)
             {
                 var position = new Vector2Int(x, y);
-                var cellObject = gridManager.GetCellObject(position);
-                if (cellObject != null)
-                {
-                    var cellView = cellObject.GetComponent<CellView>();
-                    if (cellView != null)
-                    {
-                        cellView.SetValue(0);
-                    }
-                }
+                cellValues[position] = 0;
             }
         }
-
-        var cellValues = new Dictionary<Vector2Int, int>();
 
         // Second pass: Calculate values for cells affected by mines
         for (int x = 0; x < gridManager.Width; x++)
@@ -55,7 +48,7 @@ public static class MineValuePropagator
             }
         }
 
-        // Third pass: Apply calculated values to cells
+        // Third pass: Apply calculated values to cells, considering active effects
         foreach (var kvp in cellValues)
         {
             var cellObject = gridManager.GetCellObject(kvp.Key);
@@ -64,7 +57,9 @@ public static class MineValuePropagator
                 var cellView = cellObject.GetComponent<CellView>();
                 if (cellView != null)
                 {
-                    cellView.SetValue(kvp.Value);
+                    // Apply any active effect modifications before setting the value
+                    int modifiedValue = MineValueModifier.ModifyValue(kvp.Key, kvp.Value);
+                    cellView.SetValue(modifiedValue);
                 }
             }
         }
@@ -72,22 +67,12 @@ public static class MineValuePropagator
 
     private static void PropagateValueFromMine(Vector2Int minePosition, MineData mineData, Dictionary<Vector2Int, int> cellValues, MineManager mineManager, GridManager gridManager)
     {
-        //Debug.Log($"MineValuePropagator: Propagating value from mine at position {minePosition}");
         var affectedPositions = GridShapeHelper.GetAffectedPositions(minePosition, mineData.Shape, mineData.Radius);
-        foreach (var position in affectedPositions  )
-        {
-            //Debug.Log($"MineValuePropagator: Affected position: {position}");
-        }
         foreach (var position in affectedPositions)
         {
             if (gridManager.IsValidPosition(position) && !mineManager.HasMineAt(position))
             {
-                if (!cellValues.ContainsKey(position))
-                {
-                    cellValues[position] = 0;
-                }
                 cellValues[position] += mineData.Value;
-                //Debug.Log($"MineValuePropagator: Propagating value {mineData.Value} to position {position}, total value: {cellValues[position]}");
             }
         }
     }

@@ -17,6 +17,7 @@ MonoBehaviour:
   Shape: 2
   Radius: 1
   SpawnStrategy: 0
-  MineSprite: {fileID: 0}
-  PassiveEffects: []
+  MineSprite: {fileID: 5498951995105962609, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  PassiveEffects:
+  - {fileID: 11400000, guid: 6e7b7049cf0b3484c9749386a3ce1f76, type: 2}
   ActiveEffects: []

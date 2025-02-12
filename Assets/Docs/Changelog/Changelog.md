@@ -1,3 +1,63 @@
+# v0.1.8 - 2025-02-12 16:50:06
+## Overview
+Implemented centralized value modification system to improve effect persistence and independence, enhancing the reliability and maintainability of effect-based value modifications.
+
+## Change Details
+### Architecture Improvements
+#### Value Modification System
+- Added MineValueModifier for centralized effect tracking
+- Improved separation between base value calculation and effect modifications
+- Enhanced effect persistence and independence
+```mermaid
+classDiagram
+class MineValueModifier {
+-s_ActiveEffects: Dictionary
++RegisterEffect(Vector2Int, IEffect)
++UnregisterEffect(Vector2Int, IEffect)
++ModifyValue(Vector2Int, int)
+}
+class MineValuePropagator {
++PropagateValues()
+-PropagateValueFromMine()
+}
+class ConfusionEffect {
+-m_AffectedCells: HashSet
++Apply()
++Remove()
+}
+MineValuePropagator --> MineValueModifier : Uses
+ConfusionEffect --> MineValueModifier : Registers
+note for MineValueModifier "Centralized effect tracking\nHandles value modifications"
+```
+
+
+### Adjustments and Refactoring
+#### Value Calculation System
+- Separated base value calculation from effect modifications
+- Enhanced effect persistence through centralized tracking
+- Improved value recalculation reliability
+
+```mermaid
+classDiagram
+class ValueCalculation {
+BaseValue
+EffectModification
+FinalDisplay
+}
+class Process {
+Calculate base values
+Apply effect modifications
+Update cell displays
+}
+ValueCalculation --> Process
+note for ValueCalculation "Clear separation of concerns\nImproved maintainability"
+```
+
+### Optimizations
+- Improved effect persistence management
+- Enhanced value calculation efficiency
+- Reduced redundant recalculations
+
 # v0.1.7 - 2025-02-12 15:21:49
 ## Overview
 Added new confusion effect system that obscures mine values with question marks in configurable shapes, enhancing gameplay mechanics with visual deception elements.

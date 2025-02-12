@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: ConfusionEffect
-  m_EditorClassIdentifier: Assembly-CSharp:RPGMinesweeper.Effects:PassiveEffectData
-  Type: 8
-  Duration: 5
-  Magnitude: 0
-  Shape: 1
-  Radius: 2
-  TargetLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  TickInterval: 0
+  m_Name: EffectPresets
+  m_EditorClassIdentifier: Assembly-CSharp:RPGMinesweeper.Effects:EffectPresetDatabase
+  m_Presets:
+  - PresetName: Confusion
+    Type: 8
+    Duration: 0
+    Magnitude: 0
+    Shape: 2
+    Radius: 2
+    TickInterval: 0
+    IsPassive: 1

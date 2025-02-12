@@ -259,7 +259,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5ce19249b3b7b65428e1e761806aeaed, type: 2}
   - {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
   - {fileID: 11400000, guid: 0eefe59f104676f4db7ed15ea67c0ce2, type: 2}
-  m_MineCount: 10
+  - {fileID: 11400000, guid: 0d7d24de1f7cbbe4fb4a9f3f90cf0f09, type: 2}
+  m_MineCount: 15
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429
 Transform:
@@ -357,7 +358,8 @@ MonoBehaviour:
   m_MineManager: {fileID: 536950428}
   m_DebugKey: 282
   m_InspectKey: 105
-  m_HighlightColor: {r: 1, g: 0, b: 0, a: 1}
+  m_RevealAllKey: 114
+  m_GridManager: {fileID: 0}
 --- !u!4 &1910772196
 Transform:
   m_ObjectHideFlags: 0

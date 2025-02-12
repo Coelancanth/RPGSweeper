@@ -35,16 +35,15 @@ public class ConfusionEffect : IPassiveEffect
             if (gridManager.IsValidPosition(pos))
             {
                 m_AffectedCells.Add(pos);
-                var cellObject = gridManager.GetCellObject(pos);
-                if (cellObject != null)
-                {
-                    var cellView = cellObject.GetComponent<CellView>();
-                    if (cellView != null)
-                    {
-                        cellView.SetValue(-1); // -1 will be displayed as "?" in CellView
-                    }
-                }
+                MineValueModifier.RegisterEffect(pos, this);
             }
+        }
+
+        // Trigger value recalculation
+        var mineManager = GameObject.FindFirstObjectByType<MineManager>();
+        if (mineManager != null)
+        {
+            MineValuePropagator.PropagateValues(mineManager, gridManager);
         }
     }
 
@@ -54,31 +53,15 @@ public class ConfusionEffect : IPassiveEffect
         var mineManager = GameObject.FindFirstObjectByType<MineManager>();
         if (gridManager == null || mineManager == null) return;
 
-        // Restore original values for all affected cells
+        // Unregister effect from all affected cells
         foreach (var pos in m_AffectedCells)
         {
-            var cellObject = gridManager.GetCellObject(pos);
-            if (cellObject != null)
-            {
-                var cellView = cellObject.GetComponent<CellView>();
-                if (cellView != null)
-                {
-                    // Recalculate the actual value
-                    int value = 0;
-                    var mines = mineManager.GetMines();
-                    foreach (var kvp in mines)
-                    {
-                        var mineData = mineManager.GetMineDataAt(kvp.Key);
-                        if (mineData != null && mineData.IsPositionAffected(pos, kvp.Key))
-                        {
-                            value += mineData.Value;
-                        }
-                    }
-                    cellView.SetValue(value);
-                }
-            }
+            MineValueModifier.UnregisterEffect(pos, this);
         }
         m_AffectedCells.Clear();
+
+        // Trigger value recalculation
+        MineValuePropagator.PropagateValues(mineManager, gridManager);
     }
 
     public void OnTick(GameObject source, Vector2Int sourcePosition)

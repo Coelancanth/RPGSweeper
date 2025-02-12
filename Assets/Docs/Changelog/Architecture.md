@@ -208,3 +208,28 @@ IEffect <|-- IPassiveEffect
 IPassiveEffect <|.. ConfusionEffect
 ConfusionEffect --> GridShapeHelper
 ```
+
+### Value Modification System
+```mermaid
+classDiagram
+class MineValueModifier {
+-s_ActiveEffects: Dictionary<Vector2Int, HashSet<IEffect>>
++RegisterEffect(Vector2Int, IEffect)
++UnregisterEffect(Vector2Int, IEffect)
++ModifyValue(Vector2Int, int)
++Clear()
+}
+class MineValuePropagator {
++PropagateValues(MineManager, GridManager)
+-PropagateValueFromMine()
+}
+class IEffect {
+<<interface>>
++Type: EffectType
++Apply()
++Remove()
+}
+MineValuePropagator --> MineValueModifier
+IEffect --> MineValueModifier
+note for MineValueModifier "Centralized effect management"
+```
