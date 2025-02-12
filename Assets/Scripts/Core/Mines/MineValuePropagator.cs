@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using RPGMinesweeper.Grid;
 
 public static class MineValuePropagator
 {
@@ -72,7 +73,7 @@ public static class MineValuePropagator
     private static void PropagateValueFromMine(Vector2Int minePosition, MineData mineData, Dictionary<Vector2Int, int> cellValues, MineManager mineManager, GridManager gridManager)
     {
         //Debug.Log($"MineValuePropagator: Propagating value from mine at position {minePosition}");
-        var affectedPositions = MineShapeHelper.GetShapePositions(minePosition, mineData.Shape, mineData.Radius);
+        var affectedPositions = GridShapeHelper.GetAffectedPositions(minePosition, mineData.Shape, mineData.Radius);
         foreach (var position in affectedPositions  )
         {
             //Debug.Log($"MineValuePropagator: Affected position: {position}");

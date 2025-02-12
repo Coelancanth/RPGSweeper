@@ -106,7 +106,7 @@ public class GridManager : MonoBehaviour
         {
             CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
             
-            var mineManager = FindObjectOfType<MineManager>();
+            var mineManager = FindFirstObjectByType<MineManager>();
             if (mineManager != null)
             {
                 if (!mineManager.HasMineAt(position))

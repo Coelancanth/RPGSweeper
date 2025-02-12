@@ -1,3 +1,104 @@
+# v0.1.7 - 2025-02-12 15:21:49
+## Overview
+Added new confusion effect system that obscures mine values with question marks in configurable shapes, enhancing gameplay mechanics with visual deception elements.
+
+## Change Details
+### New Features
+#### Confusion Effect System
+- Implemented new ConfusionEffect that displays "?" instead of numeric values
+- Added shape-based area of effect using existing GridShape system
+- Integrated with passive effect system for periodic updates
+- Added automatic value restoration when effect is removed
+```mermaid
+classDiagram
+class ConfusionEffect {
+-m_Duration: float
+-m_Radius: int
+-m_Shape: GridShape
+-m_AffectedCells: HashSet
++Apply(GameObject, Vector2Int)
++Remove(GameObject, Vector2Int)
++OnTick(GameObject, Vector2Int)
+}
+class CellView {
+-m_ValueText: TextMeshPro
+-m_CurrentValue: int
++SetValue(int)
++UpdateVisuals()
+}
+class GridShapeHelper {
++GetAffectedPositions(Vector2Int, GridShape, int)
+}
+ConfusionEffect --> CellView : Updates
+ConfusionEffect --> GridShapeHelper : Uses
+note for ConfusionEffect "Manages confused state\nSupports multiple shapes"
+note for CellView "Displays ? for value -1"
+```
+
+
+### Architecture Improvements
+- Enhanced effect system extensibility with shape support
+- Improved separation of concerns in value display logic
+- Added proper value state management for special cases
+
+### Adjustments and Refactoring
+#### Value Display System
+- Enhanced CellView to handle special -1 value case
+- Improved value persistence through visual updates
+- Added shape-based area calculation
+```mermaid
+classDiagram
+class PassiveEffectData {
++Type: EffectType
++Shape: GridShape
++Radius: int
++CreateEffect()
+}
+class EffectType {
+<<enumeration>>
+Confusion
+Other_Effects
+}
+PassiveEffectData --> EffectType
+note for PassiveEffectData "Configurable shape and radius\nSupports confusion effect"
+```
+
+# v0.1.6 - 2025-02-12 14:40:44
+## Overview
+Simplified cell value visualization system by improving encapsulation and removing debug-specific logic from CellView.
+
+## Change Details
+### Adjustments and Refactoring
+#### Cell Value Visualization
+- Removed debug mode from CellView class
+- Consolidated value text visibility logic
+- Simplified visual state management
+- Improved separation of concerns between CellView and MineDebugger
+```mermaid
+classDiagram
+class CellView {
+-m_ValueText: TextMeshPro
+-m_CurrentValue: int
+-m_IsRevealed: bool
++UpdateVisuals()
++SetValue(int)
+}
+class MineDebugger {
+-m_CachedValues: Dictionary
++ToggleDebugVisuals()
+-CalculateAllCellValues()
+}
+CellView <-- MineDebugger : Updates
+note for CellView "Simplified value display logic\nImproved encapsulation"
+note for MineDebugger "Handles debug visualization"
+```
+
+### Optimizations
+- Reduced code complexity in CellView
+- Improved maintainability of value display system
+- Enhanced separation of debug and core visualization logic
+
+
 # v0.1.5 - 2025-02-12 07:40:50
 ## Overview
 Implemented strategy pattern for mine spawning system, enhancing flexibility and extensibility of mine placement mechanics.

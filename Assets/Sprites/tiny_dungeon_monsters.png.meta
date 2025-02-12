@@ -5193,7 +5193,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_167
+      name: Beholder_1
       rect:
         serializedVersion: 2
         x: 127
@@ -11960,6 +11960,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Beholder_1: 5498951995105962609
       monster_bat: 3867296298848744610
       monster_rat: 3799158994825339902
       monster_rat_king: -8373585295449095950
@@ -12039,7 +12040,6 @@ TextureImporter:
       tiny_dungeon_monsters_164: -2484256683490266558
       tiny_dungeon_monsters_165: 5188497690984531248
       tiny_dungeon_monsters_166: -3401709313961136865
-      tiny_dungeon_monsters_167: 5498951995105962609
       tiny_dungeon_monsters_168: 7257132272534000552
       tiny_dungeon_monsters_169: 3280344073974137450
       tiny_dungeon_monsters_17: -3431371524583245019

@@ -177,3 +177,34 @@ class MineManager {
 -CreateMine(MineData, Vector2Int)
 }
 ```
+
+### Effect System
+```mermaid
+classDiagram
+class IEffect {
+<<interface>>
++Type: EffectType
++TargetType: EffectTargetType
++Duration: float
++Apply(GameObject, Vector2Int)
++Remove(GameObject, Vector2Int)
+}
+class IPassiveEffect {
+<<interface>>
++OnTick(GameObject, Vector2Int)
+}
+class ConfusionEffect {
+-m_Shape: GridShape
+-m_AffectedCells: HashSet
++Apply()
++Remove()
++OnTick()
+}
+class GridShapeHelper {
++GetAffectedPositions()
++IsPositionAffected()
+}
+IEffect <|-- IPassiveEffect
+IPassiveEffect <|.. ConfusionEffect
+ConfusionEffect --> GridShapeHelper
+```

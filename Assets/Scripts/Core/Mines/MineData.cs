@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using RPGMinesweeper.Effects;
+using RPGMinesweeper.Grid;
 
 [CreateAssetMenu(fileName = "MineData", menuName = "RPGMinesweeper/MineData")]
 public class MineData : ScriptableObject
@@ -8,8 +10,8 @@ public class MineData : ScriptableObject
     public MineType Type;
     public int Value;
     
-    [Header("Shape Properties")]
-    public MineShape Shape;
+    [Header("Area of Effect")]
+    public GridShape Shape;
     public int Radius;
 
     [Header("Spawn Properties")]
@@ -19,5 +21,19 @@ public class MineData : ScriptableObject
     public Sprite MineSprite;
     
     [Header("Effects")]
-    public List<EffectData> Effects;
+    [Tooltip("Effects that are always active while the mine exists")]
+    public PassiveEffectData[] PassiveEffects;
+    
+    [Tooltip("Effects that trigger when the mine is removed")]
+    public ActiveEffectData[] ActiveEffects;
+
+    public List<Vector2Int> GetAffectedPositions(Vector2Int center)
+    {
+        return GridShapeHelper.GetAffectedPositions(center, Shape, Radius);
+    }
+
+    public bool IsPositionAffected(Vector2Int position, Vector2Int center)
+    {
+        return GridShapeHelper.IsPositionAffected(position, center, Shape, Radius);
+    }
 } 

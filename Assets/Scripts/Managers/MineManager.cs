@@ -30,7 +30,7 @@ public class MineManager : MonoBehaviour
     {
         if (m_GridManager == null)
         {
-            m_GridManager = FindObjectOfType<GridManager>();
+            m_GridManager = FindFirstObjectByType<GridManager>();
             if (m_GridManager == null)
             {
                 Debug.LogError("MineManager: Could not find GridManager!");
@@ -86,7 +86,7 @@ public class MineManager : MonoBehaviour
             }
 
             // Trigger mine effect
-            var playerComponent = FindObjectOfType<PlayerComponent>();
+            var playerComponent = FindFirstObjectByType<PlayerComponent>();
             if (playerComponent != null)
             {
                 mine.OnTrigger(playerComponent);
@@ -96,8 +96,11 @@ public class MineManager : MonoBehaviour
 
     private void HandleMineRemoval(Vector2Int position)
     {
-        if (m_Mines.ContainsKey(position))
+        if (m_Mines.TryGetValue(position, out IMine mine))
         {
+            // Trigger mine's destroy effects first
+            mine.OnDestroy();
+
             // Remove the mine from both dictionaries
             m_Mines.Remove(position);
             m_MineDataMap.Remove(position);

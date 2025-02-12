@@ -24,6 +24,7 @@ public class CellView : MonoBehaviour
     private bool m_IsRevealed;
     private Sprite m_CurrentMineSprite;
     private bool m_HasMine;
+    private int m_CurrentValue;
 
     // Public properties
     public Vector2Int GridPosition => m_Position;
@@ -55,6 +56,11 @@ public class CellView : MonoBehaviour
             m_MineRenderer.sortingOrder = m_MineSortingOrder;
             m_MineRenderer.transform.localPosition = m_MineOffset;
         }
+
+        if (m_ValueText != null)
+        {
+            m_ValueText.enabled = false;
+        }
     }
 
     private void SetSpriteScale(SpriteRenderer renderer, float targetWorldSize)
@@ -79,6 +85,7 @@ public class CellView : MonoBehaviour
         m_IsRevealed = false;
         m_HasMine = false;
         m_CurrentMineSprite = null;
+        m_CurrentValue = 0;
         UpdateVisuals();
     }
 
@@ -98,14 +105,35 @@ public class CellView : MonoBehaviour
             if (!m_IsRevealed)
             {
                 m_BackgroundRenderer.sprite = m_HiddenSprite;
+                if (m_ValueText != null)
+                {
+                    m_ValueText.enabled = false;
+                }
             }
             else if (m_HasMine)
             {
                 m_BackgroundRenderer.sprite = m_RevealedMineSprite;
+                if (m_ValueText != null)
+                {
+                    m_ValueText.enabled = false;
+                }
             }
             else
             {
                 m_BackgroundRenderer.sprite = m_RevealedEmptySprite;
+                if (m_ValueText != null)
+                {
+                    if (m_CurrentValue == -1)
+                    {
+                        m_ValueText.enabled = true;
+                        m_ValueText.text = "?";
+                    }
+                    else
+                    {
+                        m_ValueText.enabled = m_CurrentValue > 0;
+                        m_ValueText.text = m_CurrentValue > 0 ? m_CurrentValue.ToString() : "";
+                    }
+                }
             }
         }
 
@@ -141,10 +169,27 @@ public class CellView : MonoBehaviour
 
     public void SetValue(int value)
     {
+        m_CurrentValue = value;
         if (m_ValueText != null)
         {
-            m_ValueText.text = value > 0 ? value.ToString() : "";
-            m_ValueText.enabled = value > 0;
+            // Only show value if the cell is revealed and doesn't have a mine
+            if (m_IsRevealed && !m_HasMine)
+            {
+                if (value == -1)
+                {
+                    m_ValueText.enabled = true;
+                    m_ValueText.text = "?";
+                }
+                else
+                {
+                    m_ValueText.enabled = value > 0;
+                    m_ValueText.text = value > 0 ? value.ToString() : "";
+                }
+            }
+            else
+            {
+                m_ValueText.enabled = false;
+            }
         }
     }
 

@@ -362,7 +362,7 @@ MonoBehaviour:
   m_ValueText: {fileID: 3454038228071885173}
   m_HiddenSprite: {fileID: -2113823571944582385, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_RevealedEmptySprite: {fileID: 4200410133095201863, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
-  m_RevealedMineSprite: {fileID: 7931753803547739155, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
+  m_RevealedMineSprite: {fileID: -2113823571944582385, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_CellSize: 1
   m_MineScale: 0.8
   m_MineOffset: {x: 0, y: 0, z: -0.1}

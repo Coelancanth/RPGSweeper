@@ -258,6 +258,7 @@ MonoBehaviour:
   m_MineDatas:
   - {fileID: 11400000, guid: 5ce19249b3b7b65428e1e761806aeaed, type: 2}
   - {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
+  - {fileID: 11400000, guid: 0eefe59f104676f4db7ed15ea67c0ce2, type: 2}
   m_MineCount: 10
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429
@@ -304,8 +305,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d72116062a35424a80645631225901a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Width: 10
-  m_Height: 10
+  m_Width: 13
+  m_Height: 13
   m_CellPrefab: {fileID: 6435001397156161710, guid: c8f02c888623f9a478c236b2e3487bbd, type: 3}
   m_GridParent: {fileID: 1433877670}
   m_CellSize: 1
@@ -381,6 +382,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1930157438}
+  - component: {fileID: 1930157439}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -403,6 +405,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1930157439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930157437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f0f30f67eefde499694cc4cc37672e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
