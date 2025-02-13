@@ -82,23 +82,31 @@ MineData --> MineSpawnStrategyType
 ```mermaid
 classDiagram
 class Player {
--m_Stats: PlayerStats
--m_BaseMaxHP: int
--m_HPIncreasePerLevel: int
-+TakeDamage(int)
-+GainExperience(int)
+    -m_Stats: PlayerStats
+    -m_BaseMaxHP: int
+    -m_HPIncreasePerLevel: int
+    -m_CurrentShield: int
+    +TakeDamage(int)
+    +GainExperience(int)
+    +AddShield(int)
+    +RemoveShield(int)
 }
 class PlayerStats {
--m_CurrentHP: int
--m_MaxHP: int
--m_Experience: int
--m_Level: int
-+ModifyHP(int)
-+AddExperience(int)
-+SetMaxHP(int)
-+RestoreFullHP()
+    -m_CurrentHP: int
+    -m_MaxHP: int
+    -m_Experience: int
+    -m_Level: int
+    +ModifyHP(int)
+    +AddExperience(int)
+    +SetMaxHP(int)
+    +RestoreFullHP()
+}
+class GameEvents {
+    +OnShieldChanged: Action~int~
+    +RaiseShieldChanged(int)
 }
 Player -- PlayerStats
+Player --> GameEvents : Notifies shield changes
 
 ### Event System
 ```mermaid

@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5df1cce5e6b07834d97e337ef27886e3, type: 3}
   m_Name: MonsterMineData
   m_EditorClassIdentifier: 
-  Type: 0
-  Value: 0
-  Shape: 0
-  Radius: 0
-  SpawnStrategy: 0
-  MineSprite: {fileID: 0}
-  m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
+  Type: 7
+  Value: 3
+  Shape: 2
+  Radius: 1
+  SpawnStrategy: 1
+  MineSprite: {fileID: 5498951995105962609, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  m_ValueColor: {r: 0.6792453, g: 0.10893546, b: 0.5409787, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  PassiveEffects: []
+  PassiveEffects:
+  - {fileID: 11400000, guid: 6e7b7049cf0b3484c9749386a3ce1f76, type: 2}
   ActiveEffects: []
   m_MaxHp: 100
   m_BaseDamage: 20
   m_DamagePerHit: 25
   m_MonsterSprite: {fileID: 0}
-  m_MonsterTint: {r: 1, g: 1, b: 1, a: 1}
-  m_HasEnrageState: 1
-  m_EnrageDamageMultiplier: 1.5
+  m_MonsterTint: {r: 1, g: 0.084905505, b: 0.084905505, a: 1}
+  m_HasEnrageState: 0
+  m_EnrageDamageMultiplier: 1

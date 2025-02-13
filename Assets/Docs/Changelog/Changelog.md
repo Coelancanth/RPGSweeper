@@ -1,3 +1,55 @@
+# v0.1.11 - 2025-02-13 23:03:41
+## Overview
+Removed speed-related functionality and enhanced shield mechanics to better align with the game's pure grid-based nature, while improving code quality and fixing linter errors.
+
+## Change Details
+### Adjustments and Refactoring
+#### Speed System Removal
+- Removed all speed-related functionality
+- Deleted SpeedEffect class and enum entry
+- Cleaned up movement code from PlayerComponent
+```mermaid
+classDiagram
+class PlayerComponent {
+    -m_CurrentShield: int
+    +TakeDamage(int)
+    +AddShield(int)
+    +RemoveShield(int)
+}
+class GameEvents {
+    +OnShieldChanged: Action~int~
+    +RaiseShieldChanged(int)
+}
+PlayerComponent --> GameEvents : Notifies
+note for PlayerComponent "Simplified component\nFocused on core mechanics"
+```
+
+#### Shield System Enhancement
+- Added shield change event system
+- Implemented proper shield notifications
+- Fixed linter errors in shield-related code
+```mermaid
+classDiagram
+class ShieldSystem {
+    CurrentShield
+    ShieldNotification
+    DamageReduction
+}
+class Process {
+    Apply shield first
+    Reduce incoming damage
+    Notify changes
+}
+ShieldSystem --> Process
+note for ShieldSystem "Enhanced shield mechanics\nImproved damage handling"
+```
+
+### Optimizations
+- Improved code encapsulation
+- Enhanced shield damage reduction logic
+- Fixed linter errors in PlayerComponent
+- Removed redundant speed-related code
+
 # v0.1.10 - 2025-02-13 16:34:22
 ## Overview
 Enhanced mine visualization system with customizable value colors and improved positioning logic for zero-value mines, providing better visual clarity and customization options.
@@ -111,8 +163,6 @@ note for ColorSource "Clear separation between\neffect and regular colors"
 - Reduced redundant color calculations
 - Improved visual consistency across systems
 
-
-
 # v0.1.8 - 2025-02-12 16:50:06
 ## Overview
 Implemented centralized value modification system to improve effect persistence and independence, enhancing the reliability and maintainability of effect-based value modifications.
@@ -144,7 +194,6 @@ MineValuePropagator --> MineValueModifier : Uses
 ConfusionEffect --> MineValueModifier : Registers
 note for MineValueModifier "Centralized effect tracking\nHandles value modifications"
 ```
-
 
 ### Adjustments and Refactoring
 #### Value Calculation System
@@ -210,7 +259,6 @@ note for ConfusionEffect "Manages confused state\nSupports multiple shapes"
 note for CellView "Displays ? for value -1"
 ```
 
-
 ### Architecture Improvements
 - Enhanced effect system extensibility with shape support
 - Improved separation of concerns in value display logic
@@ -272,7 +320,6 @@ note for MineDebugger "Handles debug visualization"
 - Reduced code complexity in CellView
 - Improved maintainability of value display system
 - Enhanced separation of debug and core visualization logic
-
 
 # v0.1.5 - 2025-02-12 07:40:50
 ## Overview
