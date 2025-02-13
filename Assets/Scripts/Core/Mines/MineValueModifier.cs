@@ -47,6 +47,25 @@ public class MineValueModifier
         return originalValue;
     }
 
+    public static (int value, Color color) ModifyValueAndGetColor(Vector2Int position, int originalValue)
+    {
+        if (!s_ActiveEffects.ContainsKey(position))
+        {
+            return (originalValue, Color.white);
+        }
+
+        // Check for confusion effects
+        foreach (var effect in s_ActiveEffects[position])
+        {
+            if (effect.Type == EffectType.Confusion)
+            {
+                return (-1, new Color(1f, 0.4f, 0.7f)); // Pink color for confusion
+            }
+        }
+
+        return (originalValue, Color.white);
+    }
+
     public static void Clear()
     {
         s_ActiveEffects.Clear();

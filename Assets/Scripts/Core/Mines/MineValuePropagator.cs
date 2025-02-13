@@ -57,9 +57,9 @@ public static class MineValuePropagator
                 var cellView = cellObject.GetComponent<CellView>();
                 if (cellView != null)
                 {
-                    // Apply any active effect modifications before setting the value
-                    int modifiedValue = MineValueModifier.ModifyValue(kvp.Key, kvp.Value);
-                    cellView.SetValue(modifiedValue);
+                    // Get effect modifications and color
+                    var (modifiedValue, effectColor) = MineValueModifier.ModifyValueAndGetColor(kvp.Key, kvp.Value);
+                    cellView.SetValue(modifiedValue, effectColor);
                 }
             }
         }

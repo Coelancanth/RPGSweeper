@@ -217,6 +217,7 @@ class MineValueModifier {
 +RegisterEffect(Vector2Int, IEffect)
 +UnregisterEffect(Vector2Int, IEffect)
 +ModifyValue(Vector2Int, int)
++ModifyValueAndGetColor(Vector2Int, int)
 +Clear()
 }
 class MineValuePropagator {
@@ -231,5 +232,5 @@ class IEffect {
 }
 MineValuePropagator --> MineValueModifier
 IEffect --> MineValueModifier
-note for MineValueModifier "Centralized effect management"
+note for MineValueModifier "Centralized effect and color management"
 ```

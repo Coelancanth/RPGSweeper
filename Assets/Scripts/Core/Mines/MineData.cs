@@ -19,6 +19,9 @@ public class MineData : ScriptableObject
 
     [Header("Visual Properties")]
     public Sprite MineSprite;
+    [Tooltip("Color of the displayed mine value text")]
+    [SerializeField] private Color m_ValueColor = Color.white;
+    public Color ValueColor => m_ValueColor;
     
     [Header("Effects")]
     [Tooltip("Effects that are always active while the mine exists")]
@@ -35,5 +38,10 @@ public class MineData : ScriptableObject
     public bool IsPositionAffected(Vector2Int position, Vector2Int center)
     {
         return GridShapeHelper.IsPositionAffected(position, center, Shape, Radius);
+    }
+
+    public (int value, Color color) GetValueDisplay()
+    {
+        return (Value, m_ValueColor);
     }
 } 

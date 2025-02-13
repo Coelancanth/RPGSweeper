@@ -16,6 +16,7 @@ public class MineDebugger : MonoBehaviour
     private Dictionary<Vector2Int, CellView> m_CellViews = new Dictionary<Vector2Int, CellView>();
     private bool m_IsDebugMode = false;
     private Dictionary<Vector2Int, int> m_CachedValues = new Dictionary<Vector2Int, int>();
+    private Dictionary<Vector2Int, Color> m_CachedColors = new Dictionary<Vector2Int, Color>();
     #endregion
 
     #region Unity Lifecycle
@@ -91,7 +92,8 @@ public class MineDebugger : MonoBehaviour
             {
                 if (m_CellViews.TryGetValue(kvp.Key, out var cellView))
                 {
-                    cellView.SetValue(kvp.Value);
+                    var (value, color) = MineValueModifier.ModifyValueAndGetColor(kvp.Key, kvp.Value);
+                    cellView.SetValue(value, color);
                 }
             }
         }
@@ -114,7 +116,8 @@ public class MineDebugger : MonoBehaviour
         {
             for (int y = 0; y < m_GridManager.Height; y++)
             {
-                m_CachedValues[new Vector2Int(x, y)] = 0;
+                var pos = new Vector2Int(x, y);
+                m_CachedValues[pos] = 0;
             }
         }
 

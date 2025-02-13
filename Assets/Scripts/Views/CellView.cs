@@ -25,6 +25,7 @@ public class CellView : MonoBehaviour
     private Sprite m_CurrentMineSprite;
     private bool m_HasMine;
     private int m_CurrentValue;
+    private Color m_CurrentValueColor = Color.white;
 
     // Public properties
     public Vector2Int GridPosition => m_Position;
@@ -127,11 +128,13 @@ public class CellView : MonoBehaviour
                     {
                         m_ValueText.enabled = true;
                         m_ValueText.text = "?";
+                        m_ValueText.color = m_CurrentValueColor;
                     }
                     else
                     {
                         m_ValueText.enabled = m_CurrentValue > 0;
                         m_ValueText.text = m_CurrentValue > 0 ? m_CurrentValue.ToString() : "";
+                        m_ValueText.color = m_CurrentValueColor;
                     }
                 }
             }
@@ -169,7 +172,13 @@ public class CellView : MonoBehaviour
 
     public void SetValue(int value)
     {
+        SetValue(value, Color.white);
+    }
+
+    public void SetValue(int value, Color color)
+    {
         m_CurrentValue = value;
+        m_CurrentValueColor = color;
         if (m_ValueText != null)
         {
             // Only show value if the cell is revealed and doesn't have a mine
@@ -179,11 +188,13 @@ public class CellView : MonoBehaviour
                 {
                     m_ValueText.enabled = true;
                     m_ValueText.text = "?";
+                    m_ValueText.color = color;
                 }
                 else
                 {
                     m_ValueText.enabled = value > 0;
                     m_ValueText.text = value > 0 ? value.ToString() : "";
+                    m_ValueText.color = color;
                 }
             }
             else

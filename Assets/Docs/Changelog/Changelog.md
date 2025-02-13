@@ -1,3 +1,60 @@
+# v0.1.9 - 2025-02-13 15:51:24
+## Overview
+Improved effect color visualization system by properly separating effect-based colors from regular value display, enhancing visual clarity and maintaining consistent color application across the game.
+
+## Change Details
+### Architecture Improvements
+#### Value Display System
+- Refactored color handling to properly separate effect colors from base values
+- Centralized color modification logic in MineValueModifier
+- Enhanced consistency between normal and debug visualization
+```mermaid
+classDiagram
+class MineValueModifier {
+-s_ActiveEffects: Dictionary
++ModifyValue(Vector2Int, int)
++ModifyValueAndGetColor(Vector2Int, int)
+}
+class MineValuePropagator {
++PropagateValues()
+-PropagateValueFromMine()
+}
+class CellView {
+-m_CurrentValue: int
+-m_CurrentValueColor: Color
++SetValue(int, Color)
+}
+MineValuePropagator --> MineValueModifier : Uses
+CellView --> MineValueModifier : Gets colors
+note for MineValueModifier "Handles both value and color\nmodifications centrally"
+```
+
+### Adjustments and Refactoring
+#### Color Management System
+- Removed color tracking from value propagation
+- Improved effect color application consistency
+- Enhanced debug visualization color handling
+```mermaid
+classDiagram
+class ValueDisplay {
+BaseValue[white]
+EffectValue[colored]
+}
+class ColorSource {
+Regular[white]
+Effect[pink]
+}
+ValueDisplay --> ColorSource
+note for ColorSource "Clear separation between\neffect and regular colors"
+```
+
+### Optimizations
+- Simplified color management logic
+- Reduced redundant color calculations
+- Improved visual consistency across systems
+
+
+
 # v0.1.8 - 2025-02-12 16:50:06
 ## Overview
 Implemented centralized value modification system to improve effect persistence and independence, enhancing the reliability and maintainability of effect-based value modifications.
