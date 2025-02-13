@@ -2,10 +2,17 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
+[System.Serializable]
+public class MineTypeSpawnData
+{
+    public MineData MineData;
+    public int SpawnCount;
+}
+
 public class MineManager : MonoBehaviour
 {
-    [SerializeField] private List<MineData> m_MineDatas;
-    [SerializeField] private int m_MineCount = 10;
+    [Header("Mine Configuration")]
+    [SerializeField] private List<MineTypeSpawnData> m_MineSpawnData;
     [SerializeField] private GridManager m_GridManager;
     
     private Dictionary<Vector2Int, IMine> m_Mines = new Dictionary<Vector2Int, IMine>();
@@ -39,8 +46,32 @@ public class MineManager : MonoBehaviour
             }
         }
 
+        ValidateSpawnCounts();
         PlaceMines();
         SubscribeToEvents();
+    }
+
+    private void ValidateSpawnCounts()
+    {
+        if (m_MineSpawnData == null || m_MineSpawnData.Count == 0)
+        {
+            Debug.LogError("MineManager: No mine spawn data configured!");
+            enabled = false;
+            return;
+        }
+
+        int totalMines = m_MineSpawnData.Sum(data => data.SpawnCount);
+        int maxPossibleMines = m_GridManager.Width * m_GridManager.Height;
+
+        if (totalMines > maxPossibleMines)
+        {
+            Debug.LogWarning($"MineManager: Total mine count ({totalMines}) exceeds grid capacity ({maxPossibleMines}). Mines will be scaled down proportionally.");
+            float scale = (float)maxPossibleMines / totalMines;
+            foreach (var data in m_MineSpawnData)
+            {
+                data.SpawnCount = Mathf.Max(1, Mathf.FloorToInt(data.SpawnCount * scale));
+            }
+        }
     }
 
     private void OnDestroy()
@@ -125,23 +156,25 @@ public class MineManager : MonoBehaviour
 
     private void PlaceMines()
     {
-        for (int i = 0; i < m_MineCount; i++)
+        foreach (var spawnData in m_MineSpawnData)
         {
-            MineData randomMineData = m_MineDatas[Random.Range(0, m_MineDatas.Count)];
-            Vector2Int position = GetSpawnPosition(randomMineData);
-            
-            IMine mine = CreateMine(randomMineData, position);
-            m_Mines.Add(position, mine);
-            m_MineDataMap.Add(position, randomMineData);
-
-            // Set the raw value on the cell view with its color
-            var cellObject = m_GridManager.GetCellObject(position);
-            if (cellObject != null)
+            for (int i = 0; i < spawnData.SpawnCount; i++)
             {
-                var cellView = cellObject.GetComponent<CellView>();
-                if (cellView != null)
+                Vector2Int position = GetSpawnPosition(spawnData.MineData);
+                
+                IMine mine = CreateMine(spawnData.MineData, position);
+                m_Mines.Add(position, mine);
+                m_MineDataMap.Add(position, spawnData.MineData);
+
+                // Set the raw value on the cell view with its color
+                var cellObject = m_GridManager.GetCellObject(position);
+                if (cellObject != null)
                 {
-                    cellView.SetRawValue(randomMineData.Value, randomMineData.MineValueColor);
+                    var cellView = cellObject.GetComponent<CellView>();
+                    if (cellView != null)
+                    {
+                        cellView.SetRawValue(spawnData.MineData.Value, spawnData.MineData.MineValueColor);
+                    }
                 }
             }
         }

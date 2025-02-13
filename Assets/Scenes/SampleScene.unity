@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 536950428}
   - component: {fileID: 536950427}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: MineManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -255,12 +255,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc0f842754b35cc4dae97d4be09ea96d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MineDatas:
-  - {fileID: 11400000, guid: 5ce19249b3b7b65428e1e761806aeaed, type: 2}
-  - {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
-  - {fileID: 11400000, guid: 0eefe59f104676f4db7ed15ea67c0ce2, type: 2}
-  - {fileID: 11400000, guid: 0d7d24de1f7cbbe4fb4a9f3f90cf0f09, type: 2}
-  m_MineCount: 15
+  m_MineSpawnData:
+  - MineData: {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
+    SpawnCount: 3
+  - MineData: {fileID: 11400000, guid: 0d7d24de1f7cbbe4fb4a9f3f90cf0f09, type: 2}
+    SpawnCount: 2
+  - MineData: {fileID: 11400000, guid: 5ce19249b3b7b65428e1e761806aeaed, type: 2}
+    SpawnCount: 5
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429
 Transform:
@@ -288,7 +289,7 @@ GameObject:
   - component: {fileID: 1433877670}
   - component: {fileID: 1433877669}
   m_Layer: 0
-  m_Name: Grid
+  m_Name: GridManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

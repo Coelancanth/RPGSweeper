@@ -4,7 +4,7 @@ namespace RPGMinesweeper.Effects
 {
     public enum EffectTargetType
     {
-        Player,     // Effects that target the player (heal, damage, shield, speed)
+        Player,     // Effects that target the player (heal, damage, shield)
         Grid,       // Effects that target grid cells (reveal)
         Area,       // Effects that target an area (explosion, chain reaction)
         Global      // Effects that affect the game state (time slow, difficulty change)
@@ -38,7 +38,6 @@ namespace RPGMinesweeper.Effects
         SpawnItem,
         Damage,
         Shield,
-        Speed,
         Confusion    // Obscures mine values with question marks
     }
 } 

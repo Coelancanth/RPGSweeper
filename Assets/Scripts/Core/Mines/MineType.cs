@@ -6,5 +6,6 @@ public enum MineType
     Transformer,
     MultiTrigger,
     AreaReveal,
-    ItemSpawner
+    ItemSpawner,
+    MonsterMine
 } 

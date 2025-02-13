@@ -130,10 +130,10 @@ public class CellView : MonoBehaviour
                 m_BackgroundRenderer.sprite = m_RevealedMineSprite;
                 if (m_ValueText != null)
                 {
-                    // For mine cells, always show raw value in white
+                    // For mine cells, show raw value in mine value color
                     m_ValueText.enabled = m_RawValue > 0;
                     m_ValueText.text = m_RawValue > 0 ? m_RawValue.ToString() : "";
-                    m_ValueText.color = Color.white;
+                    m_ValueText.color = m_MineValueColor;
                 }
             }
             else

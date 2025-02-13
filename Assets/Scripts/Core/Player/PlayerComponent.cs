@@ -2,10 +2,11 @@ using UnityEngine;
 
 public class PlayerComponent : MonoBehaviour
 {
-    private Player m_Player;
-    private float m_BaseSpeed = 5f;
-    private float m_CurrentSpeedModifier = 1f;
+    [Header("Player State")]
+    [SerializeField, Tooltip("Current shield amount, reduces incoming damage")]
     private int m_CurrentShield = 0;
+
+    private Player m_Player;
 
     private void Awake()
     {
@@ -20,6 +21,9 @@ public class PlayerComponent : MonoBehaviour
             int shieldDamage = Mathf.Min(m_CurrentShield, damage);
             m_CurrentShield -= shieldDamage;
             damage -= shieldDamage;
+            
+            // Notify shield change
+            GameEvents.RaiseShieldChanged(m_CurrentShield);
         }
 
         if (damage > 0)
@@ -36,23 +40,19 @@ public class PlayerComponent : MonoBehaviour
     public void AddShield(int amount)
     {
         m_CurrentShield += amount;
+        GameEvents.RaiseShieldChanged(m_CurrentShield);
     }
 
     public void RemoveShield(int amount)
     {
         m_CurrentShield = Mathf.Max(0, m_CurrentShield - amount);
+        GameEvents.RaiseShieldChanged(m_CurrentShield);
     }
 
-    public void ModifySpeed(float modifier)
-    {
-        m_CurrentSpeedModifier += modifier;
-        UpdateMovementSpeed();
-    }
-
-    private void UpdateMovementSpeed()
-    {
-        // Apply speed to character controller or rigidbody
-        float currentSpeed = m_BaseSpeed * m_CurrentSpeedModifier;
-        // Implementation depends on your movement system
-    }
+    // Public getters for UI/display purposes
+    public int CurrentShield => m_CurrentShield;
+    public int CurrentHp => m_Player.CurrentHp;
+    public int MaxHp => m_Player.MaxHp;
+    public int Level => m_Player.Level;
+    public int Experience => m_Player.Experience;
 } 

@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Scroll_Reveal
   m_EditorClassIdentifier: 
   Type: 0
-  Value: 5
+  Value: 0
   Shape: 2
   Radius: 1
   SpawnStrategy: 0
-  MineSprite: {fileID: -1633998254996411887, guid: edfc9caf42ca42046b52181ff601e1e4, type: 3}
+  MineSprite: {fileID: 1792902701393287813, guid: b4ed7cec96c387d45912a64fdd649cf5, type: 3}
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
+  m_MineValueColor: {r: 1, g: 1, b: 1, a: 1}
   PassiveEffects: []
-  ActiveEffects: []
+  ActiveEffects:
+  - {fileID: 11400000, guid: 7fcdae96fcf3e0b4c836fcb6e3af4f77, type: 2}

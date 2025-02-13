@@ -8,6 +8,7 @@ public static class GameEvents
     public static event Action<Vector2Int> OnEffectApplied;
     public static event Action<int> OnExperienceGained;
     public static event Action<Vector2Int> OnMineRemovalAttempted;
+    public static event Action<int> OnShieldChanged;
 
     public static void RaiseCellRevealed(Vector2Int position)
     {
@@ -32,5 +33,10 @@ public static class GameEvents
     public static void RaiseMineRemovalAttempted(Vector2Int position)
     {
         OnMineRemovalAttempted?.Invoke(position);
+    }
+
+    public static void RaiseShieldChanged(int newShieldAmount)
+    {
+        OnShieldChanged?.Invoke(newShieldAmount);
     }
 } 

@@ -8,6 +8,12 @@ public class Player
 
     public event Action OnDeath;
 
+    // Public properties to expose stats
+    public int CurrentHp => m_Stats.CurrentHP;
+    public int MaxHp => m_Stats.MaxHP;
+    public int Level => m_Stats.Level;
+    public int Experience => m_Stats.Experience;
+
     public Player()
     {
         m_Stats = new PlayerStats(m_BaseMaxHP);

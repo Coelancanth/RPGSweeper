@@ -22,7 +22,7 @@ public class MineData : ScriptableObject
     [Tooltip("Color of the displayed mine value text")]
     [SerializeField] private Color m_ValueColor = Color.white;
     [Tooltip("Color of the displayed mine value text when this is a mine cell")]
-    [SerializeField] private Color m_MineValueColor = Color.white;
+    [SerializeField] private Color m_MineValueColor = Color.yellow;
     public Color ValueColor => m_ValueColor;
     public Color MineValueColor => m_MineValueColor;
     
