@@ -1,3 +1,61 @@
+# v0.1.10 - 2025-02-13 16:34:22
+## Overview
+Enhanced mine visualization system with customizable value colors and improved positioning logic for zero-value mines, providing better visual clarity and customization options.
+
+## Change Details
+### New Features
+#### Mine Value Color Customization
+- Added MineValueColor property to MineData for custom mine value text colors
+- Implemented separate color handling for mine values vs. regular cell values
+- Enhanced visual consistency with proper color inheritance
+```mermaid
+classDiagram
+class MineData {
+    +Value: int
+    +ValueColor: Color
+    +MineValueColor: Color
+    +GetValueDisplay()
+}
+class CellView {
+    -m_MineValueColor: Color
+    +SetRawValue(int, Color)
+    +UpdateVisuals()
+}
+class MineManager {
+    +HandleCellRevealed()
+    -PlaceMines()
+}
+MineData --> CellView : Provides colors
+MineManager --> CellView : Updates
+note for MineData "Separate colors for\nmine and regular values"
+```
+
+### Adjustments and Refactoring
+#### Mine Sprite Positioning
+- Improved mine sprite positioning logic for zero-value mines
+- Centered both sprite and value text for mines with zero value
+- Enhanced visual consistency across different mine types
+```mermaid
+classDiagram
+class CellView {
+    -m_MineOffset: Vector3
+    -m_ValueOffset: Vector3
+    +ShowMineSprite()
+    +UpdateValueTextPosition()
+}
+class SpritePosition {
+    ZeroValue[centered]
+    NonZeroValue[offset]
+}
+CellView --> SpritePosition
+note for CellView "Dynamic positioning based\non mine value"
+```
+
+### Optimizations
+- Improved visual consistency for mine display
+- Enhanced code organization for sprite positioning
+- Optimized color management system
+
 # v0.1.9 - 2025-02-13 15:51:24
 ## Overview
 Improved effect color visualization system by properly separating effect-based colors from regular value display, enhancing visual clarity and maintaining consistent color application across the game.

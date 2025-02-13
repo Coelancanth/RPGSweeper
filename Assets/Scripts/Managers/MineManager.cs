@@ -75,6 +75,8 @@ public class MineManager : MonoBehaviour
                     {
                         // First show the mine sprite (this sets the HasMine flag)
                         cellView.ShowMineSprite(mineData.MineSprite);
+                        // Set the raw value from MineData with its color
+                        cellView.SetRawValue(mineData.Value, mineData.MineValueColor);
                         // Then reveal the cell (this will use the correct state based on HasMine)
                         cellView.UpdateVisuals(true);
                     }
@@ -131,6 +133,17 @@ public class MineManager : MonoBehaviour
             IMine mine = CreateMine(randomMineData, position);
             m_Mines.Add(position, mine);
             m_MineDataMap.Add(position, randomMineData);
+
+            // Set the raw value on the cell view with its color
+            var cellObject = m_GridManager.GetCellObject(position);
+            if (cellObject != null)
+            {
+                var cellView = cellObject.GetComponent<CellView>();
+                if (cellView != null)
+                {
+                    cellView.SetRawValue(randomMineData.Value, randomMineData.MineValueColor);
+                }
+            }
         }
 
         // Update all grid values after placing mines

@@ -252,7 +252,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 6750033715232265413, guid: 0eb1f649ca1660a4f920faf5616d3010, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -260,7 +260,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &6435001397156161710
@@ -364,10 +364,12 @@ MonoBehaviour:
   m_RevealedEmptySprite: {fileID: 4200410133095201863, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_RevealedMineSprite: {fileID: -2113823571944582385, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_CellSize: 1
-  m_MineScale: 0.8
-  m_MineOffset: {x: 0, y: 0, z: -0.1}
+  m_MineScale: 0.5
+  m_MineOffset: {x: 0, y: 0.2, z: -0.1}
+  m_ValueOffset: {x: 0, y: -0.2, z: -0.1}
   m_BackgroundSortingOrder: 0
   m_MineSortingOrder: 1
+  m_ValueSortingOrder: 2
 --- !u!1 &8646477785073328158
 GameObject:
   m_ObjectHideFlags: 0

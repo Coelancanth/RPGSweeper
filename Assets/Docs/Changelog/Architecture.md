@@ -121,12 +121,21 @@ classDiagram
         -m_MineRenderer: SpriteRenderer
         -m_Position: Vector2Int
         -m_ValueText: TextMeshPro
+        -m_MineValueColor: Color
         -m_CurrentState: ICellState
         +UpdateVisuals(bool)
         +ShowMineSprite(Sprite)
-        +SetValue(int)
+        +SetValue(int, Color)
+        +SetRawValue(int, Color)
         -SetupRenderers()
+        -UpdateValueTextPosition()
         -SetState(ICellState)
+    }
+    class MineData {
+        +Value: int
+        +ValueColor: Color
+        +MineValueColor: Color
+        +GetValueDisplay()
     }
     class MineDebugger {
         -m_MineManager: MineManager
@@ -145,8 +154,10 @@ classDiagram
     MineDebugger --> CellView
     GridManager --> CellView
     MineManager --> CellView
+    MineData --> CellView : Provides colors
 
-    note for CellView "Manages sprite renderer states\nEnsures proper visual transitions"
+    note for CellView "Manages sprite renderer states\nHandles color and positioning\nEnsures proper visual transitions"
+    note for MineData "Configurable colors for\nmine and regular values"
 ```
 
 ## Managers
