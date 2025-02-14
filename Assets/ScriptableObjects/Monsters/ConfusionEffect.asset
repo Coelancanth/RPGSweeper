@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: ConfusionEffect
   m_EditorClassIdentifier: Assembly-CSharp:RPGMinesweeper.Effects:PassiveEffectData
-  Type: 8
+  Type: 7
   Duration: 5
   Magnitude: 0
   Shape: 3

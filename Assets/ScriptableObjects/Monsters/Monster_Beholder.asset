@@ -23,9 +23,9 @@ MonoBehaviour:
   PassiveEffects:
   - {fileID: 11400000, guid: 6e7b7049cf0b3484c9749386a3ce1f76, type: 2}
   ActiveEffects: []
-  m_MaxHp: 100
+  m_MaxHp: 10
   m_BaseDamage: 2
-  m_DamagePerHit: 1
+  m_DamagePerHit: 2
   m_MonsterSprite: {fileID: 0}
   m_MonsterTint: {r: 1, g: 0.084905505, b: 0.084905505, a: 1}
   m_HasEnrageState: 0

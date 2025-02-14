@@ -412,10 +412,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MineSpawnData:
   - MineData: {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
-    SpawnCount: 3
+    SpawnCount: 5
   - MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
-    SpawnCount: 2
-  - MineData: {fileID: 11400000, guid: 5ce19249b3b7b65428e1e761806aeaed, type: 2}
     SpawnCount: 5
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429
@@ -1064,8 +1062,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d72116062a35424a80645631225901a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Width: 16
-  m_Height: 16
+  m_Width: 13
+  m_Height: 13
   m_CellPrefab: {fileID: 6435001397156161710, guid: c8f02c888623f9a478c236b2e3487bbd, type: 3}
   m_GridParent: {fileID: 1433877670}
   m_CellSize: 1
@@ -1456,7 +1454,7 @@ MonoBehaviour:
   m_ShieldText: {fileID: 741378091}
   m_LevelText: {fileID: 1841745313}
   m_ExperienceText: {fileID: 1068774721}
-  m_HpFillBar: {fileID: 524183856}
+  m_HpFillBar: {fileID: 0}
   m_HealthyColor: {r: 0, g: 1, b: 0, a: 1}
   m_CautionColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_DangerColor: {r: 1, g: 0, b: 0, a: 1}
