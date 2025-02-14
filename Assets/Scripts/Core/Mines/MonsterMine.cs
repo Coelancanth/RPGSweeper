@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using RPGMinesweeper.Effects;
 using RPGMinesweeper.Grid;
 
-public class MonsterMine : IMine
+public class MonsterMine : IDamagingMine
 {
     #region Private Fields
     private readonly MonsterMineData m_Data;
@@ -98,8 +98,8 @@ public class MonsterMine : IMine
     }
     #endregion
 
-    #region IMine Implementation
-    public void OnTrigger(PlayerComponent _player)
+    #region IDamagingMine Implementation
+    public int CalculateDamage()
     {
         // Check if should enter enrage state
         if (!m_IsEnraged && m_HasEnrageState && HpPercentage <= 0.3f)
@@ -109,12 +109,17 @@ public class MonsterMine : IMine
         }
 
         // Calculate damage based on current state
-        int damage = m_IsEnraged ? 
+        return m_IsEnraged ? 
             Mathf.RoundToInt(m_BaseDamage * m_EnrageDamageMultiplier) : 
             m_BaseDamage;
-            
+    }
+    #endregion
+
+    #region IMine Implementation
+    public void OnTrigger(PlayerComponent _player)
+    {
         // Deal damage to player
-        _player.TakeDamage(damage);
+        _player.TakeDamage(CalculateDamage());
         
         // Take damage
         int previousHp = m_CurrentHp;

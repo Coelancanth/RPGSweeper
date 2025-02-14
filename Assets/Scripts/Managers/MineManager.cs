@@ -200,6 +200,13 @@ public class MineManager : MonoBehaviour
         {
             case MineType.Standard:
                 return new StandardMine(mineData, position);
+            case MineType.Monster:
+                if (mineData is MonsterMineData monsterData)
+                {
+                    return new MonsterMine(monsterData, position);
+                }
+                Debug.LogError($"MineManager: MineData for Monster type must be MonsterMineData!");
+                return new StandardMine(mineData, position);
             default:
                 Debug.LogWarning($"Mine type {mineData.Type} not implemented yet. Using StandardMine as fallback.");
                 return new StandardMine(mineData, position);

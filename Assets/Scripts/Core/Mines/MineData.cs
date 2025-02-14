@@ -8,6 +8,7 @@ public class MineData : ScriptableObject
 {
     [Header("Basic Properties")]
     public MineType Type;
+    [Tooltip("Display value shown on the grid")]
     public int Value;
     
     [Header("Area of Effect")]

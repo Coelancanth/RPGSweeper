@@ -32,8 +32,7 @@ public class StandardMine : IMine
     #region IMine Implementation
     public void OnTrigger(PlayerComponent _player)
     {
-        _player.TakeDamage(m_Data.Value);
-        
+        // Standard mines only apply effects, they don't deal damage
         if (m_Data.PassiveEffects != null)
         {
             foreach (var effectData in m_Data.PassiveEffects)
