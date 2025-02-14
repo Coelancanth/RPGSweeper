@@ -129,43 +129,45 @@ classDiagram
         -m_MineRenderer: SpriteRenderer
         -m_Position: Vector2Int
         -m_ValueText: TextMeshPro
-        -m_MineValueColor: Color
-        -m_CurrentState: ICellState
+        -m_DisplayStrategy: IMineDisplayStrategy
+        -m_DisplayConfig: MineDisplayConfig
         +UpdateVisuals(bool)
-        +ShowMineSprite(Sprite)
+        +ShowMineSprite(Sprite, IMine, MineData)
         +SetValue(int, Color)
-        +SetRawValue(int, Color)
-        -SetupRenderers()
-        -UpdateValueTextPosition()
-        -SetState(ICellState)
     }
-    class MineData {
-        +Value: int
-        +ValueColor: Color
-        +MineValueColor: Color
-        +GetValueDisplay()
+    class IMineDisplayStrategy {
+        <<interface>>
+        +SetupDisplay(GameObject, TextMeshPro)
+        +UpdateDisplay(IMine, MineData, bool)
+        +CleanupDisplay()
     }
-    class MineDebugger {
-        -m_MineManager: MineManager
-        -m_CellViews: Dictionary
-        -m_IsDebugMode: bool
-        +ToggleDebugVisuals()
+    class MonsterMineDisplayStrategy {
+        -m_StatsText: TextMeshPro
+        -m_MineValueText: TextMeshPro
+        -m_MonsterMine: MonsterMine
+        +UpdateDisplay()
+        -HandleHpChanged()
+        -UpdateHPDisplay()
     }
-    class GridManager {
-        -m_CellObjects: GameObject[,]
-        +GetCellObject(Vector2Int)
+    class StandardMineDisplayStrategy {
+        -m_ValueText: TextMeshPro
+        +UpdateDisplay()
     }
-    class MineManager {
-        -m_MineDataMap: Dictionary
-        +HasMineAt(Vector2Int)
+    class MineDisplayConfig {
+        +HPPosition: Vector3
+        +DamagePosition: Vector3
+        +ValuePosition: Vector3
+        +DefaultValueColor: Color
+        +EnragedColor: Color
     }
-    MineDebugger --> CellView
-    GridManager --> CellView
-    MineManager --> CellView
-    MineData --> CellView : Provides colors
+    IMineDisplayStrategy <|.. MonsterMineDisplayStrategy
+    IMineDisplayStrategy <|.. StandardMineDisplayStrategy
+    CellView --> IMineDisplayStrategy
+    CellView --> MineDisplayConfig
+    MonsterMineDisplayStrategy --> MineDisplayConfig
 
-    note for CellView "Manages sprite renderer states\nHandles color and positioning\nEnsures proper visual transitions"
-    note for MineData "Configurable colors for\nmine and regular values"
+    note for CellView "Uses strategy pattern for\ndifferent mine displays"
+    note for IMineDisplayStrategy "Flexible display system\nfor different mine types"
 ```
 
 ## Managers

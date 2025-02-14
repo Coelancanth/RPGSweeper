@@ -105,9 +105,7 @@ public class MineManager : MonoBehaviour
                     if (cellView != null)
                     {
                         // First show the mine sprite (this sets the HasMine flag)
-                        cellView.ShowMineSprite(mineData.MineSprite);
-                        // Set the raw value from MineData with its color
-                        cellView.SetRawValue(mineData.Value, mineData.MineValueColor);
+                        cellView.ShowMineSprite(mineData.MineSprite, mine, mineData);
                         // Then reveal the cell (this will use the correct state based on HasMine)
                         cellView.UpdateVisuals(true);
                     }
@@ -173,7 +171,7 @@ public class MineManager : MonoBehaviour
                     var cellView = cellObject.GetComponent<CellView>();
                     if (cellView != null)
                     {
-                        cellView.SetRawValue(spawnData.MineData.Value, spawnData.MineData.MineValueColor);
+                        cellView.SetValue(spawnData.MineData.Value, spawnData.MineData.ValueColor);
                     }
                 }
             }

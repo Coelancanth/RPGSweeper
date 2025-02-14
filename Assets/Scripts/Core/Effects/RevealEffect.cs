@@ -43,7 +43,7 @@ namespace RPGMinesweeper.Effects
                                     var mineData = mineManager.GetMineDataAt(pos);
                                     if (mineData != null)
                                     {
-                                        cellView.ShowMineSprite(mineData.MineSprite);
+                                        cellView.ShowMineSprite(mineData.MineSprite, mineManager.GetMines()[pos], mineData);
                                     }
                                 }
                                 // Then reveal the cell

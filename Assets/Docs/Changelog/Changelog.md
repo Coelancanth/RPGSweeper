@@ -1,3 +1,37 @@
+# v0.1.12 - 2025-02-14 11:11:07
+## Overview
+Fixed real-time HP display updates for monster mines and improved the display strategy system's event handling, enhancing visual feedback reliability.
+
+## Change Details
+### Bug Fixes
+#### Monster HP Display System
+- Fixed HP display not updating in real-time for monster mines
+- Implemented proper event subscription system for HP changes
+- Enhanced cleanup of display resources and event handlers
+```mermaid
+classDiagram
+class MonsterMineDisplayStrategy {
+    -m_StatsText: TextMeshPro
+    -m_MonsterMine: MonsterMine
+    -m_IsRevealed: bool
+    +UpdateDisplay()
+    -HandleHpChanged()
+    -HandleEnraged()
+    -UpdateHPDisplay()
+}
+class MonsterMine {
+    +OnHpChanged: Action~Vector2Int, float~
+    +OnEnraged: Action~Vector2Int~
+}
+MonsterMineDisplayStrategy --> MonsterMine : Subscribes to
+note for MonsterMineDisplayStrategy "Real-time HP updates\nProper event handling"
+```
+
+### Optimizations
+- Improved display update efficiency with separate update methods
+- Enhanced memory management through proper event cleanup
+- Reduced unnecessary visual updates
+
 # v0.1.11 - 2025-02-13 23:03:41
 ## Overview
 Removed speed-related functionality and enhanced shield mechanics to better align with the game's pure grid-based nature, while improving code quality and fixing linter errors.

@@ -17,7 +17,7 @@ public class CellView : MonoBehaviour
     [SerializeField] private float m_CellSize = 1f;
     [SerializeField] private float m_MineScale = 0.8f;
     [SerializeField] private Vector3 m_MineOffset = new Vector3(0f, 0.2f, -0.1f);
-    [SerializeField] private Vector3 m_ValueOffset = new Vector3(0f, -0.2f, -0.1f);
+    [SerializeField] private MineDisplayConfig m_DisplayConfig;
     [SerializeField] private int m_BackgroundSortingOrder = 0;
     [SerializeField] private int m_MineSortingOrder = 1;
     [SerializeField] private int m_ValueSortingOrder = 2;
@@ -28,8 +28,9 @@ public class CellView : MonoBehaviour
     private bool m_HasMine;
     private int m_CurrentValue;
     private Color m_CurrentValueColor = Color.white;
-    private int m_RawValue; // Store the unmodified value from MineData
-    private Color m_MineValueColor = Color.white; // Store the mine value color
+    private IMineDisplayStrategy m_DisplayStrategy;
+    private IMine m_CurrentMine;
+    private MineData m_CurrentMineData;
 
     // Public properties
     public Vector2Int GridPosition => m_Position;
@@ -39,11 +40,17 @@ public class CellView : MonoBehaviour
     // Properties needed by MineDebugger
     public SpriteRenderer BackgroundRenderer => m_BackgroundRenderer;
     public SpriteRenderer MineRenderer => m_MineRenderer;
+    public MineDisplayConfig DisplayConfig => m_DisplayConfig;
 
     private void Awake()
     {
         SetupRenderers();
         ResetCell();
+    }
+
+    private void OnDestroy()
+    {
+        m_DisplayStrategy?.CleanupDisplay();
     }
 
     private void SetupRenderers()
@@ -92,6 +99,8 @@ public class CellView : MonoBehaviour
         m_HasMine = false;
         m_CurrentMineSprite = null;
         m_CurrentValue = 0;
+        m_DisplayStrategy?.CleanupDisplay();
+        m_DisplayStrategy = null;
         UpdateVisuals();
     }
 
@@ -100,15 +109,6 @@ public class CellView : MonoBehaviour
         if (m_IsRevealed == revealed) return;
         m_IsRevealed = revealed;
         UpdateVisuals();
-    }
-
-    private void UpdateValueTextPosition()
-    {
-        if (m_ValueText != null)
-        {
-            // If has mine with non-zero value, position below mine sprite, otherwise center
-            m_ValueText.transform.localPosition = (m_HasMine && m_RawValue > 0) ? m_ValueOffset : Vector3.zero;
-        }
     }
 
     private void UpdateVisuals()
@@ -120,21 +120,11 @@ public class CellView : MonoBehaviour
             if (!m_IsRevealed)
             {
                 m_BackgroundRenderer.sprite = m_HiddenSprite;
-                if (m_ValueText != null)
-                {
-                    m_ValueText.enabled = false;
-                }
             }
             else if (m_HasMine)
             {
                 m_BackgroundRenderer.sprite = m_RevealedMineSprite;
-                if (m_ValueText != null)
-                {
-                    // For mine cells, show raw value in mine value color
-                    m_ValueText.enabled = m_RawValue > 0;
-                    m_ValueText.text = m_RawValue > 0 ? m_RawValue.ToString() : "";
-                    m_ValueText.color = m_MineValueColor;
-                }
+                m_DisplayStrategy?.UpdateDisplay(m_CurrentMine, m_CurrentMineData, true);
             }
             else
             {
@@ -164,22 +154,34 @@ public class CellView : MonoBehaviour
         }
     }
 
-    public void ShowMineSprite(Sprite mineSprite)
+    public void ShowMineSprite(Sprite mineSprite, IMine mine, MineData mineData)
     {
         if (m_MineRenderer == null || mineSprite == null) return;
 
         m_HasMine = true;
         m_CurrentMineSprite = mineSprite;
         m_MineRenderer.sprite = mineSprite;
+        m_CurrentMine = mine;
+        m_CurrentMineData = mineData;
         
         float targetMineSize = m_CellSize * m_MineScale;
         SetSpriteScale(m_MineRenderer, targetMineSize);
 
-        // Center mine sprite if value is 0
-        m_MineRenderer.transform.localPosition = m_RawValue > 0 ? m_MineOffset : Vector3.zero;
+        // Set up appropriate display strategy
+        m_DisplayStrategy?.CleanupDisplay();
+        m_DisplayStrategy = CreateDisplayStrategy(mine);
+        m_DisplayStrategy?.SetupDisplay(gameObject, m_ValueText);
 
-        UpdateValueTextPosition();
         UpdateVisuals();
+    }
+
+    private IMineDisplayStrategy CreateDisplayStrategy(IMine mine)
+    {
+        if (mine is MonsterMine)
+        {
+            return new MonsterMineDisplayStrategy();
+        }
+        return new StandardMineDisplayStrategy();
     }
 
     public void HandleMineRemoval()
@@ -188,7 +190,8 @@ public class CellView : MonoBehaviour
 
         m_HasMine = false;
         m_CurrentMineSprite = null;
-        UpdateValueTextPosition();
+        m_DisplayStrategy?.CleanupDisplay();
+        m_DisplayStrategy = null;
         UpdateVisuals();
     }
 
@@ -201,36 +204,7 @@ public class CellView : MonoBehaviour
     {
         m_CurrentValue = value;
         m_CurrentValueColor = color;
-        if (m_ValueText != null)
-        {
-            // Show value if the cell is revealed
-            if (m_IsRevealed)
-            {
-                if (m_HasMine)
-                {
-                    // For mine cells, show raw value in mine value color
-                    m_ValueText.enabled = m_RawValue > 0;
-                    m_ValueText.text = m_RawValue > 0 ? m_RawValue.ToString() : "";
-                    m_ValueText.color = m_MineValueColor;
-                }
-                else if (value == -1)
-                {
-                    m_ValueText.enabled = true;
-                    m_ValueText.text = "?";
-                    m_ValueText.color = color;
-                }
-                else
-                {
-                    m_ValueText.enabled = value > 0;
-                    m_ValueText.text = value > 0 ? value.ToString() : "";
-                    m_ValueText.color = color;
-                }
-            }
-            else
-            {
-                m_ValueText.enabled = false;
-            }
-        }
+        UpdateVisuals();
     }
 
     public void ShowDebugHighlight(Color highlightColor)
@@ -265,26 +239,5 @@ public class CellView : MonoBehaviour
     public void ApplyEffect()
     {
         Debug.Log($"Effect applied at position {m_Position}");
-    }
-
-    public void SetRawValue(int value, Color mineValueColor)
-    {
-        m_RawValue = value;
-        m_MineValueColor = mineValueColor;
-        if (m_HasMine)
-        {
-            // Update mine sprite position if already placed
-            if (m_MineRenderer != null)
-            {
-                m_MineRenderer.transform.localPosition = value > 0 ? m_MineOffset : Vector3.zero;
-            }
-            UpdateVisuals();
-        }
-    }
-
-    // Keep the old method for backward compatibility
-    public void SetRawValue(int value)
-    {
-        SetRawValue(value, Color.white);
     }
 } 
