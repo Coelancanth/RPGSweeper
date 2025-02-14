@@ -93,6 +93,16 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
     {
         if (!m_IsRevealed || m_MonsterMine == null) return;
         UpdateHPDisplay();
+        
+        // If monster is defeated, notify the cell view to update its visuals
+        if (m_MonsterMine.IsCollectable)
+        {
+            var cellView = m_StatsText.transform.parent.GetComponent<CellView>();
+            if (cellView != null)
+            {
+                cellView.UpdateVisuals(m_IsRevealed);
+            }
+        }
     }
 
     private void HandleEnraged(Vector2Int position)

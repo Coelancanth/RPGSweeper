@@ -12,6 +12,7 @@ public class CellView : MonoBehaviour
     [SerializeField] private Sprite m_HiddenSprite;
     [SerializeField] private Sprite m_RevealedEmptySprite;
     [SerializeField] private Sprite m_RevealedMineSprite;
+    [SerializeField] private Sprite m_DefeatedMonsterSprite;
 
     [Header("Visual Settings")]
     [SerializeField] private float m_CellSize = 1f;
@@ -155,7 +156,7 @@ public class CellView : MonoBehaviour
 
     public void UpdateVisuals(bool revealed)
     {
-        if (m_IsRevealed == revealed) return;
+        bool stateChanged = m_IsRevealed != revealed;
         m_IsRevealed = revealed;
         UpdateVisuals();
     }
@@ -176,8 +177,19 @@ public class CellView : MonoBehaviour
             }
             else if (m_HasMine)
             {
-                m_BackgroundRenderer.sprite = m_RevealedMineSprite;
-                m_DisplayStrategy?.UpdateDisplay(m_CurrentMine, m_CurrentMineData, true);
+                // Check if it's a monster mine and is defeated
+                var monsterMine = m_CurrentMine as MonsterMine;
+                if (monsterMine != null && monsterMine.IsCollectable)
+                {
+                    m_BackgroundRenderer.sprite = m_DefeatedMonsterSprite;
+                }
+                else
+                {
+                    m_BackgroundRenderer.sprite = m_RevealedMineSprite;
+                }
+                
+                // Update display strategy without triggering another visual update
+                m_DisplayStrategy?.UpdateDisplay(m_CurrentMine, m_CurrentMineData, m_IsRevealed);
             }
             else // Empty cell
             {
@@ -208,7 +220,7 @@ public class CellView : MonoBehaviour
             }
         }
 
-        // Update mine sprite
+        // Update mine sprite - keep it visible for all revealed mines, including defeated monsters
         if (m_MineRenderer != null)
         {
             m_MineRenderer.enabled = m_IsRevealed && m_HasMine && m_CurrentMineSprite != null;
@@ -294,7 +306,30 @@ public class CellView : MonoBehaviour
         }
         else if (m_HasMine)
         {
-            GameEvents.RaiseMineRemovalAttempted(m_Position);
+            // For monster mines, process interaction on every click
+            var monsterMine = m_CurrentMine as MonsterMine;
+            if (monsterMine != null)
+            {
+                if (monsterMine.IsCollectable)
+                {
+                    // If monster is already defeated and in collectable state, remove it
+                    GameEvents.RaiseMineRemovalAttempted(m_Position);
+                }
+                else
+                {
+                    // Process the monster mine interaction (combat)
+                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
+                    if (player != null)
+                    {
+                        monsterMine.OnTrigger(player);
+                    }
+                }
+            }
+            else
+            {
+                // Non-monster mines can be removed normally
+                GameEvents.RaiseMineRemovalAttempted(m_Position);
+            }
         }
     }
 

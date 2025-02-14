@@ -1,3 +1,117 @@
+# v0.1.15 - 2025-02-14 15:10:37
+## Overview
+Enhanced monster mine mechanics with a new collectable state system, improving gameplay feedback and strategic depth by requiring explicit collection of defeated monsters.
+
+## Change Details
+### New Features
+#### Monster Mine Collection System
+- Added collectable state for defeated monster mines
+- Implemented two-phase removal process (combat + collection)
+- Enhanced visual feedback for defeated state
+```mermaid
+classDiagram
+class MonsterMine {
+    +IsCollectable: bool
+    +CurrentHp: int
+    +OnTrigger()
+    +OnDestroy()
+}
+class CellView {
+    -m_DefeatedMonsterSprite: Sprite
+    +UpdateVisuals()
+    +OnMouseDown()
+}
+class MonsterMineDisplayStrategy {
+    -HandleHpChanged()
+    -UpdateHPDisplay()
+}
+MonsterMine --> CellView : State affects
+CellView --> MonsterMineDisplayStrategy : Updates display
+note for MonsterMine "Enters collectable state\nwhen HP reaches 0"
+```
+
+### Adjustments and Refactoring
+#### Visual Update System
+- Fixed stack overflow in visual update chain
+- Improved sprite visibility management
+- Enhanced state transition handling
+```mermaid
+classDiagram
+class VisualUpdate {
+    CombatState
+    CollectableState
+    RemovedState
+}
+class StateTransition {
+    HP reaches 0
+    Collection click
+    Mine removal
+}
+VisualUpdate --> StateTransition
+note for VisualUpdate "Clear state progression\nImproved feedback"
+```
+
+### Optimizations
+- Optimized visual update system to prevent circular updates
+- Improved state management efficiency
+- Enhanced sprite and text visibility control
+
+# v0.1.14 - 2025-02-14 16:00:00
+## Overview
+Enhanced monster mine mechanics by adding a defeated state and restricting removal until defeated, improving gameplay clarity and strategic depth.
+
+## Change Details
+### New Features
+#### Monster Mine Defeat System
+- Added visual indication for defeated monster mines
+- Restricted monster mine removal until HP reaches zero
+- Enhanced feedback for monster mine state
+```mermaid
+classDiagram
+class CellView {
+    -m_DefeatedMonsterSprite: Sprite
+    +UpdateVisuals()
+    +OnMouseDown()
+}
+class MonsterMine {
+    +CurrentHp: int
+    +OnTrigger()
+    +OnDestroy()
+}
+class MonsterMineDisplayStrategy {
+    -UpdateHPDisplay()
+    -HandleHpChanged()
+}
+CellView --> MonsterMine : Checks HP
+MonsterMineDisplayStrategy --> CellView : Updates visuals
+note for MonsterMine "Only removable when\nHP reaches zero"
+```
+
+### Adjustments and Refactoring
+#### Monster Mine Interaction
+- Updated cell interaction logic for monster mines
+- Enhanced visual feedback for defeated state
+- Improved monster mine removal conditions
+```mermaid
+classDiagram
+class MineInteraction {
+    StandardMine[removable]
+    MonsterMine[hp_check]
+}
+class RemovalConditions {
+    CheckHP
+    UpdateSprite
+    AllowRemoval
+}
+MineInteraction --> RemovalConditions
+note for MineInteraction "Different removal rules\nfor each mine type"
+```
+
+### Optimizations
+- Improved monster mine state management
+- Enhanced visual feedback system
+- Streamlined mine removal logic
+
 # v0.1.13 - 2025-02-14 14:01:07
 ## Overview
 Enhanced the display configuration system with distinct text positions for different cell types, providing better visual organization and customization options.

@@ -47,6 +47,13 @@ class BaseMine {
 #CalculateDamage(Player)
 #ApplyEffect(EffectData)
 }
+class MonsterMine {
++IsCollectable: bool
++CurrentHp: int
++HpPercentage: float
++OnTrigger(Player)
++OnDestroy()
+}
 class IMineSpawnStrategy {
 <<interface>>
 +GetSpawnPosition(GridManager, Dictionary)
@@ -71,11 +78,13 @@ class MineManager {
 -GetSpawnPosition(MineData)
 }
 IMine <|.. BaseMine
+BaseMine <|-- MonsterMine
 IMineSpawnStrategy <|.. RandomMineSpawnStrategy
 IMineSpawnStrategy <|.. EdgeMineSpawnStrategy
 MineManager --> IMine
 MineManager --> IMineSpawnStrategy
 MineData --> MineSpawnStrategyType
+note for MonsterMine "Two-phase removal:\n1. Combat to 0 HP\n2. Collection"
 ```
 
 ### Player System
@@ -171,7 +180,7 @@ classDiagram
     CellView --> MineDisplayConfig
     MonsterMineDisplayStrategy --> MineDisplayConfig
 
-    note for CellView "Uses strategy pattern for\ndifferent mine displays"
+    note for CellView "Handles collectable state\nand sprite transitions"
     note for IMineDisplayStrategy "Flexible display system\nfor different mine types"
     note for MineDisplayConfig "Distinct positions for\ndifferent cell types"
 ```

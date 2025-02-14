@@ -32,6 +32,7 @@ public class MonsterMine : IDamagingMine
     public bool IsEnraged => m_IsEnraged;
     public Sprite MonsterSprite => m_Data.MonsterSprite;
     public Color MonsterTint => m_MonsterTint;
+    public bool IsCollectable => m_CurrentHp <= 0;
     
     // Modifiable properties
     public int MaxHp
@@ -147,15 +148,13 @@ public class MonsterMine : IDamagingMine
                 }
             }
         }
-        else
-        {
-            // Monster is defeated, trigger removal
-            GameEvents.RaiseMineRemovalAttempted(m_Position);
-        }
     }
 
     public void OnDestroy()
     {
+        // Only allow destruction if monster is defeated
+        if (m_CurrentHp > 0) return;
+
         if (m_Data.ActiveEffects != null)
         {
             var player = GameObject.FindFirstObjectByType<PlayerComponent>();
