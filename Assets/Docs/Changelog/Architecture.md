@@ -134,6 +134,7 @@ classDiagram
         +UpdateVisuals(bool)
         +ShowMineSprite(Sprite, IMine, MineData)
         +SetValue(int, Color)
+        +UpdateValueTextPosition()
     }
     class IMineDisplayStrategy {
         <<interface>>
@@ -148,16 +149,20 @@ classDiagram
         +UpdateDisplay()
         -HandleHpChanged()
         -UpdateHPDisplay()
+        -UpdateTextPositions()
     }
     class StandardMineDisplayStrategy {
         -m_ValueText: TextMeshPro
         +UpdateDisplay()
     }
     class MineDisplayConfig {
+        +EmptyCellValuePosition: Vector3
+        +StandardMineValuePosition: Vector3
+        +MonsterMineValuePosition: Vector3
         +HPPosition: Vector3
         +DamagePosition: Vector3
-        +ValuePosition: Vector3
         +DefaultValueColor: Color
+        +MonsterPowerColor: Color
         +EnragedColor: Color
     }
     IMineDisplayStrategy <|.. MonsterMineDisplayStrategy
@@ -168,6 +173,7 @@ classDiagram
 
     note for CellView "Uses strategy pattern for\ndifferent mine displays"
     note for IMineDisplayStrategy "Flexible display system\nfor different mine types"
+    note for MineDisplayConfig "Distinct positions for\ndifferent cell types"
 ```
 
 ## Managers

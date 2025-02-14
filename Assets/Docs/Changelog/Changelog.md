@@ -1,3 +1,62 @@
+# v0.1.13 - 2025-02-14 14:01:07
+## Overview
+Enhanced the display configuration system with distinct text positions for different cell types, providing better visual organization and customization options.
+
+## Change Details
+### New Features
+#### Enhanced Display Configuration
+- Added separate position configurations for empty cells, standard mines, and monster mines
+- Implemented proper position inheritance in display strategies
+- Enhanced visual clarity with dedicated positions for each display type
+```mermaid
+classDiagram
+class MineDisplayConfig {
+    +EmptyCellValuePosition: Vector3
+    +StandardMineValuePosition: Vector3
+    +MonsterMineValuePosition: Vector3
+    +HPPosition: Vector3
+    +DamagePosition: Vector3
+}
+class CellView {
+    -m_ValueText: TextMeshPro
+    +UpdateValueTextPosition()
+}
+class IMineDisplayStrategy {
+    <<interface>>
+    +SetupDisplay()
+    +UpdateDisplay()
+}
+MineDisplayConfig --> CellView : Configures
+MineDisplayConfig --> IMineDisplayStrategy : Configures
+note for MineDisplayConfig "Distinct positions for\ndifferent cell types"
+```
+
+### Adjustments and Refactoring
+#### Display Position System
+- Refactored position handling in display strategies
+- Enhanced position update logic in CellView
+- Improved visual consistency across different cell types
+```mermaid
+classDiagram
+class DisplayPositions {
+    EmptyCell[centered]
+    StandardMine[value_focused]
+    MonsterMine[multi_position]
+}
+class UpdateSystem {
+    Config changes
+    Strategy updates
+    Visual refresh
+}
+DisplayPositions --> UpdateSystem
+note for DisplayPositions "Organized position system\nBetter visual clarity"
+```
+
+### Optimizations
+- Improved position management efficiency
+- Enhanced visual consistency across cell types
+- Reduced position calculation overhead
+
 # v0.1.12 - 2025-02-14 11:11:07
 ## Overview
 Fixed real-time HP display updates for monster mines and improved the display strategy system's event handling, enhancing visual feedback reliability.

@@ -366,7 +366,7 @@ MonoBehaviour:
   m_CellSize: 1
   m_MineScale: 0.5
   m_MineOffset: {x: 0, y: 0.2, z: -0.1}
-  m_ValueOffset: {x: 0, y: -0.2, z: -0.1}
+  m_DisplayConfig: {fileID: 11400000, guid: 69711f585e609154a98fd90aa923691f, type: 2}
   m_BackgroundSortingOrder: 0
   m_MineSortingOrder: 1
   m_ValueSortingOrder: 2

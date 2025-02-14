@@ -32,7 +32,7 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
         m_MineValueText.fontSize = valueText.fontSize;
         m_MineValueText.alignment = TextAlignmentOptions.Center;
         m_MineValueText.sortingOrder = valueText.sortingOrder;
-        m_MineValueText.transform.localPosition = m_Config.ValuePosition;
+        m_MineValueText.transform.localPosition = m_Config.MonsterMineValuePosition;
         m_MineValueText.enabled = false;
 
         // Position damage text
@@ -64,9 +64,29 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
         m_MonsterMine.OnHpChanged += HandleHpChanged;
         m_MonsterMine.OnEnraged += HandleEnraged;
 
+        // Update text positions
+        UpdateTextPositions();
+        
+        // Update displays
         UpdateDamageDisplay();
         UpdateHPDisplay();
         UpdateMineValueDisplay(mineData);
+    }
+
+    private void UpdateTextPositions()
+    {
+        if (m_StatsText != null)
+        {
+            m_StatsText.transform.localPosition = m_Config.HPPosition;
+        }
+        if (m_ValueText != null)
+        {
+            m_ValueText.transform.localPosition = m_Config.DamagePosition;
+        }
+        if (m_MineValueText != null)
+        {
+            m_MineValueText.transform.localPosition = m_Config.MonsterMineValuePosition;
+        }
     }
 
     private void HandleHpChanged(Vector2Int position, float hpPercentage)
@@ -83,24 +103,42 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
 
     private void UpdateDamageDisplay()
     {
+        if (m_ValueText == null) return;
+        
         m_ValueText.enabled = true;
-        m_ValueText.text = m_MonsterMine.CalculateDamage().ToString();
-        m_ValueText.color = m_MonsterMine.IsEnraged ? m_Config.EnragedColor : m_Config.DefaultValueColor;
+        int damage = m_MonsterMine.CalculateDamage();
+        m_ValueText.text = damage.ToString();
+        m_ValueText.color = m_MonsterMine.IsEnraged ? m_Config.EnragedColor : m_Config.MonsterPowerColor;
         m_ValueText.fontStyle = m_MonsterMine.IsEnraged ? FontStyles.Bold : FontStyles.Normal;
+        m_ValueText.transform.localPosition = m_Config.DamagePosition;
     }
 
     private void UpdateHPDisplay()
     {
+        if (m_StatsText == null) return;
+        
         m_StatsText.enabled = true;
         m_StatsText.text = $"{m_MonsterMine.CurrentHp}/{m_MonsterMine.MaxHp}";
         m_StatsText.color = Color.Lerp(m_Config.HPLowColor, m_Config.HPHighColor, m_MonsterMine.HpPercentage);
+        m_StatsText.transform.localPosition = m_Config.HPPosition;
     }
 
     private void UpdateMineValueDisplay(MineData mineData)
     {
-        m_MineValueText.enabled = true;
-        m_MineValueText.text = mineData.Value.ToString();
-        m_MineValueText.color = mineData.ValueColor;
+        if (m_MineValueText == null) return;
+        
+        // Only show mine value if it's greater than 0
+        if (mineData.Value > 0)
+        {
+            m_MineValueText.enabled = true;
+            m_MineValueText.text = mineData.Value.ToString();
+            m_MineValueText.color = mineData.MineValueColor; // Use mine-specific color from MineData
+            m_MineValueText.transform.localPosition = m_Config.MonsterMineValuePosition;
+        }
+        else
+        {
+            m_MineValueText.enabled = false;
+        }
     }
 
     public void CleanupDisplay()

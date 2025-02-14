@@ -37,7 +37,7 @@ public class CellView : MonoBehaviour
     public bool IsRevealed => m_IsRevealed;
     public bool HasMine => m_HasMine;
     
-    // Properties needed by MineDebugger
+    // Properties needed by MineDebugger and display strategies
     public SpriteRenderer BackgroundRenderer => m_BackgroundRenderer;
     public SpriteRenderer MineRenderer => m_MineRenderer;
     public MineDisplayConfig DisplayConfig => m_DisplayConfig;
@@ -48,9 +48,58 @@ public class CellView : MonoBehaviour
         ResetCell();
     }
 
+    private void OnEnable()
+    {
+        if (m_DisplayConfig != null)
+        {
+            m_DisplayConfig.OnConfigChanged += HandleDisplayConfigChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (m_DisplayConfig != null)
+        {
+            m_DisplayConfig.OnConfigChanged -= HandleDisplayConfigChanged;
+        }
+    }
+
     private void OnDestroy()
     {
         m_DisplayStrategy?.CleanupDisplay();
+    }
+
+    private void HandleDisplayConfigChanged()
+    {
+        if (m_MineRenderer != null)
+        {
+            m_MineRenderer.transform.localPosition = m_DisplayConfig.MineOffset;
+            float targetMineSize = m_CellSize * m_MineScale;
+            SetSpriteScale(m_MineRenderer, targetMineSize);
+        }
+
+        // Update display strategy with new config
+        if (m_HasMine && m_IsRevealed && m_DisplayStrategy != null)
+        {
+            m_DisplayStrategy.UpdateDisplay(m_CurrentMine, m_CurrentMineData, true);
+        }
+        else if (m_ValueText != null)
+        {
+            UpdateValueTextPosition();
+        }
+    }
+
+    private void UpdateValueTextPosition()
+    {
+        if (m_ValueText != null)
+        {
+            // For empty cells, use EmptyCellValuePosition
+            if (!m_HasMine)
+            {
+                m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
+            }
+            // For mines, let the display strategy handle positioning
+        }
     }
 
     private void SetupRenderers()
@@ -120,28 +169,40 @@ public class CellView : MonoBehaviour
             if (!m_IsRevealed)
             {
                 m_BackgroundRenderer.sprite = m_HiddenSprite;
+                if (m_ValueText != null)
+                {
+                    m_ValueText.enabled = false;
+                }
             }
             else if (m_HasMine)
             {
                 m_BackgroundRenderer.sprite = m_RevealedMineSprite;
                 m_DisplayStrategy?.UpdateDisplay(m_CurrentMine, m_CurrentMineData, true);
             }
-            else
+            else // Empty cell
             {
                 m_BackgroundRenderer.sprite = m_RevealedEmptySprite;
                 if (m_ValueText != null)
                 {
                     if (m_CurrentValue == -1)
                     {
+                        // Confusion effect
                         m_ValueText.enabled = true;
                         m_ValueText.text = "?";
                         m_ValueText.color = m_CurrentValueColor;
+                        m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
+                    }
+                    else if (m_CurrentValue > 0)
+                    {
+                        // Show surrounding mine count
+                        m_ValueText.enabled = true;
+                        m_ValueText.text = m_CurrentValue.ToString();
+                        m_ValueText.color = m_DisplayConfig.DefaultValueColor;
+                        m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
                     }
                     else
                     {
-                        m_ValueText.enabled = m_CurrentValue > 0;
-                        m_ValueText.text = m_CurrentValue > 0 ? m_CurrentValue.ToString() : "";
-                        m_ValueText.color = m_CurrentValueColor;
+                        m_ValueText.enabled = false;
                     }
                 }
             }
@@ -166,6 +227,7 @@ public class CellView : MonoBehaviour
         
         float targetMineSize = m_CellSize * m_MineScale;
         SetSpriteScale(m_MineRenderer, targetMineSize);
+        m_MineRenderer.transform.localPosition = m_DisplayConfig.MineOffset;
 
         // Set up appropriate display strategy
         m_DisplayStrategy?.CleanupDisplay();
@@ -239,5 +301,22 @@ public class CellView : MonoBehaviour
     public void ApplyEffect()
     {
         Debug.Log($"Effect applied at position {m_Position}");
+    }
+
+    public void UpdateDisplayConfig(MineDisplayConfig newConfig)
+    {
+        if (m_DisplayConfig != null)
+        {
+            m_DisplayConfig.OnConfigChanged -= HandleDisplayConfigChanged;
+        }
+
+        m_DisplayConfig = newConfig;
+        
+        if (m_DisplayConfig != null)
+        {
+            m_DisplayConfig.OnConfigChanged += HandleDisplayConfigChanged;
+        }
+
+        HandleDisplayConfigChanged();
     }
 } 
