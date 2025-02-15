@@ -16,7 +16,7 @@ MonoBehaviour:
   Value: 3
   Shape: 2
   Radius: 1
-  SpawnStrategy: 1
+  SpawnStrategy: 6
   MineSprite: {fileID: 5498951995105962609, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_ValueColor: {r: 0.6792453, g: 0.10893546, b: 0.5409787, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

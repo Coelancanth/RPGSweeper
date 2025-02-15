@@ -1,13 +1,21 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public interface IMineSpawnStrategy
+namespace RPGMinesweeper
 {
-    Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines);
-}
+    public interface IMineSpawnStrategy
+    {
+        Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines);
+    }
 
-public enum MineSpawnStrategyType
-{
-    Random,
-    Edge
+    [System.Flags]
+    public enum MineSpawnStrategyType
+    {
+        None = 0,
+        Random = 1 << 0,
+        Edge = 1 << 1,
+        Corner = 1 << 2,
+        Center = 1 << 3,
+        All = Random | Edge | Corner | Center
+    }
 } 

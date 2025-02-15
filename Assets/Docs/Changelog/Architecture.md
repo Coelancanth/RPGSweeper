@@ -58,11 +58,19 @@ class IMineSpawnStrategy {
 <<interface>>
 +GetSpawnPosition(GridManager, Dictionary)
 }
-class RandomMineSpawnStrategy {
-+GetSpawnPosition(GridManager, Dictionary)
+class CompositeSpawnStrategy {
+-m_Strategies: MineSpawnStrategyType
+-m_StrategyMap: Dictionary
++GetSpawnPosition()
 }
-class EdgeMineSpawnStrategy {
-+GetSpawnPosition(GridManager, Dictionary)
+class MineSpawnStrategyType {
+<<enumeration>>
+None = 0
+Random = 1
+Edge = 2
+Corner = 4
+Center = 8
+All = Random | Edge | Corner | Center
 }
 class MineData {
 +Type: MineType
@@ -81,13 +89,13 @@ class MineManager {
 }
 IMine <|.. BaseMine
 BaseMine <|-- MonsterMine
-IMineSpawnStrategy <|.. RandomMineSpawnStrategy
-IMineSpawnStrategy <|.. EdgeMineSpawnStrategy
-MineManager --> IMine
+IMineSpawnStrategy <|.. CompositeSpawnStrategy
 MineManager --> IMineSpawnStrategy
 MineData --> MineSpawnStrategyType
+CompositeSpawnStrategy --> MineSpawnStrategyType
 note for MonsterMine "Two-phase removal:\n1. Combat to 0 HP\n2. Collection"
 note for MineManager "Supports runtime mine addition\nwith type-specific handling"
+note for CompositeSpawnStrategy "Handles multiple strategies\nwith flag composition"
 ```
 
 ### Player System

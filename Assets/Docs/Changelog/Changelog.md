@@ -1,3 +1,69 @@
+# v0.1.20 - 2025-02-16 02:10:00
+## Overview
+Enhanced the mine spawn strategy system with flags-based composition, allowing flexible combination of different spawn patterns for more varied and strategic mine placement.
+
+## Change Details
+### Architecture Improvements
+#### Flags-based Spawn Strategy System
+- Converted MineSpawnStrategyType to flags enum for strategy composition
+- Added new Corner and Center spawn strategies
+- Implemented CompositeSpawnStrategy for handling multiple strategies
+- Enhanced MineManager with strategy caching and composition
+```mermaid
+classDiagram
+class MineSpawnStrategyType {
+    <<enumeration>>
+    None = 0
+    Random = 1
+    Edge = 2
+    Corner = 4
+    Center = 8
+    All = Random | Edge | Corner | Center
+}
+class CompositeSpawnStrategy {
+    -m_Strategies: MineSpawnStrategyType
+    -m_StrategyMap: Dictionary
+    +GetSpawnPosition()
+}
+class IMineSpawnStrategy {
+    <<interface>>
+    +GetSpawnPosition()
+}
+class MineManager {
+    -m_SpawnStrategies: Dictionary
+    +GetOrCreateStrategy()
+}
+IMineSpawnStrategy <|.. CompositeSpawnStrategy
+MineManager --> CompositeSpawnStrategy
+CompositeSpawnStrategy --> MineSpawnStrategyType
+note for CompositeSpawnStrategy "Handles multiple strategies\nwith flag composition"
+```
+
+### Adjustments and Refactoring
+#### Strategy Management System
+- Improved strategy instantiation with caching
+- Enhanced spawn position selection logic
+- Added proper namespace organization
+```mermaid
+classDiagram
+class StrategySystem {
+    SingleStrategy[direct]
+    CompositeStrategy[flags_based]
+}
+class Implementation {
+    Cache strategies
+    Select position
+    Handle fallbacks
+}
+StrategySystem --> Implementation
+note for StrategySystem "Clear separation between\nsingle and composite strategies"
+```
+
+### Optimizations
+- Improved strategy instantiation through caching
+- Enhanced spawn position selection efficiency
+- Reduced redundant strategy creation
+
 # v0.1.19 - 2025-02-16 00:57:00
 ## Overview
 Added dynamic mine addition system with proper visual handling, enabling runtime mine placement with support for specific monster types.

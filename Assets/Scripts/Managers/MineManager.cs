@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using RPGMinesweeper;  // Add namespace for MonsterType
+using RPGMinesweeper;  // For MonsterType and CompositeSpawnStrategy
+using RPGMinesweeper.Grid;  // For GridShape
 
 [System.Serializable]
 public class MineTypeSpawnData
@@ -18,7 +19,7 @@ public class MineManager : MonoBehaviour
     
     private Dictionary<Vector2Int, IMine> m_Mines = new Dictionary<Vector2Int, IMine>();
     private Dictionary<Vector2Int, MineData> m_MineDataMap = new Dictionary<Vector2Int, MineData>();
-    private Dictionary<MineSpawnStrategyType, IMineSpawnStrategy> m_SpawnStrategies;
+    private Dictionary<MineSpawnStrategyType, CompositeSpawnStrategy> m_SpawnStrategies;
 
     private void Awake()
     {
@@ -27,11 +28,17 @@ public class MineManager : MonoBehaviour
 
     private void InitializeSpawnStrategies()
     {
-        m_SpawnStrategies = new Dictionary<MineSpawnStrategyType, IMineSpawnStrategy>
+        m_SpawnStrategies = new Dictionary<MineSpawnStrategyType, CompositeSpawnStrategy>();
+    }
+
+    private CompositeSpawnStrategy GetOrCreateStrategy(MineSpawnStrategyType strategy)
+    {
+        if (!m_SpawnStrategies.TryGetValue(strategy, out var spawnStrategy))
         {
-            { MineSpawnStrategyType.Random, new RandomMineSpawnStrategy() },
-            { MineSpawnStrategyType.Edge, new EdgeMineSpawnStrategy() }
-        };
+            spawnStrategy = new CompositeSpawnStrategy(strategy);
+            m_SpawnStrategies[strategy] = spawnStrategy;
+        }
+        return spawnStrategy;
     }
 
     private void Start()
@@ -257,13 +264,8 @@ public class MineManager : MonoBehaviour
 
     private Vector2Int GetSpawnPosition(MineData mineData)
     {
-        if (m_SpawnStrategies.TryGetValue(mineData.SpawnStrategy, out IMineSpawnStrategy strategy))
-        {
-            return strategy.GetSpawnPosition(m_GridManager, m_Mines);
-        }
-        
-        Debug.LogWarning($"MineManager: No spawn strategy found for {mineData.SpawnStrategy}, falling back to random strategy");
-        return m_SpawnStrategies[MineSpawnStrategyType.Random].GetSpawnPosition(m_GridManager, m_Mines);
+        var strategy = GetOrCreateStrategy(mineData.SpawnStrategy);
+        return strategy.GetSpawnPosition(m_GridManager, m_Mines);
     }
 
     private IMine CreateMine(MineData mineData, Vector2Int position)

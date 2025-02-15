@@ -411,8 +411,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MineSpawnData:
-  - MineData: {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
-    SpawnCount: 5
   - MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
     SpawnCount: 5
   m_GridManager: {fileID: 1433877669}

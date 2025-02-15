@@ -1,4 +1,4 @@
-# Title [Version Number] - [Date]
+# Title [Semantic Version Number] - [Date]
 # Overview
 - Briefly summarize the goals of this update, the affected modules, and the significance of the changes.
 
