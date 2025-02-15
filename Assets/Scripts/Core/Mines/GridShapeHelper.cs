@@ -8,6 +8,7 @@ namespace RPGMinesweeper.Grid
         public static List<Vector2Int> GetAffectedPositions(Vector2Int center, GridShape shape, int range)
         {
             var positions = new List<Vector2Int>();
+            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             
             switch (shape)
             {
@@ -59,7 +60,6 @@ namespace RPGMinesweeper.Grid
                     break;
 
                 case GridShape.WholeGrid:
-                    var gridManager = GameObject.FindFirstObjectByType<GridManager>();
                     if (gridManager != null)
                     {
                         // For WholeGrid, range is ignored - we use the actual grid dimensions
@@ -72,13 +72,37 @@ namespace RPGMinesweeper.Grid
                         }
                     }
                     break;
+
+                case GridShape.Row:
+                    if (gridManager != null)
+                    {
+                        // For Row, affect the entire row at center.y
+                        for (int x = 0; x < gridManager.Width; x++)
+                        {
+                            positions.Add(new Vector2Int(x, center.y));
+                        }
+                    }
+                    break;
+
+                case GridShape.Column:
+                    if (gridManager != null)
+                    {
+                        // For Column, affect the entire column at center.x
+                        for (int y = 0; y < gridManager.Height; y++)
+                        {
+                            positions.Add(new Vector2Int(center.x, y));
+                        }
+                    }
+                    break;
             }
-            //Debug.Log($"MineShapeHelper: Shape {shape} with range {range} has {positions.Count} positions");
+            //Debug.Log($"GridShapeHelper: Shape {shape} with range {range} has {positions.Count} positions");
             return positions;
         }
         
         public static bool IsPositionAffected(Vector2Int position, Vector2Int center, GridShape shape, int range)
         {
+            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
+            
             switch (shape)
             {
                 case GridShape.Single:
@@ -102,11 +126,26 @@ namespace RPGMinesweeper.Grid
                     return diff.y == 0 && Mathf.Abs(diff.x) <= range;
 
                 case GridShape.WholeGrid:
-                    var gridManager = GameObject.FindFirstObjectByType<GridManager>();
                     if (gridManager != null)
                     {
                         // For WholeGrid, we only need to check if the position is within grid bounds
                         return gridManager.IsValidPosition(position);
+                    }
+                    return false;
+
+                case GridShape.Row:
+                    if (gridManager != null)
+                    {
+                        // For Row, check if position is in the same row and within grid bounds
+                        return position.y == center.y && gridManager.IsValidPosition(position);
+                    }
+                    return false;
+
+                case GridShape.Column:
+                    if (gridManager != null)
+                    {
+                        // For Column, check if position is in the same column and within grid bounds
+                        return position.x == center.x && gridManager.IsValidPosition(position);
                     }
                     return false;
                     

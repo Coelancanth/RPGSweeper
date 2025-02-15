@@ -3,6 +3,14 @@ namespace RPGMinesweeper
     public enum MonsterType
     {
         None,
+        Rat,
+        RatKing,
+        MimicChest,
+        Minotaur,
+        Demon,
+        Devil,
+        Imp,
+        Beholder,
         Bat,
         Spider,
         Slime,

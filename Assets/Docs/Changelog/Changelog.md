@@ -1,3 +1,61 @@
+# v0.1.19 - 2025-02-16 00:57:00
+## Overview
+Added dynamic mine addition system with proper visual handling, enabling runtime mine placement with support for specific monster types.
+
+## Change Details
+### New Features
+#### Dynamic Mine Addition System
+- Implemented MineAddAttempted event with MonsterType support
+- Added runtime mine creation with proper validation
+- Enhanced visual handling for both hidden and revealed cells
+- Created test component for development validation
+```mermaid
+classDiagram
+class GameEvents {
+    +OnMineAddAttempted: Action~Vector2Int, MineType, MonsterType?~
+    +RaiseMineAddAttempted()
+}
+class MineManager {
+    -HandleMineAdd()
+    -FindMineDataByMonsterType()
+    -CreateMine()
+}
+class CellView {
+    +IsRevealed: bool
+    +ShowMineSprite()
+    +UpdateVisuals()
+}
+GameEvents --> MineManager : Notifies
+MineManager --> CellView : Updates
+note for MineManager "Handles both hidden and\nrevealed cell states"
+```
+
+### Adjustments and Refactoring
+#### Mine Creation System
+- Enhanced mine data lookup by monster type
+- Improved visual state handling for revealed cells
+- Added proper validation for mine placement
+```mermaid
+classDiagram
+class MineCreation {
+    ValidatePosition
+    FindMineData
+    CreateInstance
+    UpdateVisuals
+}
+class StateHandling {
+    Hidden[standard]
+    Revealed[show_sprite]
+}
+MineCreation --> StateHandling
+note for MineCreation "Proper state handling\nfor all cell states"
+```
+
+### Optimizations
+- Improved mine data lookup efficiency
+- Enhanced visual state management
+- Optimized sprite handling for revealed cells
+
 # v0.1.18 - 2025-02-15 23:15:00
 ## Overview
 Enhanced the grid shape system with a new WholeGrid shape that enables effects to target the entire grid at once, improving support for global effects.

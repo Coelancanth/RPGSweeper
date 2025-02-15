@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using RPGMinesweeper;  // Add namespace for MonsterType
 
 [System.Serializable]
 public class MineTypeSpawnData
@@ -83,12 +84,14 @@ public class MineManager : MonoBehaviour
     {
         GameEvents.OnCellRevealed += HandleCellRevealed;
         GameEvents.OnMineRemovalAttempted += HandleMineRemoval;
+        GameEvents.OnMineAddAttempted += HandleMineAdd;
     }
 
     private void UnsubscribeFromEvents()
     {
         GameEvents.OnCellRevealed -= HandleCellRevealed;
         GameEvents.OnMineRemovalAttempted -= HandleMineRemoval;
+        GameEvents.OnMineAddAttempted -= HandleMineAdd;
     }
 
     private void HandleCellRevealed(Vector2Int position)
@@ -150,6 +153,77 @@ public class MineManager : MonoBehaviour
             // Update all grid values
             UpdateAllGridValues();
         }
+    }
+
+    private MineData FindMineDataByMonsterType(MonsterType monsterType)
+    {
+        return m_MineSpawnData
+            .Select(data => data.MineData)
+            .OfType<MonsterMineData>()
+            .FirstOrDefault(data => data.MonsterType == monsterType);
+    }
+
+    private void HandleMineAdd(Vector2Int position, MineType type, MonsterType? monsterType = null)
+    {
+        // Check if the position is valid and empty
+        if (!m_GridManager.IsValidPosition(position))
+        {
+            Debug.LogError($"MineManager: Attempted to add mine at invalid position {position}");
+            return;
+        }
+
+        if (m_Mines.ContainsKey(position))
+        {
+            Debug.LogError($"MineManager: Attempted to add mine at occupied position {position}");
+            return;
+        }
+
+        // Find the corresponding MineData
+        MineData mineData;
+        if (type == MineType.Monster && monsterType.HasValue)
+        {
+            mineData = FindMineDataByMonsterType(monsterType.Value);
+        }
+        else
+        {
+            mineData = m_MineSpawnData.FirstOrDefault(data => data.MineData.Type == type)?.MineData;
+        }
+
+        if (mineData == null)
+        {
+            string errorDetails = type == MineType.Monster && monsterType.HasValue 
+                ? $"type {type} and monster type {monsterType.Value}" 
+                : $"type {type}";
+            Debug.LogError($"MineManager: No MineData found for {errorDetails}");
+            return;
+        }
+
+        // Create and add the new mine using the existing CreateMine method
+        IMine mine = CreateMine(mineData, position);
+        m_Mines[position] = mine;
+        m_MineDataMap[position] = mineData;
+
+        // Get the cell view for visual updates
+        var cellObject = m_GridManager.GetCellObject(position);
+        if (cellObject != null)
+        {
+            var cellView = cellObject.GetComponent<CellView>();
+            if (cellView != null)
+            {
+                // Set the raw value and color
+                cellView.SetValue(mineData.Value, mineData.ValueColor);
+
+                // If the cell is already revealed, show the mine sprite immediately
+                if (cellView.IsRevealed)
+                {
+                    cellView.ShowMineSprite(mineData.MineSprite, mine, mineData);
+                    cellView.UpdateVisuals(true);
+                }
+            }
+        }
+
+        // Update all grid values after adding the mine
+        UpdateAllGridValues();
     }
 
     private void PlaceMines()

@@ -38,6 +38,8 @@ Square
 Diamond
 Line
 WholeGrid
+Row
+Column
 }
 class GridShapeHelper {
 +GetAffectedPositions()
@@ -74,4 +76,6 @@ note for EffectTemplate "Allows per-mine\ncustomization of effects"
 note for TargetedRevealEffect "Reveals specific\nmonster types"
 note for GridShape "Supports both local\nand global shapes"
 note for WholeGrid "Grid-wide effects\nignore range parameter"
+note for Row "Affects entire row\nat center position"
+note for Column "Affects entire column\nat center position"
 ``` 

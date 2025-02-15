@@ -74,8 +74,10 @@ class MineManager {
 -m_Mines: Dictionary
 -m_SpawnStrategies: Dictionary
 +HandleMineRemoval(Vector2Int)
++HandleMineAdd(Vector2Int, MineType, MonsterType?)
 +HasMineAt(Vector2Int)
 -GetSpawnPosition(MineData)
+-FindMineDataByMonsterType(MonsterType)
 }
 IMine <|.. BaseMine
 BaseMine <|-- MonsterMine
@@ -85,6 +87,7 @@ MineManager --> IMine
 MineManager --> IMineSpawnStrategy
 MineData --> MineSpawnStrategyType
 note for MonsterMine "Two-phase removal:\n1. Combat to 0 HP\n2. Collection"
+note for MineManager "Supports runtime mine addition\nwith type-specific handling"
 ```
 
 ### Player System

@@ -22,7 +22,7 @@ MonoBehaviour:
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PassiveEffects: []
   m_ActiveEffects: []
-  m_MonsterType: 1
+  m_MonsterType: 9
   m_MaxHp: 5
   m_BaseDamage: 1
   m_DamagePerHit: 1

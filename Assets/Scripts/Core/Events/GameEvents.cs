@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using RPGMinesweeper;
 
 public static class GameEvents
 {
@@ -7,6 +8,7 @@ public static class GameEvents
     public static event Action<MineType> OnMineTriggered;
     public static event Action<Vector2Int> OnEffectApplied;
     public static event Action<int> OnExperienceGained;
+    public static event Action<Vector2Int, MineType, MonsterType?> OnMineAddAttempted;
     public static event Action<Vector2Int> OnMineRemovalAttempted;
     public static event Action<int> OnShieldChanged;
 
@@ -28,6 +30,11 @@ public static class GameEvents
     public static void RaiseExperienceGained(int amount)
     {
         OnExperienceGained?.Invoke(amount);
+    }
+
+    public static void RaiseMineAddAttempted(Vector2Int position, MineType type, MonsterType? monsterType = null)
+    {
+        OnMineAddAttempted?.Invoke(position, type, monsterType);
     }
 
     public static void RaiseMineRemovalAttempted(Vector2Int position)
