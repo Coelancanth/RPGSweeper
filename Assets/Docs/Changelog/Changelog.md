@@ -1,3 +1,67 @@
+# v0.1.16 - 2025-02-15 20:10:12
+## Overview
+Enhanced effect customization in MineData by implementing a template-based system, allowing per-mine customization of effect properties while maintaining template references.
+
+## Change Details
+### Architecture Improvements
+#### Effect Template System
+- Implemented EffectTemplate wrapper for effect customization
+- Enhanced MineData to support per-instance effect property modifications
+- Improved runtime effect instantiation with custom values
+```mermaid
+classDiagram
+class EffectTemplate {
+    -m_Template: EffectData
+    -m_Duration: float
+    -m_Magnitude: float
+    -m_Shape: GridShape
+    -m_Radius: int
+    +CreateInstance()
+    +OnValidate()
+}
+class MineData {
+    -m_PassiveEffects: EffectTemplate[]
+    -m_ActiveEffects: EffectTemplate[]
+    +PassiveEffects: EffectData[]
+    +ActiveEffects: EffectData[]
+}
+class EffectData {
+    +Type: EffectType
+    +Duration: float
+    +Magnitude: float
+    +Shape: GridShape
+}
+MineData --> EffectTemplate : Contains
+EffectTemplate --> EffectData : References
+note for EffectTemplate "Customizable properties\nper mine instance"
+```
+
+### Adjustments and Refactoring
+#### Effect Property Management
+- Separated template references from instance properties
+- Enhanced inspector usability with proper value initialization
+- Improved runtime instance creation
+```mermaid
+classDiagram
+class PropertyFlow {
+    Template[reference]
+    CustomValues[per_mine]
+    RuntimeInstance[combined]
+}
+class Validation {
+    InitFromTemplate
+    AllowCustomization
+    CreateInstance
+}
+PropertyFlow --> Validation
+note for PropertyFlow "Clear property flow\nImproved customization"
+```
+
+### Optimizations
+- Improved effect property management
+- Enhanced inspector usability
+- Optimized runtime instance creation
+
 # v0.1.15 - 2025-02-14 15:10:37
 ## Overview
 Enhanced monster mine mechanics with a new collectable state system, improving gameplay feedback and strategic depth by requiring explicit collection of defeated monsters.

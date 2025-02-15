@@ -229,6 +229,22 @@ class IPassiveEffect {
 <<interface>>
 +OnTick(GameObject, Vector2Int)
 }
+class EffectTemplate {
+-m_Template: EffectData
+-m_Duration: float
+-m_Magnitude: float
+-m_Shape: GridShape
+-m_Radius: int
++CreateInstance()
++OnValidate()
+}
+class EffectData {
++Type: EffectType
++Duration: float
++Magnitude: float
++Shape: GridShape
++CreateEffect()
+}
 class ConfusionEffect {
 -m_Shape: GridShape
 -m_AffectedCells: HashSet
@@ -243,6 +259,9 @@ class GridShapeHelper {
 IEffect <|-- IPassiveEffect
 IPassiveEffect <|.. ConfusionEffect
 ConfusionEffect --> GridShapeHelper
+EffectTemplate --> EffectData : References
+EffectData --> IEffect : Creates
+note for EffectTemplate "Allows per-mine\ncustomization of effects"
 ```
 
 ### Value Modification System

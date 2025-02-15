@@ -12,11 +12,6 @@ namespace RPGMinesweeper.Effects
         public float Duration;
         public float Magnitude;
         
-        //[Header("Effect Behavior")]
-        //public bool IsPassive;
-        //public float TickInterval = 1f; // Only used for passive effects
-        //public bool TriggerOnRemoval; // Only used for active effects
-        
         [Header("Area of Effect")]
         public GridShape Shape = GridShape.Single;
         public int Radius = 1;
@@ -45,12 +40,6 @@ namespace RPGMinesweeper.Effects
         {
             switch (Type)
             {
-                //case EffectType.Damage:
-                    //return new DamageEffect(Duration, Magnitude);
-                //case EffectType.Shield:
-                    //return new ShieldEffect(Duration, Magnitude);
-                //case EffectType.Speed:
-                    //return new SpeedEffect(Duration, Magnitude);
                 case EffectType.Confusion:
                     return new ConfusionEffect(Duration, Radius, Shape);
                 default:
