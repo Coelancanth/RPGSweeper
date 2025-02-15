@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using RPGMinesweeper.Effects;
 using RPGMinesweeper.Grid;
+using RPGMinesweeper;  // For MonsterType
 
 [Serializable]
 public class EffectTemplate
@@ -16,6 +17,7 @@ public class EffectTemplate
     [SerializeField] private GridShape m_Shape = GridShape.Single;
     [SerializeField] private int m_Radius = 1;
     [SerializeField] private LayerMask m_TargetLayers;
+    [SerializeField] private MonsterType m_TargetMonsterType = MonsterType.None;
 
     // For passive effects
     [SerializeField] private float m_TickInterval = 1f;
@@ -40,6 +42,10 @@ public class EffectTemplate
         {
             passiveInstance.TickInterval = m_TickInterval;
         }
+        else if (instance is TargetedRevealEffectData targetedRevealInstance)
+        {
+            targetedRevealInstance.SetTargetMonsterType(m_TargetMonsterType);
+        }
 
         return instance;
     }
@@ -59,6 +65,10 @@ public class EffectTemplate
             if (m_Template is PassiveEffectData passiveTemplate)
             {
                 if (m_TickInterval == 1f) m_TickInterval = passiveTemplate.TickInterval;
+            }
+            else if (m_Template is TargetedRevealEffectData targetedRevealTemplate)
+            {
+                if (m_TargetMonsterType == MonsterType.None) m_TargetMonsterType = targetedRevealTemplate.GetTargetMonsterType();
             }
         }
     }

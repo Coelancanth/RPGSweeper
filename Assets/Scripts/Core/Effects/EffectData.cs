@@ -52,6 +52,10 @@ namespace RPGMinesweeper.Effects
     [CreateAssetMenu(fileName = "ActiveEffect", menuName = "RPGMinesweeper/Effects/ActiveEffect")]
     public class ActiveEffectData : EffectData
     {
+        [Header("Monster Targeting")]
+        [Tooltip("For TargetedReveal effect, specify which monster type to reveal")]
+        [SerializeField] private MonsterType m_TargetMonsterType = MonsterType.None;
+
         public override IEffect CreateEffect()
         {
             switch (Type)
@@ -60,6 +64,8 @@ namespace RPGMinesweeper.Effects
                     return new HealEffect(Duration, Magnitude);
                 case EffectType.Reveal:
                     return new RevealEffect(Duration, Radius);
+                case EffectType.TargetedReveal:
+                    return new TargetedRevealEffect(Duration, Radius, m_TargetMonsterType);
                 default:
                     Debug.LogWarning($"Effect type {Type} not implemented as active effect");
                     return null;

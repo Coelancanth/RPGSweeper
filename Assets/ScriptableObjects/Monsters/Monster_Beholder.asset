@@ -20,9 +20,29 @@ MonoBehaviour:
   MineSprite: {fileID: 5498951995105962609, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_ValueColor: {r: 0.6792453, g: 0.10893546, b: 0.5409787, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  PassiveEffects:
-  - {fileID: 11400000, guid: 6e7b7049cf0b3484c9749386a3ce1f76, type: 2}
-  ActiveEffects: []
+  m_PassiveEffects:
+  - m_Template: {fileID: 11400000, guid: 28ffe2c918b8f9142951c757aa816ede, type: 2}
+    m_Duration: 0
+    m_Magnitude: 0
+    m_Shape: 1
+    m_Radius: 3
+    m_TargetLayers:
+      serializedVersion: 2
+      m_Bits: 0
+    m_TargetMonsterType: 0
+    m_TickInterval: 0
+  m_ActiveEffects:
+  - m_Template: {fileID: 11400000, guid: d1b8ed2475309234d95d975877f22ab1, type: 2}
+    m_Duration: 5
+    m_Magnitude: 13
+    m_Shape: 2
+    m_Radius: 5
+    m_TargetLayers:
+      serializedVersion: 2
+      m_Bits: 0
+    m_TargetMonsterType: 1
+    m_TickInterval: 0
+  m_MonsterType: 0
   m_MaxHp: 10
   m_BaseDamage: 2
   m_DamagePerHit: 2

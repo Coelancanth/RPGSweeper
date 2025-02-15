@@ -1,9 +1,13 @@
 using UnityEngine;
+using RPGMinesweeper;  // For MonsterType
 
 [CreateAssetMenu(fileName = "MonsterMineData", menuName = "RPGMinesweeper/MonsterMineData")]
 public class MonsterMineData : MineData
 {
     [Header("Monster Properties")]
+    [Tooltip("Type of monster this mine represents")]
+    [SerializeField] private MonsterType m_MonsterType = MonsterType.None;
+    
     [Tooltip("Maximum HP of the monster - determines how many hits it can take before being defeated")]
     [SerializeField] private int m_MaxHp = 100;
     
@@ -25,6 +29,7 @@ public class MonsterMineData : MineData
     [Tooltip("Multiplier applied to base damage when monster is enraged (e.g., 1.5 = 50% more damage)")]
     [SerializeField, Range(1f, 3f)] private float m_EnrageDamageMultiplier = 1.5f;
 
+    public MonsterType MonsterType => m_MonsterType;
     public int MaxHp => m_MaxHp;
     public int BaseDamage => m_BaseDamage;
     public int DamagePerHit => m_DamagePerHit;
@@ -40,5 +45,10 @@ public class MonsterMineData : MineData
             return Mathf.RoundToInt(m_BaseDamage * m_EnrageDamageMultiplier);
         }
         return m_BaseDamage;
+    }
+
+    public string GetMonsterType()
+    {
+        return m_MonsterType.ToString();
     }
 } 

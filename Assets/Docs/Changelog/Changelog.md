@@ -1,3 +1,66 @@
+# v0.1.17 - 2025-02-15 22:48:00
+## Overview
+Added a new targeted reveal effect system that allows revealing specific monster types, enhancing strategic gameplay with selective monster detection capabilities.
+
+## Change Details
+### New Features
+#### Targeted Reveal Effect System
+- Implemented TargetedRevealEffect for selective monster type revelation
+- Added MonsterType classification system
+- Enhanced effect template system with monster type targeting
+```mermaid
+classDiagram
+class TargetedRevealEffect {
+    -m_Duration: float
+    -m_Radius: float
+    -m_TargetMonsterType: MonsterType
+    +Apply(GameObject, Vector2Int)
+}
+class MonsterType {
+    <<enumeration>>
+    None
+    Bat
+    Spider
+    Slime
+    Ghost
+    Skeleton
+    Dragon
+}
+class EffectTemplate {
+    -m_TargetMonsterType: MonsterType
+    +CreateInstance()
+}
+TargetedRevealEffect --> MonsterType : Targets
+EffectTemplate --> MonsterType : Configures
+note for TargetedRevealEffect "Reveals only specific\nmonster types"
+```
+
+### Adjustments and Refactoring
+#### Effect Property System
+- Enhanced effect template system to support monster targeting
+- Fixed radius value propagation from template to effect
+- Improved effect creation pipeline
+```mermaid
+classDiagram
+class PropertyFlow {
+    Template[source]
+    EffectData[intermediate]
+    Effect[final]
+}
+class ValuePropagation {
+    Duration
+    Radius
+    MonsterType
+}
+PropertyFlow --> ValuePropagation
+note for PropertyFlow "Proper value propagation\nfrom template to effect"
+```
+
+### Optimizations
+- Improved effect property propagation
+- Enhanced template value management
+- Optimized monster type targeting logic
+
 # v0.1.16 - 2025-02-15 20:10:12
 ## Overview
 Enhanced effect customization in MineData by implementing a template-based system, allowing per-mine customization of effect properties while maintaining template references.

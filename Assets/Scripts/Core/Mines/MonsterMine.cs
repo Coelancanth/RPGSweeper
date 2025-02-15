@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using RPGMinesweeper.Effects;
 using RPGMinesweeper.Grid;
+using RPGMinesweeper;  // For MonsterType
 
 public class MonsterMine : IDamagingMine
 {
@@ -33,6 +34,7 @@ public class MonsterMine : IDamagingMine
     public Sprite MonsterSprite => m_Data.MonsterSprite;
     public Color MonsterTint => m_MonsterTint;
     public bool IsCollectable => m_CurrentHp <= 0;
+    public MonsterType MonsterType => m_Data.MonsterType;
     
     // Modifiable properties
     public int MaxHp

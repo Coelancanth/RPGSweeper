@@ -33,6 +33,7 @@ namespace RPGMinesweeper.Effects
     {
         None,
         Reveal,
+        TargetedReveal,
         Transform,
         Heal,
         SpawnItem,

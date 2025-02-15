@@ -20,8 +20,9 @@ MonoBehaviour:
   MineSprite: {fileID: 3867296298848744610, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  PassiveEffects: []
-  ActiveEffects: []
+  m_PassiveEffects: []
+  m_ActiveEffects: []
+  m_MonsterType: 1
   m_MaxHp: 5
   m_BaseDamage: 1
   m_DamagePerHit: 1
