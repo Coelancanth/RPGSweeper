@@ -30,6 +30,24 @@ class EffectData {
 +Shape: GridShape
 +CreateEffect()
 }
+class GridShape {
+<<enumeration>>
+Single
+Cross
+Square
+Diamond
+Line
+WholeGrid
+}
+class GridShapeHelper {
++GetAffectedPositions()
++IsPositionAffected()
+}
+class GridManager {
++Width: int
++Height: int
++IsValidPosition()
+}
 class TargetedRevealEffect {
 -m_Duration: float
 -m_Radius: float
@@ -44,16 +62,16 @@ class ConfusionEffect {
 +Remove()
 +OnTick()
 }
-class GridShapeHelper {
-+GetAffectedPositions()
-+IsPositionAffected()
-}
 IEffect <|-- IPassiveEffect
 IPassiveEffect <|.. ConfusionEffect
 IEffect <|.. TargetedRevealEffect
 ConfusionEffect --> GridShapeHelper
 EffectTemplate --> EffectData : References
 EffectData --> IEffect : Creates
+GridShapeHelper --> GridManager : Uses
+GridShapeHelper --> GridShape : Implements
 note for EffectTemplate "Allows per-mine\ncustomization of effects"
 note for TargetedRevealEffect "Reveals specific\nmonster types"
+note for GridShape "Supports both local\nand global shapes"
+note for WholeGrid "Grid-wide effects\nignore range parameter"
 ``` 

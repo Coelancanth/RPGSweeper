@@ -6,6 +6,7 @@ namespace RPGMinesweeper.Grid
         Cross,      // + shape
         Square,     // Square shape
         Diamond,    // Diamond shape
-        Line        // Straight line
+        Line,       // Straight line
+        WholeGrid   // Affects entire grid
     }
 } 

@@ -57,6 +57,21 @@ namespace RPGMinesweeper.Grid
                         positions.Add(center + new Vector2Int(-i, 0));   // Left
                     }
                     break;
+
+                case GridShape.WholeGrid:
+                    var gridManager = GameObject.FindFirstObjectByType<GridManager>();
+                    if (gridManager != null)
+                    {
+                        // For WholeGrid, range is ignored - we use the actual grid dimensions
+                        for (int x = 0; x < gridManager.Width; x++)
+                        {
+                            for (int y = 0; y < gridManager.Height; y++)
+                            {
+                                positions.Add(new Vector2Int(x, y));
+                            }
+                        }
+                    }
+                    break;
             }
             //Debug.Log($"MineShapeHelper: Shape {shape} with range {range} has {positions.Count} positions");
             return positions;
@@ -85,6 +100,15 @@ namespace RPGMinesweeper.Grid
                 case GridShape.Line:
                     diff = position - center;
                     return diff.y == 0 && Mathf.Abs(diff.x) <= range;
+
+                case GridShape.WholeGrid:
+                    var gridManager = GameObject.FindFirstObjectByType<GridManager>();
+                    if (gridManager != null)
+                    {
+                        // For WholeGrid, we only need to check if the position is within grid bounds
+                        return gridManager.IsValidPosition(position);
+                    }
+                    return false;
                     
                 default:
                     return false;

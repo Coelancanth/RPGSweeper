@@ -1,3 +1,62 @@
+# v0.1.18 - 2025-02-15 23:15:00
+## Overview
+Enhanced the grid shape system with a new WholeGrid shape that enables effects to target the entire grid at once, improving support for global effects.
+
+## Change Details
+### New Features
+#### WholeGrid Shape System
+- Added WholeGrid shape type for grid-wide effects
+- Implemented efficient grid-wide position calculation
+- Enhanced shape helper with grid boundary awareness
+```mermaid
+classDiagram
+class GridShape {
+    <<enumeration>>
+    Single
+    Cross
+    Square
+    Diamond
+    Line
+    WholeGrid
+}
+class GridShapeHelper {
+    +GetAffectedPositions()
+    +IsPositionAffected()
+}
+class GridManager {
+    +Width: int
+    +Height: int
+    +IsValidPosition()
+}
+GridShapeHelper --> GridManager : Uses
+GridShapeHelper --> GridShape : Implements
+note for WholeGrid "Affects entire grid\nIgnores range parameter"
+```
+
+### Architecture Improvements
+#### Shape System Enhancement
+- Optimized position calculation for grid-wide effects
+- Improved boundary checking with GridManager integration
+- Enhanced shape helper extensibility
+```mermaid
+classDiagram
+class ShapeSystem {
+    LocalShapes[range_based]
+    GlobalShapes[grid_wide]
+}
+class Implementation {
+    GetPositions[optimize]
+    CheckBoundaries[validate]
+}
+ShapeSystem --> Implementation
+note for ShapeSystem "Clear separation between\nlocal and global shapes"
+```
+
+### Optimizations
+- Improved position calculation efficiency for WholeGrid
+- Enhanced grid boundary validation
+- Optimized memory usage for position lists
+
 # v0.1.17 - 2025-02-15 22:48:00
 ## Overview
 Added a new targeted reveal effect system that allows revealing specific monster types, enhancing strategic gameplay with selective monster detection capabilities.
