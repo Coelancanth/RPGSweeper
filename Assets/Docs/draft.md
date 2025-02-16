@@ -1,155 +1,157 @@
-# Template-Based ScriptableObject Instantiation
+# Teleport/Swap Effect System Design
 
-## Problem Statement
-When referencing ScriptableObjects (like `MineData` in `EffectData`), we often want to use the referenced object as a template rather than a direct reference. This allows creating new instances with customizable data while maintaining the base structure.
+## Overview
+The teleport/swap effect system will allow mines to move around the grid, either randomly or in specific patterns. This adds a dynamic element to the game where mines can change positions based on triggers or turn events.
 
-## Solution Approaches
+## Core Components
 
-### Approach 1: Using OnValidate (Recommended)
-Unity's `OnValidate` method provides a simpler, more native approach to handle template instantiation in the editor:
-
+### 1. TeleportEffectData
 ```csharp
-public class EffectData : ScriptableObject
+public enum TeleportType
 {
-    [Header("Mine Template")]
-    [SerializeField] private MineData m_MineTemplate;
-    [SerializeField] private MineData m_MineInstance;
-    
-    // Custom overrides
-    [SerializeField] private int m_CustomValue;
-    [SerializeField] private Color m_CustomValueColor;
+    Random,           // Move to any valid position
+    DirectionalShift, // Move in a specific direction
+    RowEnd,          // Move to end of current row
+    ColumnEnd,       // Move to end of current column
+    SwapNearest,     // Swap with nearest mine
+    SwapRandom       // Swap with random mine
+}
 
-    #if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (m_MineTemplate != null && m_MineInstance == null)
-        {
-            // Create new instance
-            m_MineInstance = ScriptableObject.CreateInstance<MineData>();
-            UnityEditor.AssetDatabase.AddObjectToAsset(m_MineInstance, this);
-            
-            // Copy template values
-            m_MineInstance.Type = m_MineTemplate.Type;
-            m_MineInstance.Shape = m_MineTemplate.Shape;
-            m_MineInstance.Radius = m_MineTemplate.Radius;
-            
-            // Apply custom overrides
-            m_MineInstance.Value = m_CustomValue;
-            
-            // Mark the asset dirty to ensure changes are saved
-            UnityEditor.EditorUtility.SetDirty(this);
-        }
-    }
-    #endif
+[CreateAssetMenu(fileName = "TeleportEffectData", menuName = "RPGMinesweeper/Effects/TeleportEffectData")]
+public class TeleportEffectData : EffectData
+{
+    [SerializeField] private TeleportType m_TeleportType;
+    [SerializeField] private Vector2Int m_Direction; // For DirectionalShift
+    [SerializeField] private bool m_TriggerOnTurnEnd = false;
+    [SerializeField] private float m_TeleportChance = 1f; // Probability of teleport occurring
+    
+    public TeleportType TeleportType => m_TeleportType;
+    public Vector2Int Direction => m_Direction;
+    public bool TriggerOnTurnEnd => m_TriggerOnTurnEnd;
+    public float TeleportChance => m_TeleportChance;
 }
 ```
 
-Benefits of this approach:
-1. Simpler implementation - no wrapper class needed
-2. Automatic handling in the Unity Editor
-3. Native integration with Unity's asset system
-4. Proper serialization of sub-assets
-5. Better memory management as instances are properly tracked as sub-assets
-
-### Approach 2: Wrapper Class (Alternative)
-
-### 1. Using CreateInstance Method
-Unity provides `ScriptableObject.CreateInstance<T>()` which can create new instances at runtime. We can combine this with a custom editor to automatically clone templates.
-
-### 2. Implementation Example
-Using `MineData` and `EffectData` as examples:
-
+### 2. TeleportEffect
 ```csharp
-[Serializable]
-public class TemplatedMineData
+public class TeleportEffect : IEffect
 {
-    [SerializeField] private MineData m_Template;
-    [SerializeField] private MineData m_Instance;
+    private readonly TeleportEffectData m_Data;
+    private readonly MineManager m_MineManager;
+    private readonly GridManager m_GridManager;
     
-    // Custom properties that override template values
-    [SerializeField] private int m_CustomValue;
-    [SerializeField] private Color m_CustomValueColor;
-    
-    public MineData Instance => m_Instance;
-    
-    public void Initialize()
+    public void Apply(GameObject target, Vector2Int position)
     {
-        if (m_Template != null && m_Instance == null)
+        if (Random.value > m_Data.TeleportChance) return;
+        
+        Vector2Int newPosition = CalculateTargetPosition(position);
+        if (newPosition != position)
         {
-            // Create new instance from template
-            m_Instance = ScriptableObject.CreateInstance<MineData>();
-            // Copy base values
-            m_Instance.Type = m_Template.Type;
-            m_Instance.Shape = m_Template.Shape;
-            m_Instance.Radius = m_Template.Radius;
-            // Apply custom overrides
-            m_Instance.Value = m_CustomValue;
-            // ... other property copying
+            PerformTeleport(position, newPosition);
+        }
+    }
+    
+    private Vector2Int CalculateTargetPosition(Vector2Int currentPos)
+    {
+        switch (m_Data.TeleportType)
+        {
+            case TeleportType.Random:
+                return GetRandomValidPosition();
+            case TeleportType.DirectionalShift:
+                return GetDirectionalPosition(currentPos);
+            case TeleportType.RowEnd:
+                return GetRowEndPosition(currentPos);
+            case TeleportType.ColumnEnd:
+                return GetColumnEndPosition(currentPos);
+            case TeleportType.SwapNearest:
+                return FindNearestMine(currentPos);
+            case TeleportType.SwapRandom:
+                return GetRandomMinePosition();
+            default:
+                return currentPos;
         }
     }
 }
 ```
 
-### 3. Usage in EffectData
+## Implementation Plan
+
+### Phase 1: Core Teleport System
+1. Create `TeleportEffectData` and `TeleportEffect` classes
+2. Implement basic position calculation methods
+3. Add teleport effect to existing effect system
+4. Test basic random teleportation
+
+### Phase 2: Advanced Movement Patterns
+1. Implement directional movement
+2. Add row/column end targeting
+3. Create swap functionality
+4. Add turn-end trigger support
+
+### Phase 3: Visual Feedback
+1. Add animation system for teleporting mines
+2. Implement visual indicators for teleport destinations
+3. Create particle effects for teleportation
+
+### Phase 4: Integration
+1. Update `MineManager` to handle mine position updates
+2. Modify `CellView` to support teleport animations
+3. Add event system for teleport notifications
+4. Implement proper value recalculation after teleports
+
+## Technical Considerations
+
+### 1. Position Validation
+- Check for grid boundaries
+- Handle occupied positions
+- Maintain proper mine spacing
+- Prevent infinite loops in position finding
+
+### 2. State Management
+- Update mine position dictionaries
+- Maintain proper cell references
+- Handle revealed state preservation
+- Update adjacent cell values
+
+### 3. Visual Updates
+- Smooth transition animations
+- Clear visual feedback
+- Proper sprite/text updates
+- Maintain visual consistency
+
+### 4. Performance
+- Efficient position calculation
+- Optimize swap operations
+- Minimize unnecessary updates
+- Cache frequently used values
+
+## Example Usage
+
 ```csharp
-public class EffectData : ScriptableObject
+// Example teleport effect configuration
+[CreateAssetMenu(fileName = "RandomTeleportMine", menuName = "RPGMinesweeper/Mines/RandomTeleportMine")]
+public class TeleportMineData : MineData
 {
-    [Header("Mine Template")]
-    [SerializeField] private TemplatedMineData m_MineTemplate;
-    
-    private void OnEnable()
+    protected override void InitializeEffects()
     {
-        m_MineTemplate.Initialize();
+        var teleportEffect = CreateInstance<TeleportEffectData>();
+        teleportEffect.Initialize(TeleportType.Random, 0.5f);
+        
+        m_ActiveEffects = new EffectData[] { teleportEffect };
     }
 }
 ```
 
-## Comparison of Approaches
+## Next Steps
+1. Implement `TeleportEffectData` and `TeleportEffect` classes
+2. Add position calculation methods
+3. Create test mine prefab with teleport effect
+4. Implement basic visual feedback
+5. Test and refine the system
 
-### OnValidate Approach
-Pros:
-- Simpler implementation
-- Better integration with Unity's asset system
-- Automatic cleanup of sub-assets
-- Works seamlessly in the editor
-
-Cons:
-- Only works in editor (but that's typically when we need it)
-- Less flexible for runtime modifications
-
-### Wrapper Class Approach
-Pros:
-- More flexible for runtime use
-- Better encapsulation of template logic
-- Can be extended more easily
-
-Cons:
-- More complex implementation
-- Requires manual cleanup
-- Needs additional serialization handling
-
-## Recommendation
-Use the OnValidate approach unless you specifically need runtime template instantiation. It's simpler, more maintainable, and better integrated with Unity's systems.
-
-## Benefits
-1. Maintains SOLID principles:
-   - Single Responsibility: Template handling is encapsulated
-   - Open/Closed: New template types can be added without modifying existing code
-   - Dependency Inversion: Works with abstractions rather than concrete implementations
-
-2. Follows Unity best practices:
-   - Proper serialization support
-   - Inspector-friendly design
-   - Clean separation of template and instance data
-
-## Implementation Notes
-1. Consider using `[CreateAssetMenu]` for template creation
-2. Implement proper cleanup in editor scripts
-3. Handle template updates appropriately
-4. Consider adding validation to ensure template integrity
-
-## Considerations
-1. Memory management: Instances should be properly cleaned up
-2. Asset references: Ensure proper handling of sub-assets
-3. Scene serialization: Consider how instances persist between play sessions
-4. Editor tooling: May need custom editor scripts for better UX
+## Questions to Consider
+1. Should teleported mines maintain their revealed state?
+2. How should teleport effects interact with other effects?
+3. Should there be a cooldown between teleports?
+4. How to handle teleport chains/cascades?
+5. Should certain mine types be immune to teleportation?

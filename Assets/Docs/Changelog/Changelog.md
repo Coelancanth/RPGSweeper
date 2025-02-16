@@ -1,3 +1,65 @@
+# v0.1.21 - 2025-02-16 15:01:00
+## Overview
+Improved code organization and maintainability by extracting the EffectTemplate system into its own file, enhancing modularity and reusability of the effect configuration system.
+
+## Change Details
+### Architecture Improvements
+#### Effect Template System
+- Extracted EffectTemplate to dedicated file in Effects namespace
+- Enhanced separation of concerns in effect configuration
+- Improved reusability of effect template system
+```mermaid
+classDiagram
+class EffectTemplate {
+    -m_Template: EffectData
+    -m_Duration: float
+    -m_Magnitude: float
+    -m_Shape: GridShape
+    -m_Radius: int
+    +CreateInstance()
+    +OnValidate()
+}
+class MineData {
+    -m_PassiveEffects: EffectTemplate[]
+    -m_ActiveEffects: EffectTemplate[]
+    +PassiveEffects: EffectData[]
+    +ActiveEffects: EffectData[]
+}
+class EffectData {
+    +Type: EffectType
+    +Duration: float
+    +Magnitude: float
+    +Shape: GridShape
+}
+MineData --> EffectTemplate : Uses
+EffectTemplate --> EffectData : Creates
+note for EffectTemplate "Dedicated class for\neffect configuration"
+```
+
+### Adjustments and Refactoring
+#### Effect System Organization
+- Moved EffectTemplate to Core/Effects directory
+- Enhanced namespace organization
+- Improved code file structure
+```mermaid
+classDiagram
+class Organization {
+    Core/Effects[template]
+    Core/Mines[data]
+}
+class Separation {
+    EffectTemplate[configuration]
+    MineData[usage]
+}
+Organization --> Separation
+note for Organization "Clear separation between\neffect config and usage"
+```
+
+### Optimizations
+- Improved code maintainability
+- Enhanced system modularity
+- Better organized effect configuration system
+
 # v0.1.20 - 2025-02-16 02:10:00
 ## Overview
 Enhanced the mine spawn strategy system with flags-based composition, allowing flexible combination of different spawn patterns for more varied and strategic mine placement.

@@ -9,6 +9,8 @@ public class MineTypeSpawnData
 {
     public MineData MineData;
     public int SpawnCount;
+    [Tooltip("When disabled, this mine type will not be spawned")]
+    public bool IsEnabled = true;
 }
 
 public class MineManager : MonoBehaviour
@@ -68,14 +70,17 @@ public class MineManager : MonoBehaviour
             return;
         }
 
-        int totalMines = m_MineSpawnData.Sum(data => data.SpawnCount);
+        int totalMines = m_MineSpawnData
+            .Where(data => data.IsEnabled)
+            .Sum(data => data.SpawnCount);
+            
         int maxPossibleMines = m_GridManager.Width * m_GridManager.Height;
 
         if (totalMines > maxPossibleMines)
         {
             Debug.LogWarning($"MineManager: Total mine count ({totalMines}) exceeds grid capacity ({maxPossibleMines}). Mines will be scaled down proportionally.");
             float scale = (float)maxPossibleMines / totalMines;
-            foreach (var data in m_MineSpawnData)
+            foreach (var data in m_MineSpawnData.Where(d => d.IsEnabled))
             {
                 data.SpawnCount = Mathf.Max(1, Mathf.FloorToInt(data.SpawnCount * scale));
             }
@@ -165,6 +170,7 @@ public class MineManager : MonoBehaviour
     private MineData FindMineDataByMonsterType(MonsterType monsterType)
     {
         return m_MineSpawnData
+            .Where(data => data.IsEnabled)
             .Select(data => data.MineData)
             .OfType<MonsterMineData>()
             .FirstOrDefault(data => data.MonsterType == monsterType);
@@ -193,7 +199,9 @@ public class MineManager : MonoBehaviour
         }
         else
         {
-            mineData = m_MineSpawnData.FirstOrDefault(data => data.MineData.Type == type)?.MineData;
+            mineData = m_MineSpawnData
+                .Where(data => data.IsEnabled && data.MineData.Type == type)
+                .FirstOrDefault()?.MineData;
         }
 
         if (mineData == null)
@@ -235,7 +243,7 @@ public class MineManager : MonoBehaviour
 
     private void PlaceMines()
     {
-        foreach (var spawnData in m_MineSpawnData)
+        foreach (var spawnData in m_MineSpawnData.Where(data => data.IsEnabled))
         {
             for (int i = 0; i < spawnData.SpawnCount; i++)
             {

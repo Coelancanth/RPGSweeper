@@ -413,6 +413,10 @@ MonoBehaviour:
   m_MineSpawnData:
   - MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
     SpawnCount: 5
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
+    SpawnCount: 5
+    IsEnabled: 1
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429
 Transform:
