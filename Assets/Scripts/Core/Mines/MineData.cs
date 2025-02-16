@@ -5,6 +5,9 @@ using RPGMinesweeper.Effects;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper;  // For MonsterType
 using Sirenix.OdinInspector;
+#if UNITY_EDITOR
+using Sirenix.OdinInspector.Editor;
+#endif
 
 [CreateAssetMenu(fileName = "MineData", menuName = "RPGMinesweeper/MineData")]
 public class MineData : SerializedScriptableObject
@@ -51,12 +54,14 @@ public class MineData : SerializedScriptableObject
     [BoxGroup("Effects")]
     [TabGroup("Effects/Tabs", "Passive")]
     [Tooltip("Effects that are applied while the mine is active")]
-    [ListDrawerSettings(ShowIndexLabels = true)]
+    [ListDrawerSettings(ShowIndexLabels = true, Expanded = true)]
+    [InlineEditor]
     [SerializeField] private EffectData[] m_PassiveEffects;
 
     [TabGroup("Effects/Tabs", "Active")]
     [Tooltip("Effects that are applied when the mine is destroyed")]
-    [ListDrawerSettings(ShowIndexLabels = true)]
+    [ListDrawerSettings(ShowIndexLabels = true, Expanded = true)]
+    [InlineEditor]
     [SerializeField] private EffectData[] m_ActiveEffects;
 
     public EffectData[] PassiveEffects => m_PassiveEffects;
@@ -76,4 +81,52 @@ public class MineData : SerializedScriptableObject
     {
         return (Value, m_ValueColor);
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        // Ensure each effect is a unique instance
+        if (m_PassiveEffects != null)
+        {
+            for (int i = 0; i < m_PassiveEffects.Length; i++)
+            {
+                if (m_PassiveEffects[i] != null)
+                {
+                    // Check if this effect is referenced by other objects
+                    var references = UnityEditor.AssetDatabase.GetDependencies(UnityEditor.AssetDatabase.GetAssetPath(this));
+                    bool isShared = references.Length > 1;
+
+                    if (isShared)
+                    {
+                        // Create a clone if it's shared
+                        var clone = ScriptableObject.Instantiate(m_PassiveEffects[i]);
+                        clone.name = m_PassiveEffects[i].name + " (Clone)";
+                        m_PassiveEffects[i] = clone;
+                    }
+                }
+            }
+        }
+
+        if (m_ActiveEffects != null)
+        {
+            for (int i = 0; i < m_ActiveEffects.Length; i++)
+            {
+                if (m_ActiveEffects[i] != null)
+                {
+                    // Check if this effect is referenced by other objects
+                    var references = UnityEditor.AssetDatabase.GetDependencies(UnityEditor.AssetDatabase.GetAssetPath(this));
+                    bool isShared = references.Length > 1;
+
+                    if (isShared)
+                    {
+                        // Create a clone if it's shared
+                        var clone = ScriptableObject.Instantiate(m_ActiveEffects[i]);
+                        clone.name = m_ActiveEffects[i].name + " (Clone)";
+                        m_ActiveEffects[i] = clone;
+                    }
+                }
+            }
+        }
+    }
+#endif
 } 

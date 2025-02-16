@@ -274,13 +274,11 @@ class TargetedRevealEffect {
     -m_TargetMonsterType: MonsterType
     +Apply()
 }
-class GridShapeHelper {
-    +GetAffectedPositions()
-    +IsPositionAffected()
-}
 class MineData {
-    -m_Effects: EffectData[]
-    +Effects: EffectData[]
+    -m_PassiveEffects: EffectData[]
+    -m_ActiveEffects: EffectData[]
+    +PassiveEffects: EffectData[]
+    +ActiveEffects: EffectData[]
 }
 IEffect <|-- IDurationalEffect
 IEffect <|-- IInstantEffect
@@ -291,13 +289,11 @@ EffectData <|-- ConfusionEffectData
 EffectData <|-- TargetedRevealEffectData
 ConfusionEffectData ..> ConfusionEffect : Creates
 TargetedRevealEffectData ..> TargetedRevealEffect : Creates
-ConfusionEffect --> GridShapeHelper
-TargetedRevealEffect --> GridShapeHelper
 MineData --> EffectData : Uses directly
 note for IEffect "Base interface with\nminimal requirements"
 note for ITickableEffect "For effects needing\nperiodic updates"
-note for EffectData "Base class for all\neffect scriptable objects"
-note for MineData "Direct usage of effect data\nwithout intermediaries"
+note for EffectData "ScriptableObject base\nwith inline editing"
+note for MineData "Direct effect management\nwith automatic cloning"
 ```
 
 ### Value Modification System

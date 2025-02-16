@@ -1,3 +1,60 @@
+# v0.1.26 - 2025-02-17 01:43:51
+## Overview
+Simplified the effect system by removing the EffectTemplate wrapper and implementing direct ScriptableObject editing with Odin Inspector, improving maintainability and usability.
+
+## Change Details
+### Architecture Improvements
+#### Effect System Simplification
+- Removed EffectTemplate intermediary layer
+- Implemented direct EffectData editing
+- Added automatic effect instance management
+```mermaid
+classDiagram
+class MineData {
+    -m_PassiveEffects: EffectData[]
+    -m_ActiveEffects: EffectData[]
+    +PassiveEffects: EffectData[]
+    +ActiveEffects: EffectData[]
+    -OnValidate()
+}
+class EffectData {
+    +Duration: float
+    +Magnitude: float
+    +Shape: GridShape
+    +CreateEffect()
+}
+MineData --> EffectData : Uses directly
+note for MineData "Direct effect management\nwith inline editing"
+note for EffectData "ScriptableObject-based\neffect configuration"
+```
+
+### Adjustments and Refactoring
+#### Inspector Enhancement
+- Added inline effect property editing
+- Improved effect organization with tabs
+- Enhanced visual feedback and grouping
+```mermaid
+classDiagram
+class InspectorLayout {
+    BoxGroup[effects]
+    TabGroup[passive_active]
+    InlineEditor[properties]
+}
+class EffectManagement {
+    DirectEditing[inline]
+    AutoCloning[unique_instances]
+    PropertyValidation[runtime]
+}
+InspectorLayout --> EffectManagement
+note for InspectorLayout "Better organized\nMore intuitive"
+```
+
+### Optimizations
+- Reduced code complexity by removing wrapper layer
+- Improved effect instance management
+- Enhanced inspector usability
+- Simplified effect property access
+
 # v0.1.25 - 2025-02-17 01:15:00
 ## Overview
 Refactored the effect system to better follow Interface Segregation Principle, removing the EffectType enum and introducing specialized interfaces for different effect behaviors.
@@ -1136,7 +1193,7 @@ class CellView {
 -m_ValueText: TextMeshPro
 -m_CurrentValue: int
 -m_IsRevealed: bool
-+UpdateVisuals()
++UpdateVisuals(bool)
 +SetValue(int)
 }
 class MineDebugger {
