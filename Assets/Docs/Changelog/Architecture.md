@@ -3,7 +3,6 @@
 ## Core Systems
 
 ### Grid System
-
 ```mermaid
 classDiagram
 class ICell {
@@ -26,8 +25,31 @@ class Grid {
 +GetCell(Vector2Int)
 +IsValidPosition(Vector2Int)
 }
+class GridPositionType {
+    <<enumeration>>
+    None
+    Random
+    Edge
+    Corner
+    Center
+    Source
+    All
+}
+class GridShapeHelper {
+    +GetAffectedPositions()
+    +IsPositionAffected()
+}
+class GridManager {
+    +Width: int
+    +Height: int
+    +IsValidPosition()
+}
 ICell <|.. Cell
 Grid -- ICell
+GridShapeHelper --> GridManager : Uses
+GridShapeHelper --> GridPositionType : Uses
+note for GridPositionType "Standardized position types\nfor grid-based operations"
+note for GridShapeHelper "Handles position calculations\nand validation"
 ```
 
 ### Mine System
@@ -231,26 +253,44 @@ class MineManager {
 classDiagram
 class IEffect {
     <<interface>>
+    +Type: EffectType
     +TargetType: EffectTargetType
-    +Apply(GameObject, Vector2Int)
-}
-class IDurationalEffect {
-    <<interface>>
     +Duration: float
+    +Apply(GameObject, Vector2Int)
     +Remove(GameObject, Vector2Int)
 }
-class IInstantEffect {
+class IPassiveEffect {
     <<interface>>
-}
-class ITickableEffect {
-    <<interface>>
-    +TickInterval: float
     +OnTick(GameObject, Vector2Int)
 }
+class EffectTemplate {
+    -m_Template: EffectData
+    -m_Duration: float
+    -m_Magnitude: float
+    -m_Shape: GridShape
+    -m_Radius: int
+    -m_TargetMonsterType: MonsterType
+    +CreateInstance()
+    +OnValidate()
+}
 class EffectData {
+    +Type: EffectType
     +Duration: float
     +Magnitude: float
     +Shape: GridShape
+    +CreateEffect()
+}
+class RangeRevealEffect {
+    -m_Radius: float
+    -m_Shape: GridShape
+    -m_TriggerPosition: Vector2Int?
+    -m_TriggerPositionType: GridPositionType
+    +Apply()
+    -GetEffectivePosition()
+}
+class RangeRevealEffectData {
+    -m_TriggerPositionType: GridPositionType
+    -m_TriggerPosition: Vector2Int?
     +CreateEffect()
 }
 class ConfusionEffectData {
@@ -284,19 +324,14 @@ class EffectInstance {
     +Template: EffectData
     +CreateEffect()
 }
-IEffect <|-- IDurationalEffect
-IEffect <|-- IInstantEffect
-IDurationalEffect <|-- ITickableEffect
-EffectData <|-- ConfusionEffectData
-EffectData <|-- TargetedRevealEffectData
-EffectData <|-- SummonEffectData
-IInstantEffect <|.. SummonEffect
-MineData --> EffectInstance : Contains
-EffectInstance --> EffectData : Uses template
-note for EffectData "ScriptableObject-based\neffect configuration"
-note for EffectInstance "Simple template reference\nfor effect creation"
-note for MineData "Direct effect management\nwith ScriptableObjects"
-note for SummonEffectData "Dynamic mine creation\nwith pattern support"
+IEffect <|-- IPassiveEffect
+EffectTemplate --> EffectData : References
+EffectData --> IEffect : Creates
+RangeRevealEffectData --|> EffectData
+RangeRevealEffect ..|> IEffect
+RangeRevealEffectData --> RangeRevealEffect : Creates
+note for RangeRevealEffect "Supports configurable\ntrigger positions"
+note for RangeRevealEffectData "Configures position\nand targeting"
 ```
 
 ### Value Modification System

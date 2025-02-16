@@ -167,6 +167,7 @@ public class MineEditorWindow : OdinMenuEditorWindow
         InitializeStandardMine(mine);
         
         mine.name = "New Monster Mine";
+        mine.Type = MineType.Monster;  // Set correct type for monster mines
         
         // Initialize monster-specific properties
         var serializedObject = new SerializedObject(mine);

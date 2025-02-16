@@ -1,3 +1,56 @@
+# v0.1.30 - 2025-02-17 03:45:00
+## Overview
+Enhanced grid position system with standardized position types and improved RangeRevealEffect with configurable trigger positions.
+
+## Change Details
+### Architecture Improvements
+#### Grid Position System
+- Introduced GridPositionType enum for standardized position handling
+- Deprecated MineSpawnStrategyType in favor of GridPositionType
+- Enhanced position calculation with helper methods
+```mermaid
+classDiagram
+class GridPositionType {
+    <<enumeration>>
+    None
+    Random
+    Edge
+    Corner
+    Center
+    Source
+    All
+}
+note for GridPositionType "Standardized position types\nfor grid-based operations"
+```
+
+### Adjustments and Refactoring
+#### RangeRevealEffect Enhancement
+- Added configurable trigger positions
+- Implemented position type-based targeting
+- Enhanced position calculation system
+```mermaid
+classDiagram
+class RangeRevealEffect {
+    -m_TriggerPosition: Vector2Int?
+    -m_TriggerPositionType: GridPositionType
+    +GetEffectivePosition()
+    -GetRandomEdgePosition()
+    -GetRandomCornerPosition()
+}
+class RangeRevealEffectData {
+    -m_TriggerPositionType: GridPositionType
+    -m_TriggerPosition: Vector2Int?
+    +CreateEffect()
+}
+RangeRevealEffectData --> RangeRevealEffect : Creates
+note for RangeRevealEffect "Flexible trigger positions\nwith type-based targeting"
+```
+
+### Optimizations
+- Improved position calculation reusability
+- Enhanced effect trigger flexibility
+- Standardized position type handling
+
 # v0.1.29 - 2025-02-17 03:15:00
 ## Overview
 Added a new summon effect system for dynamic mine creation and fixed monster data configuration issues.

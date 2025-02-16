@@ -8,6 +8,7 @@ namespace RPGMinesweeper
         Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines);
     }
 
+    // Deprecated: Use GridPositionType instead
     [System.Flags]
     public enum MineSpawnStrategyType
     {

@@ -19,3 +19,4 @@ MonoBehaviour:
     m_Bits: 0
   m_Duration: 0
   m_Magnitude: 0
+  m_TriggerPositionType: 1
