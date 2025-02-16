@@ -166,4 +166,47 @@ note for MonsterMine "Two-phase removal:\n1. Combat to 0 HP\n2. Collection"
 note for MineManager "Supports runtime mine addition\nwith type-specific handling"
 note for CompositeSpawnStrategy "Handles multiple strategies\nwith flag composition"
 note for SerializedScriptableObject "Provides enhanced editor\nexperience with Odin"
+```
+
+### Editor Tools
+```mermaid
+classDiagram
+class MineEditorWindow {
+    -BuildMenuTree()
+    -OnBeginDrawEditors()
+    -CreateNewAsset<T>()
+    -DeleteSelectedAsset()
+    -InitializeStandardMine()
+    -InitializeMonsterMine()
+}
+class OdinMenuEditorWindow {
+    <<Odin>>
+    #MenuTree: OdinMenuTree
+    #BuildMenuTree()
+    #OnBeginDrawEditors()
+}
+class OdinMenuTree {
+    +DefaultMenuStyle: MenuStyle
+    +Config: TreeConfig
+    +AddAllAssetsAtPath()
+    +EnumerateTree()
+}
+class MineData {
+    +Type: MineType
+    +Value: int
+    +Shape: GridShape
+    +Effects: EffectData[]
+}
+class MonsterMineData {
+    +MonsterType: MonsterType
+    +MaxHp: int
+    +BaseDamage: int
+    +DamagePerHit: int
+}
+MineEditorWindow --|> OdinMenuEditorWindow
+MineEditorWindow --> OdinMenuTree : Creates and manages
+MineEditorWindow ..> MineData : Creates/Deletes
+MineEditorWindow ..> MonsterMineData : Creates/Deletes
+note for MineEditorWindow "Centralized editor for\nmine data management"
+note for OdinMenuTree "Handles asset organization\nand visualization"
 ``` 

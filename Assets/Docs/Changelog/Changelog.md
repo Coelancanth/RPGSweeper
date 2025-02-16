@@ -1,3 +1,64 @@
+# v0.1.24 - 2025-02-16 23:47:15
+## Overview
+Added a custom editor window for managing mine data assets, enhancing the development workflow with a centralized interface for creating and managing both standard and monster mines.
+
+## Change Details
+### New Features
+#### Mine Editor Window
+- Implemented custom editor window using Odin Inspector
+- Added asset creation and management functionality
+- Enhanced organization with categorized mine types
+```mermaid
+classDiagram
+class MineEditorWindow {
+    +BuildMenuTree()
+    +OnBeginDrawEditors()
+    -CreateNewAsset<T>()
+    -DeleteSelectedAsset()
+    -InitializeStandardMine()
+    -InitializeMonsterMine()
+}
+class OdinMenuTree {
+    +AddAllAssetsAtPath()
+    +EnumerateTree()
+    +Config: TreeConfig
+}
+class ScriptableObject {
+    <<Unity>>
+    +CreateInstance<T>()
+}
+MineEditorWindow --|> OdinMenuEditorWindow
+MineEditorWindow --> OdinMenuTree : Creates
+MineEditorWindow --> ScriptableObject : Manages
+note for MineEditorWindow "Centralized interface for\nmine data management"
+```
+
+### Architecture Improvements
+#### Asset Management System
+- Implemented proper asset initialization with default values
+- Added drag-and-drop support for mine assets
+- Enhanced asset deletion with confirmation dialog
+```mermaid
+classDiagram
+class AssetManagement {
+    CreateAsset
+    InitializeValues
+    DeleteAsset
+}
+class Workflow {
+    DragAndDrop
+    Confirmation
+    KeyboardShortcuts
+}
+AssetManagement --> Workflow
+note for AssetManagement "Streamlined asset\nmanagement workflow"
+```
+
+### Optimizations
+- Improved asset creation workflow
+- Enhanced error handling and validation
+- Optimized folder structure management
+
 # v0.1.23 - 2025-02-16 23:13:00
 ## Overview
 Enhanced the mine data system with Odin Inspector integration, improving editor workflow and data management through better visualization and organization.
