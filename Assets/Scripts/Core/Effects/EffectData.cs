@@ -7,15 +7,26 @@ namespace RPGMinesweeper.Effects
 {
     public abstract class EffectData : ScriptableObject
     {
-        [Header("Basic Properties")]
-        public EffectType Type;
+        [Header("Area of Effect")]
+        [Tooltip("Shape of the effect area")]
+        public GridShape Shape = GridShape.Single;
+        
+        [Tooltip("Radius of the effect")]
+        public int Radius = 1;
+        
+        [Header("Target Settings")]
+        [Tooltip("Layers that this effect can target")]
+        public LayerMask TargetLayers;
+
+        [Header("Optional Properties")]
+        [Tooltip("Duration of the effect (if applicable)")]
         public float Duration;
+        
+        [Tooltip("Magnitude/strength of the effect (if applicable)")]
         public float Magnitude;
         
-        [Header("Area of Effect")]
-        public GridShape Shape = GridShape.Single;
-        public int Radius = 1;
-        public LayerMask TargetLayers;
+        [Tooltip("How often the effect ticks (for tickable effects)")]
+        public float TickInterval = 1f;
 
         public List<Vector2Int> GetAffectedPositions(Vector2Int center)
         {
@@ -29,45 +40,4 @@ namespace RPGMinesweeper.Effects
 
         public abstract IEffect CreateEffect();
     }
-
-    //[CreateAssetMenu(fileName = "PassiveEffect", menuName = "RPGMinesweeper/Effects/PassiveEffect")]
-    //public class PassiveEffectData : EffectData
-    //{
-        //[Header("Passive Behavior")]
-        //public float TickInterval = 1f;
-
-        //public override IEffect CreateEffect()
-        //{
-            ////switch (Type)
-            ////{
-                ////case EffectType.Confusion:
-                    ////return new ConfusionEffect(Duration, Radius, Shape);
-                ////default:
-                    ////Debug.LogWarning($"Effect type {Type} not implemented as passive effect");
-                    ////return null;
-            ////}
-        //}
-    }
-
-    //[CreateAssetMenu(fileName = "ActiveEffect", menuName = "RPGMinesweeper/Effects/ActiveEffect")]
-    //public class ActiveEffectData : EffectData
-    //{
-        //[Header("Monster Targeting")]
-        //[Tooltip("For TargetedReveal effect, specify which monster type to reveal")]
-        //[SerializeField] private MonsterType m_TargetMonsterType = MonsterType.None;
-
-        //public override IEffect CreateEffect()
-        //{
-            //switch (Type)
-            //{
-                //case EffectType.Reveal:
-                    //return new RevealEffect(Duration, Radius);
-                ////case EffectType.TargetedReveal:
-                    ////return new TargetedRevealEffect(Duration, Radius, m_TargetMonsterType);
-                //default:
-                    //Debug.LogWarning($"Effect type {Type} not implemented as active effect");
-                    //return null;
-            //}
-        //}
-    //}
-//} 
+}

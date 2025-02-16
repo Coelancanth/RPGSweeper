@@ -10,35 +10,36 @@ namespace RPGMinesweeper.Effects
         Global      // Effects that affect the game state (time slow, difficulty change)
     }
 
+    // Base interface for all effects
     public interface IEffect
     {
-        EffectType Type { get; }
         EffectTargetType TargetType { get; }
-        float Duration { get; }
         void Apply(GameObject source, Vector2Int sourcePosition);
+    }
+
+    // For effects that need duration and cleanup
+    public interface IDurationalEffect : IEffect
+    {
+        float Duration { get; }
         void Remove(GameObject source, Vector2Int sourcePosition);
     }
 
-    public interface IPassiveEffect : IEffect
+    // For instant effects (no cleanup needed)
+    public interface IInstantEffect : IEffect
     {
+        // Just inherits Apply from IEffect
+    }
+
+    // For effects that need periodic updates
+    public interface ITickableEffect : IDurationalEffect
+    {
+        float TickInterval { get; }
         void OnTick(GameObject source, Vector2Int sourcePosition);
     }
 
-    public interface IActiveEffect : IEffect
+    // For effects that react to mine removal
+    public interface IMineReactiveEffect : IEffect
     {
         void OnMineRemoved(GameObject source, Vector2Int sourcePosition);
-    }
-
-    public enum EffectType
-    {
-        None,
-        Reveal,
-        TargetedReveal,
-        Transform,
-        Heal,
-        SpawnItem,
-        Damage,
-        Shield,
-        Confusion    // Obscures mine values with question marks
     }
 } 

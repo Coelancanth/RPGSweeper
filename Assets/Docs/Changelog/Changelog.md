@@ -1,3 +1,72 @@
+# v0.1.25 - 2025-02-17 01:15:00
+## Overview
+Refactored the effect system to better follow Interface Segregation Principle, removing the EffectType enum and introducing specialized interfaces for different effect behaviors.
+
+## Change Details
+### Architecture Improvements
+#### Effect System Redesign
+- Removed EffectType enum in favor of concrete classes
+- Split IEffect into specialized interfaces
+- Enhanced effect property organization
+- Improved namespace consistency
+```mermaid
+classDiagram
+class IEffect {
+    <<interface>>
+    +TargetType: EffectTargetType
+    +Apply()
+}
+class IDurationalEffect {
+    <<interface>>
+    +Duration: float
+    +Remove()
+}
+class IInstantEffect {
+    <<interface>>
+}
+class ITickableEffect {
+    <<interface>>
+    +TickInterval: float
+    +OnTick()
+}
+IEffect <|-- IDurationalEffect
+IEffect <|-- IInstantEffect
+IDurationalEffect <|-- ITickableEffect
+note for IEffect "Base interface with\nminimal requirements"
+note for ITickableEffect "For effects needing\nperiodic updates"
+```
+
+### Adjustments and Refactoring
+#### Effect Implementation
+- Updated effect classes to use appropriate interfaces
+- Improved property organization in EffectData
+- Enhanced type safety with pattern matching
+```mermaid
+classDiagram
+class ConfusionEffect {
+    +Apply()
+    +Remove()
+    +OnTick()
+}
+class RevealEffect {
+    +Apply()
+}
+class TargetedRevealEffect {
+    +Apply()
+}
+ITickableEffect <|.. ConfusionEffect
+IInstantEffect <|.. RevealEffect
+IInstantEffect <|.. TargetedRevealEffect
+note for ConfusionEffect "Uses tickable interface\nfor periodic updates"
+note for RevealEffect "Simple instant effect\nno cleanup needed"
+```
+
+### Optimizations
+- Reduced coupling by removing enum dependency
+- Improved effect type safety
+- Enhanced code organization and maintainability
+- Simplified effect property management
+
 # v0.1.24 - 2025-02-16 23:47:15
 ## Overview
 Added a custom editor window for managing mine data assets, enhancing the development workflow with a centralized interface for creating and managing both standard and monster mines.

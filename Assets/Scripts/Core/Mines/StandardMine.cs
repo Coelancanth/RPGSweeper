@@ -9,7 +9,7 @@ public class StandardMine : IMine
     private readonly MineData m_Data;
     private readonly Vector2Int m_Position;
     private readonly List<Vector2Int> m_AffectedPositions;
-    private readonly List<IPassiveEffect> m_ActivePassiveEffects = new();
+    private readonly List<ITickableEffect> m_ActiveTickableEffects = new();
     private float m_ElapsedTime;
     private GameObject m_GameObject;
     #endregion
@@ -25,7 +25,7 @@ public class StandardMine : IMine
         m_Data = _data;
         m_Position = _position;
         m_AffectedPositions = GridShapeHelper.GetAffectedPositions(m_Position, m_Data.Shape, m_Data.Radius);
-        InitializePassiveEffects();
+        InitializeTickableEffects();
     }
     #endregion
 
@@ -37,11 +37,11 @@ public class StandardMine : IMine
         {
             foreach (var effectData in m_Data.PassiveEffects)
             {
-                var effect = effectData.CreateEffect() as IPassiveEffect;
+                var effect = effectData.CreateEffect() as ITickableEffect;
                 if (effect != null)
                 {
                     effect.Apply(_player.gameObject, m_Position);
-                    m_ActivePassiveEffects.Add(effect);
+                    m_ActiveTickableEffects.Add(effect);
                 }
             }
         }
@@ -67,19 +67,19 @@ public class StandardMine : IMine
             }
         }
 
-        // Clean up passive effects
-        foreach (var effect in m_ActivePassiveEffects)
+        // Clean up tickable effects
+        foreach (var effect in m_ActiveTickableEffects)
         {
             effect.Remove(GameObject.FindFirstObjectByType<PlayerComponent>()?.gameObject, m_Position);
         }
-        m_ActivePassiveEffects.Clear();
+        m_ActiveTickableEffects.Clear();
     }
 
     public void Update(float deltaTime)
     {
         m_ElapsedTime += deltaTime;
         
-        foreach (var effect in m_ActivePassiveEffects)
+        foreach (var effect in m_ActiveTickableEffects)
         {
             var player = GameObject.FindFirstObjectByType<PlayerComponent>();
             if (player != null)
@@ -91,7 +91,7 @@ public class StandardMine : IMine
     #endregion
 
     #region Private Methods
-    private void InitializePassiveEffects()
+    private void InitializeTickableEffects()
     {
         if (m_Data.PassiveEffects == null) return;
         
@@ -100,11 +100,11 @@ public class StandardMine : IMine
 
         foreach (var effectData in m_Data.PassiveEffects)
         {
-            var effect = effectData.CreateEffect() as IPassiveEffect;
+            var effect = effectData.CreateEffect() as ITickableEffect;
             if (effect != null)
             {
                 effect.Apply(player.gameObject, m_Position);
-                m_ActivePassiveEffects.Add(effect);
+                m_ActiveTickableEffects.Add(effect);
             }
         }
     }

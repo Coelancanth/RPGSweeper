@@ -5,20 +5,16 @@ using RPGMinesweeper.Grid;  // For GridShape
 
 namespace RPGMinesweeper.Effects
 {
-    public class TargetedRevealEffect : IEffect
+    public class TargetedRevealEffect : IInstantEffect
     {
-        private readonly float m_Duration;
         private readonly float m_Radius;
         private readonly MonsterType m_TargetMonsterType;
         private readonly GridShape m_Shape;
 
-        public EffectType Type => EffectType.Reveal;
         public EffectTargetType TargetType => EffectTargetType.Grid;
-        public float Duration => m_Duration;
 
-        public TargetedRevealEffect(float duration, float radius, MonsterType targetMonsterType, GridShape shape = GridShape.Square)
+        public TargetedRevealEffect(float radius, MonsterType targetMonsterType, GridShape shape = GridShape.Square)
         {
-            m_Duration = duration;
             m_Radius = radius;
             m_TargetMonsterType = targetMonsterType;
             m_Shape = shape;

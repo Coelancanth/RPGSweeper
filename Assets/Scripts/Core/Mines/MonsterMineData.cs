@@ -35,10 +35,10 @@ public class MonsterMineData : MineData
     //[PreviewField(55)]
     //[SerializeField] private Sprite m_MonsterSprite;
     
-    [VerticalGroup("Visual Properties/Split/Right")]
-    [Tooltip("Color tint applied to the monster's sprite")]
-    [ColorPalette]
-    [SerializeField] private Color m_MonsterTint = Color.white;
+    //[VerticalGroup("Visual Properties/Split/Right")]
+    //[Tooltip("Color tint applied to the monster's sprite")]
+    //[ColorPalette]
+    //[SerializeField] private Color m_MonsterTint = Color.white;
     
     [FoldoutGroup("Enrage Properties")]
     [Tooltip("When enabled, monster deals increased damage at low HP (below 30%)")]
@@ -56,7 +56,7 @@ public class MonsterMineData : MineData
     public int BaseDamage => m_BaseDamage;
     public int DamagePerHit => m_DamagePerHit;
     //public Sprite MonsterSprite => m_MonsterSprite;
-    public Color MonsterTint => m_MonsterTint;
+    //public Color MonsterTint => m_MonsterTint;
     public bool HasEnrageState => m_HasEnrageState;
     public float EnrageDamageMultiplier => m_EnrageDamageMultiplier;
 

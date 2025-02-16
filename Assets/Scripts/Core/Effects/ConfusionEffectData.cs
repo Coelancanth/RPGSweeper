@@ -1,12 +1,15 @@
 using UnityEngine;
-using RPGMinesweeper.Effects;
 using RPGMinesweeper.Grid;
+using RPGMinesweeper.Effects;
 
-[CreateAssetMenu(fileName = "ConfusionEffectData", menuName = "RPGMinesweeper/Effects/ConfusionEffect")]
-public class ConfusionEffectData : EffectData
+namespace RPGMinesweeper.Effects
 {
-    public override IEffect CreateEffect()
+    [CreateAssetMenu(fileName = "ConfusionEffectData", menuName = "RPGMinesweeper/Effects/ConfusionEffect")]
+    public class ConfusionEffectData : EffectData
     {
-        return new ConfusionEffect(Duration, Radius, Shape);
+        public override IEffect CreateEffect()
+        {
+            return new ConfusionEffect(Duration, Radius, Shape);
+        }
     }
 } 

@@ -1,23 +1,23 @@
 using UnityEngine;
 using System.Collections.Generic;
-using RPGMinesweeper.Effects;
 using RPGMinesweeper.Grid;
 
 namespace RPGMinesweeper.Effects
 {
-    public class ConfusionEffect : IPassiveEffect
+    public class ConfusionEffect : ITickableEffect
     {
         #region Private Fields
         private readonly float m_Duration;
         private readonly float m_Radius;
         private readonly GridShape m_Shape;
         private readonly HashSet<Vector2Int> m_AffectedCells;
+        private readonly float m_TickInterval = 1f;
         #endregion
 
         #region Public Properties
-        public EffectType Type => EffectType.Confusion;
         public EffectTargetType TargetType => EffectTargetType.Grid;
         public float Duration => m_Duration;
+        public float TickInterval => m_TickInterval;
         #endregion
 
         public ConfusionEffect(float duration, float radius, GridShape shape = GridShape.Square)

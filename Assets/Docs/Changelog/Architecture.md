@@ -230,57 +230,63 @@ class MineManager {
 ```mermaid
 classDiagram
 class IEffect {
-<<interface>>
-+Type: EffectType
-+TargetType: EffectTargetType
-+Duration: float
-+Apply(GameObject, Vector2Int)
-+Remove(GameObject, Vector2Int)
+    <<interface>>
+    +TargetType: EffectTargetType
+    +Apply(GameObject, Vector2Int)
 }
-class IPassiveEffect {
-<<interface>>
-+OnTick(GameObject, Vector2Int)
+class IDurationalEffect {
+    <<interface>>
+    +Duration: float
+    +Remove(GameObject, Vector2Int)
+}
+class IInstantEffect {
+    <<interface>>
+}
+class ITickableEffect {
+    <<interface>>
+    +TickInterval: float
+    +OnTick(GameObject, Vector2Int)
 }
 class EffectData {
-+Type: EffectType
-+Duration: float
-+Magnitude: float
-+Shape: GridShape
-+CreateEffect()
+    +Duration: float
+    +Magnitude: float
+    +Shape: GridShape
+    +TickInterval: float
+    +CreateEffect()
 }
 class ConfusionEffectData {
-+CreateEffect()
+    +CreateEffect()
 }
 class TargetedRevealEffectData {
--m_TargetMonsterType: MonsterType
-+CreateEffect()
+    -m_TargetMonsterType: MonsterType
+    +CreateEffect()
 }
 class ConfusionEffect {
--m_Duration: float
--m_Radius: float
--m_Shape: GridShape
-+Apply()
-+Remove()
-+OnTick()
+    -m_Duration: float
+    -m_Radius: float
+    -m_Shape: GridShape
+    +Apply()
+    +Remove()
+    +OnTick()
 }
 class TargetedRevealEffect {
--m_Duration: float
--m_Radius: float
--m_TargetMonsterType: MonsterType
-+Apply()
-+Remove()
+    -m_Radius: float
+    -m_TargetMonsterType: MonsterType
+    +Apply()
 }
 class GridShapeHelper {
-+GetAffectedPositions()
-+IsPositionAffected()
+    +GetAffectedPositions()
+    +IsPositionAffected()
 }
 class MineData {
--m_Effects: EffectData[]
-+Effects: EffectData[]
+    -m_Effects: EffectData[]
+    +Effects: EffectData[]
 }
-IEffect <|-- IPassiveEffect
-IPassiveEffect <|.. ConfusionEffect
-IEffect <|.. TargetedRevealEffect
+IEffect <|-- IDurationalEffect
+IEffect <|-- IInstantEffect
+IDurationalEffect <|-- ITickableEffect
+ITickableEffect <|.. ConfusionEffect
+IInstantEffect <|.. TargetedRevealEffect
 EffectData <|-- ConfusionEffectData
 EffectData <|-- TargetedRevealEffectData
 ConfusionEffectData ..> ConfusionEffect : Creates
@@ -288,6 +294,8 @@ TargetedRevealEffectData ..> TargetedRevealEffect : Creates
 ConfusionEffect --> GridShapeHelper
 TargetedRevealEffect --> GridShapeHelper
 MineData --> EffectData : Uses directly
+note for IEffect "Base interface with\nminimal requirements"
+note for ITickableEffect "For effects needing\nperiodic updates"
 note for EffectData "Base class for all\neffect scriptable objects"
 note for MineData "Direct usage of effect data\nwithout intermediaries"
 ```

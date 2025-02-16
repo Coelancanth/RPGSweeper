@@ -2,18 +2,14 @@ using UnityEngine;
 
 namespace RPGMinesweeper.Effects
 {
-    public class RevealEffect : IEffect
+    public class RevealEffect : IInstantEffect
     {
-        private readonly float m_Duration;
         private readonly float m_Radius;
 
-        public EffectType Type => EffectType.Reveal;
         public EffectTargetType TargetType => EffectTargetType.Grid;
-        public float Duration => m_Duration;
 
-        public RevealEffect(float duration, float radius)
+        public RevealEffect(float radius)
         {
-            m_Duration = duration;
             m_Radius = radius;
         }
 
@@ -53,11 +49,6 @@ namespace RPGMinesweeper.Effects
                     }
                 }
             }
-        }
-
-        public void Remove(GameObject source, Vector2Int sourcePosition)
-        {
-            // Revealing is permanent, no need for removal logic
         }
     }
 } 

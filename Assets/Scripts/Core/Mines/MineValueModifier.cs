@@ -38,7 +38,7 @@ public class MineValueModifier
         // Check for confusion effects
         foreach (var effect in s_ActiveEffects[position])
         {
-            if (effect.Type == EffectType.Confusion)
+            if (effect is ConfusionEffect)
             {
                 return -1; // Show "?" if any confusion effect is active
             }
@@ -57,7 +57,7 @@ public class MineValueModifier
         // Check for confusion effects
         foreach (var effect in s_ActiveEffects[position])
         {
-            if (effect.Type == EffectType.Confusion)
+            if (effect is ConfusionEffect)
             {
                 return (-1, new Color(1f, 0.4f, 0.7f)); // Pink color for confusion
             }

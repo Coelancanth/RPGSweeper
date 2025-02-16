@@ -30,18 +30,14 @@ namespace RPGMinesweeper.Effects
             if (instance == null) return null;
 
             // Copy base values
-            instance.Type = m_Template.Type;
             instance.Duration = m_Duration;
             instance.Magnitude = m_Magnitude;
             instance.Shape = m_Shape;
             instance.Radius = m_Radius;
             instance.TargetLayers = m_TargetLayers;
+            instance.TickInterval = m_TickInterval;
 
             // Handle specific effect type properties
-            //if (instance is PassiveEffectData passiveInstance)
-            //{
-                //passiveInstance.TickInterval = m_TickInterval;
-            //}
             if (instance is TargetedRevealEffectData targetedRevealInstance)
             {
                 targetedRevealInstance.SetTargetMonsterType(m_TargetMonsterType);
@@ -61,11 +57,8 @@ namespace RPGMinesweeper.Effects
                 if (m_Shape == GridShape.Single) m_Shape = m_Template.Shape;
                 if (m_Radius == 1) m_Radius = m_Template.Radius;
                 if (m_TargetLayers == 0) m_TargetLayers = m_Template.TargetLayers;
+                if (m_TickInterval == 1f) m_TickInterval = m_Template.TickInterval;
 
-                //if (m_Template is PassiveEffectData passiveTemplate)
-                //{
-                    //if (m_TickInterval == 1f) m_TickInterval = passiveTemplate.TickInterval;
-                //}
                 if (m_Template is TargetedRevealEffectData targetedRevealTemplate)
                 {
                     if (m_TargetMonsterType == MonsterType.None) m_TargetMonsterType = targetedRevealTemplate.GetTargetMonsterType();
