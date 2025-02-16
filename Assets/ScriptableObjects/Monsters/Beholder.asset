@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5df1cce5e6b07834d97e337ef27886e3, type: 3}
-  m_Name: Monster_Mimic_Chect
+  m_Name: Beholder
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -22,18 +22,20 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   Type: 7
-  Value: 11
+  Value: 3
   Shape: 2
   Radius: 1
-  SpawnStrategy: 0
-  MineSprite: {fileID: 3322503085002356860, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
+  SpawnStrategy: 2
+  MineSprite: {fileID: 5498951995105962609, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  m_ValueColor: {r: 0.6792453, g: 0.10893546, b: 0.5409787, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  m_PassiveEffects: []
-  m_ActiveEffects: []
-  m_MonsterType: 3
-  m_MaxHp: 100
-  m_BaseDamage: 20
-  m_DamagePerHit: 25
-  m_HasEnrageState: 1
-  m_EnrageDamageMultiplier: 1.5
+  m_PassiveEffects:
+  - Template: {fileID: 11400000, guid: 88c9dee50cde4014bad908951c7cd6c1, type: 2}
+  m_ActiveEffects:
+  - Template: {fileID: 11400000, guid: d1b8ed2475309234d95d975877f22ab1, type: 2}
+  m_MonsterType: 8
+  m_MaxHp: 10
+  m_BaseDamage: 2
+  m_DamagePerHit: 2
+  m_HasEnrageState: 0
+  m_EnrageDamageMultiplier: 1

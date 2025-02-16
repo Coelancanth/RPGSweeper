@@ -1,3 +1,60 @@
+# v0.1.29 - 2025-02-17 03:15:00
+## Overview
+Added a new summon effect system for dynamic mine creation and fixed monster data configuration issues.
+
+## Change Details
+### New Features
+#### Summon Effect System
+- Implemented SummonEffect for dynamic mine placement
+- Added ScriptableObject-based configuration with SummonEffectData
+- Enhanced pattern-based summoning with shape and radius support
+- Added support for both standard and monster mine types
+```mermaid
+classDiagram
+class SummonEffect {
+    -m_Radius: float
+    -m_Shape: GridShape
+    -m_MineType: MineType
+    -m_MonsterType: MonsterType
+    -m_Count: int
+    +Apply(GameObject, Vector2Int)
+}
+class SummonEffectData {
+    -m_MineType: MineType
+    -m_MonsterType: MonsterType
+    -m_Count: int
+    +CreateEffect()
+}
+class GameEvents {
+    +RaiseMineAddAttempted()
+}
+SummonEffectData --> SummonEffect : Creates
+SummonEffect --> GameEvents : Uses
+note for SummonEffect "Pattern-based mine placement\nwith type support"
+```
+
+### Bug Fixes
+#### Monster Data Configuration
+- Fixed Rat monster data configuration
+- Corrected MineType and MonsterType settings
+- Adjusted stats for better gameplay balance
+```mermaid
+classDiagram
+class MonsterMineData {
+    +Type: MineType
+    +MonsterType: MonsterType
+    +MaxHp: int
+    +BaseDamage: int
+    +DamagePerHit: int
+}
+note for MonsterMineData "Proper configuration for\nRat monster type"
+```
+
+### Optimizations
+- Improved mine placement validation
+- Enhanced position selection for summon effects
+- Optimized value recalculation after mine placement
+
 # v0.1.28 - 2025-02-17 02:31:30
 ## Overview
 Simplified the effect system by removing the property override mechanism, leveraging ScriptableObject's natural template functionality instead of using a complex reflection-based system.
@@ -224,17 +281,17 @@ class ConfusionEffect {
     +Remove()
     +OnTick()
 }
-class RevealEffect {
+class RangeRevealEffect {
     +Apply()
 }
 class TargetedRevealEffect {
     +Apply()
 }
 ITickableEffect <|.. ConfusionEffect
-IInstantEffect <|.. RevealEffect
+IInstantEffect <|.. RangeRevealEffect
 IInstantEffect <|.. TargetedRevealEffect
 note for ConfusionEffect "Uses tickable interface\nfor periodic updates"
-note for RevealEffect "Simple instant effect\nno cleanup needed"
+note for RangeRevealEffect "Simple instant effect\nno cleanup needed"
 ```
 
 ### Optimizations

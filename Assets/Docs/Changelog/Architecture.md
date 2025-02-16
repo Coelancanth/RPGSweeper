@@ -260,6 +260,20 @@ class TargetedRevealEffectData {
     -m_TargetMonsterType: MonsterType
     +CreateEffect()
 }
+class SummonEffectData {
+    -m_MineType: MineType
+    -m_MonsterType: MonsterType
+    -m_Count: int
+    +CreateEffect()
+}
+class SummonEffect {
+    -m_Radius: float
+    -m_Shape: GridShape
+    -m_MineType: MineType
+    -m_MonsterType: MonsterType
+    -m_Count: int
+    +Apply()
+}
 class MineData {
     -m_PassiveEffects: EffectInstance[]
     -m_ActiveEffects: EffectInstance[]
@@ -275,11 +289,14 @@ IEffect <|-- IInstantEffect
 IDurationalEffect <|-- ITickableEffect
 EffectData <|-- ConfusionEffectData
 EffectData <|-- TargetedRevealEffectData
+EffectData <|-- SummonEffectData
+IInstantEffect <|.. SummonEffect
 MineData --> EffectInstance : Contains
 EffectInstance --> EffectData : Uses template
 note for EffectData "ScriptableObject-based\neffect configuration"
 note for EffectInstance "Simple template reference\nfor effect creation"
 note for MineData "Direct effect management\nwith ScriptableObjects"
+note for SummonEffectData "Dynamic mine creation\nwith pattern support"
 ```
 
 ### Value Modification System

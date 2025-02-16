@@ -50,7 +50,7 @@ class GridManager {
 +Height: int
 +IsValidPosition()
 }
-class TargetedRevealEffect {
+class RangeRevealEffect {
 -m_Duration: float
 -m_Radius: float
 -m_TargetMonsterType: MonsterType
@@ -66,14 +66,14 @@ class ConfusionEffect {
 }
 IEffect <|-- IPassiveEffect
 IPassiveEffect <|.. ConfusionEffect
-IEffect <|.. TargetedRevealEffect
+IEffect <|.. RangeRevealEffect
 ConfusionEffect --> GridShapeHelper
 EffectTemplate --> EffectData : References
 EffectData --> IEffect : Creates
 GridShapeHelper --> GridManager : Uses
 GridShapeHelper --> GridShape : Implements
 note for EffectTemplate "Allows per-mine\ncustomization of effects"
-note for TargetedRevealEffect "Reveals specific\nmonster types"
+note for RangeRevealEffect "Reveals specific\nmonster types"
 note for GridShape "Supports both local\nand global shapes"
 note for WholeGrid "Grid-wide effects\nignore range parameter"
 note for Row "Affects entire row\nat center position"
@@ -209,4 +209,4 @@ MineEditorWindow ..> MineData : Creates/Deletes
 MineEditorWindow ..> MonsterMineData : Creates/Deletes
 note for MineEditorWindow "Centralized editor for\nmine data management"
 note for OdinMenuTree "Handles asset organization\nand visualization"
-``` 
+```

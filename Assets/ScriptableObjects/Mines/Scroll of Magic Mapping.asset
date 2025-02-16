@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f43b157a318a5ce4485df28ec691153b, type: 3}
+  m_Name: Scroll of Magic Mapping
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  Type: 0
+  Value: 15
+  Shape: 0
+  Radius: 1
+  SpawnStrategy: 4
+  MineSprite: {fileID: 1792902701393287813, guid: b4ed7cec96c387d45912a64fdd649cf5, type: 3}
+  m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
+  m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_PassiveEffects: []
+  m_ActiveEffects:
+  - Template: {fileID: 11400000, guid: cae04097716564c4e914b912f0cf7bdd, type: 2}
