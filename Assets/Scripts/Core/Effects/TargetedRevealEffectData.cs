@@ -24,7 +24,7 @@ public class TargetedRevealEffectData : EffectData
 
     public override IEffect CreateEffect()
     {
-        Debug.Log($"Creating TargetedRevealEffect with monster type: {m_TargetMonsterType}, shape: {Shape}, radius: {Radius}");
+        //Debug.Log($"Creating TargetedRevealEffect with monster type: {m_TargetMonsterType}, shape: {Shape}, radius: {Radius}");
         return new TargetedRevealEffect(Duration, Radius, m_TargetMonsterType, Shape);
     }
 } 

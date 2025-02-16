@@ -1,13 +1,72 @@
-# v0.1.21 - 2025-02-16 15:01:00
+# v0.1.22 - 2025-02-16 15:30:00
 ## Overview
-Improved code organization and maintainability by extracting the EffectTemplate system into its own file, enhancing modularity and reusability of the effect configuration system.
+Enhanced the effect system by converting ConfusionEffect to use scriptable object pattern, improving consistency and maintainability across effect implementations.
 
 ## Change Details
 ### Architecture Improvements
-#### Effect Template System
+#### Effect System Standardization
+- Implemented ConfusionEffectData scriptable object
+- Standardized effect creation pattern
+- Enhanced code organization with proper regions
+```mermaid
+classDiagram
+class ConfusionEffectData {
+    +CreateEffect()
+}
+class ConfusionEffect {
+    -m_Duration: float
+    -m_Radius: float
+    -m_Shape: GridShape
+    +Apply()
+    +Remove()
+    +OnTick()
+}
+class EffectData {
+    +Duration: float
+    +Radius: float
+    +Shape: GridShape
+}
+ConfusionEffectData --|> EffectData
+ConfusionEffectData ..> ConfusionEffect : Creates
+note for ConfusionEffectData "Follows same pattern as\nTargetedRevealEffect"
+```
+
+### Adjustments and Refactoring
+#### Effect Implementation
+- Improved code organization with regions
+- Enhanced field immutability
+- Standardized parameter types
+```mermaid
+classDiagram
+class EffectSystem {
+    StandardPattern[scriptable_object]
+    ConsistentTypes[float_radius]
+}
+class Implementation {
+    Regions[organization]
+    ReadOnly[immutability]
+    Namespace[structure]
+}
+EffectSystem --> Implementation
+note for EffectSystem "Consistent patterns across\nall effect types"
+```
+
+### Optimizations
+- Improved code maintainability
+- Enhanced system consistency
+- Better organized effect implementation
+
+# v0.1.21 - 2025-02-16 15:01:00
+## Overview
+Improved code organization and maintainability by extracting the EffectTemplate system into its own file and transitioning to direct effect data usage, enhancing modularity and reusability of the effect system.
+
+## Change Details
+### Architecture Improvements
+#### Effect System Reorganization
 - Extracted EffectTemplate to dedicated file in Effects namespace
+- Removed PassiveEffect/ActiveEffect intermediary scriptable objects
+- Transitioned to direct usage of specific effect data classes (ConfusionEffectData, TargetedRevealEffectData)
 - Enhanced separation of concerns in effect configuration
-- Improved reusability of effect template system
 ```mermaid
 classDiagram
 class EffectTemplate {
@@ -20,10 +79,8 @@ class EffectTemplate {
     +OnValidate()
 }
 class MineData {
-    -m_PassiveEffects: EffectTemplate[]
-    -m_ActiveEffects: EffectTemplate[]
-    +PassiveEffects: EffectData[]
-    +ActiveEffects: EffectData[]
+    -m_Effects: EffectData[]
+    +Effects: EffectData[]
 }
 class EffectData {
     +Type: EffectType
@@ -31,34 +88,35 @@ class EffectData {
     +Magnitude: float
     +Shape: GridShape
 }
-MineData --> EffectTemplate : Uses
+MineData --> EffectData : Uses directly
 EffectTemplate --> EffectData : Creates
-note for EffectTemplate "Dedicated class for\neffect configuration"
+note for EffectData "Base class for specific\neffect data types"
 ```
 
 ### Adjustments and Refactoring
 #### Effect System Organization
 - Moved EffectTemplate to Core/Effects directory
 - Enhanced namespace organization
-- Improved code file structure
+- Simplified effect hierarchy by removing intermediary layers
 ```mermaid
 classDiagram
 class Organization {
     Core/Effects[template]
     Core/Mines[data]
 }
-class Separation {
-    EffectTemplate[configuration]
-    MineData[usage]
+class Hierarchy {
+    EffectData[base]
+    SpecificEffectData[concrete]
 }
-Organization --> Separation
-note for Organization "Clear separation between\neffect config and usage"
+Organization --> Hierarchy
+note for Hierarchy "Direct inheritance without\nintermediary layers"
 ```
 
 ### Optimizations
 - Improved code maintainability
 - Enhanced system modularity
-- Better organized effect configuration system
+- Simplified effect configuration system
+- Reduced unnecessary abstraction layers
 
 # v0.1.20 - 2025-02-16 02:10:00
 ## Overview

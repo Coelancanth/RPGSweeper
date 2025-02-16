@@ -77,6 +77,7 @@ class MineData {
 +Value: int
 +Shape: MineShape
 +SpawnStrategy: MineSpawnStrategyType
++Effects: EffectData[]
 }
 class MineManager {
 -m_Mines: Dictionary
@@ -240,15 +241,6 @@ class IPassiveEffect {
 <<interface>>
 +OnTick(GameObject, Vector2Int)
 }
-class EffectTemplate {
--m_Template: EffectData
--m_Duration: float
--m_Magnitude: float
--m_Shape: GridShape
--m_Radius: int
-+CreateInstance()
-+OnValidate()
-}
 class EffectData {
 +Type: EffectType
 +Duration: float
@@ -256,23 +248,48 @@ class EffectData {
 +Shape: GridShape
 +CreateEffect()
 }
+class ConfusionEffectData {
++CreateEffect()
+}
+class TargetedRevealEffectData {
+-m_TargetMonsterType: MonsterType
++CreateEffect()
+}
 class ConfusionEffect {
+-m_Duration: float
+-m_Radius: float
 -m_Shape: GridShape
--m_AffectedCells: HashSet
 +Apply()
 +Remove()
 +OnTick()
+}
+class TargetedRevealEffect {
+-m_Duration: float
+-m_Radius: float
+-m_TargetMonsterType: MonsterType
++Apply()
++Remove()
 }
 class GridShapeHelper {
 +GetAffectedPositions()
 +IsPositionAffected()
 }
+class MineData {
+-m_Effects: EffectData[]
++Effects: EffectData[]
+}
 IEffect <|-- IPassiveEffect
 IPassiveEffect <|.. ConfusionEffect
+IEffect <|.. TargetedRevealEffect
+EffectData <|-- ConfusionEffectData
+EffectData <|-- TargetedRevealEffectData
+ConfusionEffectData ..> ConfusionEffect : Creates
+TargetedRevealEffectData ..> TargetedRevealEffect : Creates
 ConfusionEffect --> GridShapeHelper
-EffectTemplate --> EffectData : References
-EffectData --> IEffect : Creates
-note for EffectTemplate "Allows per-mine\ncustomization of effects"
+TargetedRevealEffect --> GridShapeHelper
+MineData --> EffectData : Uses directly
+note for EffectData "Base class for all\neffect scriptable objects"
+note for MineData "Direct usage of effect data\nwithout intermediaries"
 ```
 
 ### Value Modification System

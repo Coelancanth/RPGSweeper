@@ -30,46 +30,44 @@ namespace RPGMinesweeper.Effects
         public abstract IEffect CreateEffect();
     }
 
-    [CreateAssetMenu(fileName = "PassiveEffect", menuName = "RPGMinesweeper/Effects/PassiveEffect")]
-    public class PassiveEffectData : EffectData
-    {
-        [Header("Passive Behavior")]
-        public float TickInterval = 1f;
+    //[CreateAssetMenu(fileName = "PassiveEffect", menuName = "RPGMinesweeper/Effects/PassiveEffect")]
+    //public class PassiveEffectData : EffectData
+    //{
+        //[Header("Passive Behavior")]
+        //public float TickInterval = 1f;
 
-        public override IEffect CreateEffect()
-        {
-            switch (Type)
-            {
-                case EffectType.Confusion:
-                    return new ConfusionEffect(Duration, Radius, Shape);
-                default:
-                    Debug.LogWarning($"Effect type {Type} not implemented as passive effect");
-                    return null;
-            }
-        }
+        //public override IEffect CreateEffect()
+        //{
+            ////switch (Type)
+            ////{
+                ////case EffectType.Confusion:
+                    ////return new ConfusionEffect(Duration, Radius, Shape);
+                ////default:
+                    ////Debug.LogWarning($"Effect type {Type} not implemented as passive effect");
+                    ////return null;
+            ////}
+        //}
     }
 
-    [CreateAssetMenu(fileName = "ActiveEffect", menuName = "RPGMinesweeper/Effects/ActiveEffect")]
-    public class ActiveEffectData : EffectData
-    {
-        [Header("Monster Targeting")]
-        [Tooltip("For TargetedReveal effect, specify which monster type to reveal")]
-        [SerializeField] private MonsterType m_TargetMonsterType = MonsterType.None;
+    //[CreateAssetMenu(fileName = "ActiveEffect", menuName = "RPGMinesweeper/Effects/ActiveEffect")]
+    //public class ActiveEffectData : EffectData
+    //{
+        //[Header("Monster Targeting")]
+        //[Tooltip("For TargetedReveal effect, specify which monster type to reveal")]
+        //[SerializeField] private MonsterType m_TargetMonsterType = MonsterType.None;
 
-        public override IEffect CreateEffect()
-        {
-            switch (Type)
-            {
-                case EffectType.Heal:
-                    return new HealEffect(Duration, Magnitude);
-                case EffectType.Reveal:
-                    return new RevealEffect(Duration, Radius);
-                case EffectType.TargetedReveal:
-                    return new TargetedRevealEffect(Duration, Radius, m_TargetMonsterType);
-                default:
-                    Debug.LogWarning($"Effect type {Type} not implemented as active effect");
-                    return null;
-            }
-        }
-    }
-} 
+        //public override IEffect CreateEffect()
+        //{
+            //switch (Type)
+            //{
+                //case EffectType.Reveal:
+                    //return new RevealEffect(Duration, Radius);
+                ////case EffectType.TargetedReveal:
+                    ////return new TargetedRevealEffect(Duration, Radius, m_TargetMonsterType);
+                //default:
+                    //Debug.LogWarning($"Effect type {Type} not implemented as active effect");
+                    //return null;
+            //}
+        //}
+    //}
+//} 

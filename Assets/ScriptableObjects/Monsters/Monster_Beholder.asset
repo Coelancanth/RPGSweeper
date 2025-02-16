@@ -21,11 +21,11 @@ MonoBehaviour:
   m_ValueColor: {r: 0.6792453, g: 0.10893546, b: 0.5409787, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PassiveEffects:
-  - m_Template: {fileID: 11400000, guid: 67310bc9a6c055d4b89a46a699c8d565, type: 2}
+  - m_Template: {fileID: 11400000, guid: 88c9dee50cde4014bad908951c7cd6c1, type: 2}
     m_Duration: 0
     m_Magnitude: 0
-    m_Shape: 1
-    m_Radius: 2
+    m_Shape: 2
+    m_Radius: 3
     m_TargetLayers:
       serializedVersion: 2
       m_Bits: 0
