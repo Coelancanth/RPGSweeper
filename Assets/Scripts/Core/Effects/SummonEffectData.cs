@@ -1,6 +1,7 @@
 using UnityEngine;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper.Effects;
+using RPGMinesweeper;  // For GridPositionType
 
 namespace RPGMinesweeper.Effects
 {
@@ -21,6 +22,15 @@ namespace RPGMinesweeper.Effects
         [Min(1)]
         private int m_Count = 1;
 
+        [Header("Trigger Position")]
+        [Tooltip("Type of position to trigger the effect from")]
+        [SerializeField]
+        private GridPositionType m_TriggerPositionType = GridPositionType.Source;
+
+        [Tooltip("Custom trigger position (optional, overrides position type)")]
+        [SerializeField]
+        private Vector2Int? m_TriggerPosition = null;
+
         public MineType MineType
         {
             get => m_MineType;
@@ -39,9 +49,21 @@ namespace RPGMinesweeper.Effects
             set => m_Count = Mathf.Max(1, value);
         }
 
+        public GridPositionType TriggerPositionType
+        {
+            get => m_TriggerPositionType;
+            set => m_TriggerPositionType = value;
+        }
+
+        public Vector2Int? TriggerPosition
+        {
+            get => m_TriggerPosition;
+            set => m_TriggerPosition = value;
+        }
+
         public override IEffect CreateEffect()
         {
-            return new SummonEffect(Radius, Shape, m_MineType, m_MonsterType, m_Count);
+            return new SummonEffect(Radius, Shape, m_MineType, m_MonsterType, m_Count, m_TriggerPosition, m_TriggerPositionType);
         }
     }
 } 

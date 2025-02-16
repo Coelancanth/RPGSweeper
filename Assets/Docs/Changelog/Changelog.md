@@ -1,3 +1,60 @@
+# v0.1.31 - 2025-02-17 04:00:00
+## Overview
+Enhanced SummonEffect system with standardized position handling using GridPositionType, improving flexibility and consistency in mine placement mechanics.
+
+## Change Details
+### Architecture Improvements
+#### SummonEffect Enhancement
+- Updated SummonEffect to use GridPositionType for position selection
+- Added configurable trigger positions to SummonEffectData
+- Standardized position handling across effect types
+```mermaid
+classDiagram
+class SummonEffect {
+    -m_TriggerPosition: Vector2Int?
+    -m_TriggerPositionType: GridPositionType
+    +GetEffectivePosition()
+    -GetRandomEdgePosition()
+    -GetRandomCornerPosition()
+}
+class SummonEffectData {
+    -m_TriggerPositionType: GridPositionType
+    -m_TriggerPosition: Vector2Int?
+    +CreateEffect()
+}
+SummonEffectData --> SummonEffect : Creates
+note for SummonEffect "Flexible position selection\nfor mine placement"
+```
+
+### Adjustments and Refactoring
+#### Position Selection System
+- Reused position helper methods from RangeRevealEffect
+- Enhanced position calculation with standardized approach
+- Improved code reusability across effect types
+```mermaid
+classDiagram
+class PositionSelection {
+    Source[default]
+    Custom[override]
+    Random[dynamic]
+    Edge[strategic]
+    Corner[tactical]
+    Center[focused]
+}
+class Implementation {
+    GetEffectivePosition
+    ValidatePosition
+    SelectRandomly
+}
+PositionSelection --> Implementation
+note for PositionSelection "Standardized position\nselection system"
+```
+
+### Optimizations
+- Reduced code duplication in position calculations
+- Improved position selection flexibility
+- Enhanced mine placement strategy options
+
 # v0.1.30 - 2025-02-17 03:45:00
 ## Overview
 Enhanced grid position system with standardized position types and improved RangeRevealEffect with configurable trigger positions.

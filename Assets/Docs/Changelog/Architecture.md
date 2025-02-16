@@ -252,86 +252,68 @@ class MineManager {
 ```mermaid
 classDiagram
 class IEffect {
-    <<interface>>
-    +Type: EffectType
-    +TargetType: EffectTargetType
-    +Duration: float
-    +Apply(GameObject, Vector2Int)
-    +Remove(GameObject, Vector2Int)
+<<interface>>
++Type: EffectType
++TargetType: EffectTargetType
++Duration: float
++Apply(GameObject, Vector2Int)
++Remove(GameObject, Vector2Int)
 }
 class IPassiveEffect {
-    <<interface>>
-    +OnTick(GameObject, Vector2Int)
+<<interface>>
++OnTick(GameObject, Vector2Int)
 }
 class EffectTemplate {
-    -m_Template: EffectData
-    -m_Duration: float
-    -m_Magnitude: float
-    -m_Shape: GridShape
-    -m_Radius: int
-    -m_TargetMonsterType: MonsterType
-    +CreateInstance()
-    +OnValidate()
+-m_Template: EffectData
+-m_Duration: float
+-m_Magnitude: float
+-m_Shape: GridShape
+-m_Radius: int
+-m_TargetMonsterType: MonsterType
++CreateInstance()
++OnValidate()
 }
 class EffectData {
-    +Type: EffectType
-    +Duration: float
-    +Magnitude: float
-    +Shape: GridShape
-    +CreateEffect()
++Type: EffectType
++Duration: float
++Magnitude: float
++Shape: GridShape
++CreateEffect()
 }
 class RangeRevealEffect {
-    -m_Radius: float
-    -m_Shape: GridShape
-    -m_TriggerPosition: Vector2Int?
-    -m_TriggerPositionType: GridPositionType
-    +Apply()
-    -GetEffectivePosition()
-}
-class RangeRevealEffectData {
-    -m_TriggerPositionType: GridPositionType
-    -m_TriggerPosition: Vector2Int?
-    +CreateEffect()
-}
-class ConfusionEffectData {
-    +CreateEffect()
-}
-class TargetedRevealEffectData {
-    -m_TargetMonsterType: MonsterType
-    +CreateEffect()
-}
-class SummonEffectData {
-    -m_MineType: MineType
-    -m_MonsterType: MonsterType
-    -m_Count: int
-    +CreateEffect()
+-m_Radius: float
+-m_Shape: GridShape
+-m_TriggerPosition: Vector2Int?
+-m_TriggerPositionType: GridPositionType
++Apply()
+-GetEffectivePosition()
 }
 class SummonEffect {
-    -m_Radius: float
-    -m_Shape: GridShape
-    -m_MineType: MineType
-    -m_MonsterType: MonsterType
-    -m_Count: int
-    +Apply()
+-m_Radius: float
+-m_Shape: GridShape
+-m_MineType: MineType
+-m_MonsterType: MonsterType
+-m_Count: int
+-m_TriggerPosition: Vector2Int?
+-m_TriggerPositionType: GridPositionType
++Apply()
+-GetEffectivePosition()
 }
-class MineData {
-    -m_PassiveEffects: EffectInstance[]
-    -m_ActiveEffects: EffectInstance[]
-    +CreatePassiveEffects()
-    +CreateActiveEffects()
-}
-class EffectInstance {
-    +Template: EffectData
-    +CreateEffect()
+class ConfusionEffect {
+-m_Shape: GridShape
+-m_AffectedCells: HashSet
++Apply()
++Remove()
++OnTick()
 }
 IEffect <|-- IPassiveEffect
+IPassiveEffect <|.. ConfusionEffect
+IEffect <|.. RangeRevealEffect
+IEffect <|.. SummonEffect
 EffectTemplate --> EffectData : References
 EffectData --> IEffect : Creates
-RangeRevealEffectData --|> EffectData
-RangeRevealEffect ..|> IEffect
-RangeRevealEffectData --> RangeRevealEffect : Creates
-note for RangeRevealEffect "Supports configurable\ntrigger positions"
-note for RangeRevealEffectData "Configures position\nand targeting"
+note for RangeRevealEffect "Configurable trigger positions\nfor revealing cells"
+note for SummonEffect "Flexible mine placement\nwith position selection"
 ```
 
 ### Value Modification System

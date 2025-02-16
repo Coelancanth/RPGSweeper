@@ -146,7 +146,7 @@ public class MineEditorWindow : OdinMenuEditorWindow
         mine.name = "New Standard Mine";
         mine.Type = MineType.Standard;
         mine.Value = 1;
-        mine.Shape = GridShape.Single;
+        mine.Shape = GridShape.Square;
         mine.Radius = 1;
         mine.SpawnStrategy = MineSpawnStrategyType.Random;
         
@@ -182,7 +182,7 @@ public class MineEditorWindow : OdinMenuEditorWindow
         if (maxHpProp != null) maxHpProp.intValue = 100;
         if (baseDamageProp != null) baseDamageProp.intValue = 20;
         if (damagePerHitProp != null) damagePerHitProp.intValue = 25;
-        if (hasEnrageStateProp != null) hasEnrageStateProp.boolValue = true;
+        if (hasEnrageStateProp != null) hasEnrageStateProp.boolValue = false;
         if (enrageMultiplierProp != null) enrageMultiplierProp.floatValue = 1.5f;
         
         serializedObject.ApplyModifiedProperties();
