@@ -31,8 +31,8 @@ public class MonsterMine : IDamagingMine
     public int CurrentHp => m_CurrentHp;
     public float HpPercentage => (float)m_CurrentHp / m_MaxHp;
     public bool IsEnraged => m_IsEnraged;
-    public Sprite MonsterSprite => m_Data.MonsterSprite;
-    public Color MonsterTint => m_MonsterTint;
+    //public Sprite MonsterSprite => m_Data.MonsterSprite;
+    //public Color MonsterTint => m_MonsterTint;
     public bool IsCollectable => m_CurrentHp <= 0;
     public MonsterType MonsterType => m_Data.MonsterType;
     
@@ -94,7 +94,7 @@ public class MonsterMine : IDamagingMine
         m_DamagePerHit = _data.DamagePerHit;
         m_EnrageDamageMultiplier = _data.EnrageDamageMultiplier;
         m_HasEnrageState = _data.HasEnrageState;
-        m_MonsterTint = _data.MonsterTint;
+        //m_MonsterTint = _data.MonsterTint;
         
         m_AffectedPositions = GridShapeHelper.GetAffectedPositions(m_Position, m_Data.Shape, m_Data.Radius);
         InitializePassiveEffects();

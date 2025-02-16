@@ -25,6 +25,7 @@
 - Prefer direct references or GetComponent() over GameObject.Find() or Transform.Find().
 - Always use TextMeshPro for text rendering.
 - Separate View and Logic.
+- Prefer composition over inheritance.
 
 ### Proper Use of Interfaces and Delegates
 - Interfaces: Use interfaces when different classes need to perform the same operation.

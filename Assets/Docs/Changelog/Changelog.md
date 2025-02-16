@@ -1,3 +1,69 @@
+# v0.1.23 - 2025-02-16 23:13:00
+## Overview
+Enhanced the mine data system with Odin Inspector integration, improving editor workflow and data management through better visualization and organization.
+
+## Change Details
+### Architecture Improvements
+#### Mine Data System Enhancement
+- Converted mine data classes to use SerializedScriptableObject
+- Implemented proper grouping and layout with Odin attributes
+- Added validation attributes for numeric fields
+- Enhanced visual feedback with preview fields and color palettes
+```mermaid
+classDiagram
+class MineData {
+    +Type: MineType
+    +Value: int
+    +Shape: GridShape
+    +Radius: int
+    +SpawnStrategy: MineSpawnStrategyType
+    +Effects: EffectData[]
+}
+class MonsterMineData {
+    +MonsterType: MonsterType
+    +MaxHp: int
+    +BaseDamage: int
+    +DamagePerHit: int
+    +HasEnrageState: bool
+    +EnrageDamageMultiplier: float
+}
+class SerializedScriptableObject {
+    <<Odin>>
+    Enhanced serialization
+    Better inspector
+}
+MineData --|> SerializedScriptableObject
+MonsterMineData --|> MineData
+note for SerializedScriptableObject "Provides enhanced\ninspector experience"
+```
+
+### Adjustments and Refactoring
+#### Inspector Organization
+- Improved property grouping with TitleGroup and BoxGroup
+- Enhanced layout with horizontal and vertical groups
+- Added proper validation and visual feedback
+```mermaid
+classDiagram
+class InspectorLayout {
+    TitleGroup[sections]
+    BoxGroup[containers]
+    HorizontalGroup[layout]
+}
+class PropertyValidation {
+    MinValue[numeric]
+    Range[bounded]
+    ColorPalette[colors]
+}
+InspectorLayout --> PropertyValidation
+note for InspectorLayout "Better organized\nMore intuitive"
+```
+
+### Optimizations
+- Improved inspector usability
+- Enhanced data validation
+- Better visual organization
+- Reactive property updates
+
 # v0.1.22 - 2025-02-16 15:30:00
 ## Overview
 Enhanced the effect system by converting ConfusionEffect to use scriptable object pattern, improving consistency and maintainability across effect implementations.

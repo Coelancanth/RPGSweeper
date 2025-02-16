@@ -4,36 +4,58 @@ using System.Collections.Generic;
 using RPGMinesweeper.Effects;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper;  // For MonsterType
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "MineData", menuName = "RPGMinesweeper/MineData")]
-public class MineData : ScriptableObject
+public class MineData : SerializedScriptableObject
 {
-    [Header("Basic Properties")]
+    [TitleGroup("Basic Properties")]
+    [HorizontalGroup("Basic Properties/Split")]
+    [VerticalGroup("Basic Properties/Split/Left"), LabelWidth(100)]
     public MineType Type;
+
+    [VerticalGroup("Basic Properties/Split/Left")]
     [Tooltip("Display value shown on the grid")]
     public int Value;
     
-    [Header("Area of Effect")]
+    [BoxGroup("Area of Effect")]
+    [HorizontalGroup("Area of Effect/Split")]
+    [VerticalGroup("Area of Effect/Split/Left"), LabelWidth(100)]
     public GridShape Shape;
+
+    [VerticalGroup("Area of Effect/Split/Left")]
     public int Radius;
 
-    [Header("Spawn Properties")]
+    [FoldoutGroup("Spawn Settings")]
     public MineSpawnStrategyType SpawnStrategy = MineSpawnStrategyType.Random;
 
-    [Header("Visual Properties")]
+    [BoxGroup("Visual Properties")]
+    [HorizontalGroup("Visual Properties/Split")]
+    [VerticalGroup("Visual Properties/Split/Left"), LabelWidth(100)]
+    [PreviewField(55)]
     public Sprite MineSprite;
+
+    [FoldoutGroup("Visual Properties/Colors")]
     [Tooltip("Color of the displayed mine value text")]
+    [ColorPalette]
     [SerializeField] private Color m_ValueColor = Color.white;
+
+    [FoldoutGroup("Visual Properties/Colors")]
     [Tooltip("Color of the displayed mine value text when this is a mine cell")]
+    [ColorPalette]
     [SerializeField] private Color m_MineValueColor = Color.yellow;
+
     public Color ValueColor => m_ValueColor;
     public Color MineValueColor => m_MineValueColor;
     
-    [Header("Effects")]
+    [TabGroup("Effects", "Passive")]
     [Tooltip("Effects that are always active while the mine exists")]
+    [ListDrawerSettings(ShowIndexLabels = true)]
     [SerializeField] private EffectTemplate[] m_PassiveEffects;
     
+    [TabGroup("Effects", "Active")]
     [Tooltip("Effects that trigger when the mine is removed")]
+    [ListDrawerSettings(ShowIndexLabels = true)]
     [SerializeField] private EffectTemplate[] m_ActiveEffects;
 
     private EffectData[] m_PassiveEffectInstances;
