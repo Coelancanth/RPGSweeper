@@ -30,21 +30,15 @@ MonoBehaviour:
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PassiveEffects:
-  - m_Template: {fileID: 11400000, guid: 88c9dee50cde4014bad908951c7cd6c1, type: 2}
-    m_Duration: 0
-    m_Magnitude: 0
-    m_Shape: 1
-    m_Radius: 3
-    m_TargetLayers:
-      serializedVersion: 2
-      m_Bits: 0
-    m_TargetMonsterType: 0
-    m_TickInterval: 1
+  - Template: {fileID: 0}
+    m_OverrideFlags:
+      m_Entries: []
+    m_OverrideValues:
+      m_Entries: []
   m_ActiveEffects: []
   m_MonsterType: 3
   m_MaxHp: 100
   m_BaseDamage: 20
   m_DamagePerHit: 25
-  m_MonsterTint: {r: 1, g: 1, b: 1, a: 1}
   m_HasEnrageState: 1
   m_EnrageDamageMultiplier: 1.5

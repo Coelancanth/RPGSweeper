@@ -9,16 +9,14 @@ namespace RPGMinesweeper.Effects
     {
         [Header("Targeted Reveal Properties")]
         [Tooltip("Type of monster to reveal")]
-        [SerializeField] private MonsterType m_TargetMonsterType = MonsterType.None;
+        [SerializeField]
+        private MonsterType m_TargetMonsterType = MonsterType.None;
 
-        public void SetTargetMonsterType(MonsterType type)
+        [OverridableProperty("Target Monster Type")]
+        public MonsterType TargetMonsterType
         {
-            m_TargetMonsterType = type;
-        }
-
-        public MonsterType GetTargetMonsterType()
-        {
-            return m_TargetMonsterType;
+            get => m_TargetMonsterType;
+            set => m_TargetMonsterType = value;
         }
 
         public override IEffect CreateEffect()

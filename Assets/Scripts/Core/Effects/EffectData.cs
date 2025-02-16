@@ -24,9 +24,6 @@ namespace RPGMinesweeper.Effects
         
         [Tooltip("Magnitude/strength of the effect (if applicable)")]
         public float Magnitude;
-        
-        [Tooltip("How often the effect ticks (for tickable effects)")]
-        public float TickInterval = 1f;
 
         public List<Vector2Int> GetAffectedPositions(Vector2Int center)
         {

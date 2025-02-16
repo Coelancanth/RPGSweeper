@@ -10,7 +10,7 @@ public class MonsterMine : IDamagingMine
     private readonly MonsterMineData m_Data;
     private readonly Vector2Int m_Position;
     private readonly List<Vector2Int> m_AffectedPositions;
-    private readonly List<ITickableEffect> m_ActiveTickableEffects = new();
+    private readonly List<IDurationalEffect> m_ActiveDurationalEffects = new();
     private int m_CurrentHp;
     private float m_ElapsedTime;
     private bool m_IsEnraged;
@@ -94,10 +94,9 @@ public class MonsterMine : IDamagingMine
         m_DamagePerHit = _data.DamagePerHit;
         m_EnrageDamageMultiplier = _data.EnrageDamageMultiplier;
         m_HasEnrageState = _data.HasEnrageState;
-        //m_MonsterTint = _data.MonsterTint;
         
         m_AffectedPositions = GridShapeHelper.GetAffectedPositions(m_Position, m_Data.Shape, m_Data.Radius);
-        InitializeTickableEffects();
+        InitializeDurationalEffects();
     }
     #endregion
 
@@ -137,16 +136,16 @@ public class MonsterMine : IDamagingMine
         // Apply effects if monster is still alive
         if (m_CurrentHp > 0)
         {
-            if (m_Data.PassiveEffects != null)
+            foreach (var effect in m_Data.CreatePassiveEffects())
             {
-                foreach (var effectData in m_Data.PassiveEffects)
+                if (effect is IDurationalEffect durationalEffect)
                 {
-                    var effect = effectData.CreateEffect() as ITickableEffect;
-                    if (effect != null)
-                    {
-                        effect.Apply(_player.gameObject, m_Position);
-                        m_ActiveTickableEffects.Add(effect);
-                    }
+                    durationalEffect.Apply(_player.gameObject, m_Position);
+                    m_ActiveDurationalEffects.Add(durationalEffect);
+                }
+                else
+                {
+                    effect.Apply(_player.gameObject, m_Position);
                 }
             }
         }
@@ -157,60 +156,60 @@ public class MonsterMine : IDamagingMine
         // Only allow destruction if monster is defeated
         if (m_CurrentHp > 0) return;
 
-        if (m_Data.ActiveEffects != null)
+        var player = GameObject.FindFirstObjectByType<PlayerComponent>();
+        if (player != null)
         {
-            var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-            if (player != null)
+            foreach (var effect in m_Data.CreateActiveEffects())
             {
-                foreach (var effectData in m_Data.ActiveEffects)
-                {
-                    var effect = effectData.CreateEffect();
-                    if (effect != null)
-                    {
-                        effect.Apply(player.gameObject, m_Position);
-                    }
-                }
+                effect.Apply(player.gameObject, m_Position);
             }
         }
 
-        // Clean up tickable effects
-        foreach (var effect in m_ActiveTickableEffects)
+        // Clean up durational effects
+        foreach (var effect in m_ActiveDurationalEffects)
         {
             effect.Remove(GameObject.FindFirstObjectByType<PlayerComponent>()?.gameObject, m_Position);
         }
-        m_ActiveTickableEffects.Clear();
+        m_ActiveDurationalEffects.Clear();
     }
 
     public void Update(float deltaTime)
     {
         m_ElapsedTime += deltaTime;
         
-        foreach (var effect in m_ActiveTickableEffects)
+        // Check for expired effects
+        for (int i = m_ActiveDurationalEffects.Count - 1; i >= 0; i--)
         {
-            var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-            if (player != null)
+            var effect = m_ActiveDurationalEffects[i];
+            if (m_ElapsedTime >= effect.Duration)
             {
-                effect.OnTick(player.gameObject, m_Position);
+                var player = GameObject.FindFirstObjectByType<PlayerComponent>();
+                if (player != null)
+                {
+                    effect.Remove(player.gameObject, m_Position);
+                }
+                m_ActiveDurationalEffects.RemoveAt(i);
             }
         }
     }
     #endregion
 
     #region Private Methods
-    private void InitializeTickableEffects()
+    private void InitializeDurationalEffects()
     {
-        if (m_Data.PassiveEffects == null) return;
-        
         var player = GameObject.FindFirstObjectByType<PlayerComponent>();
         if (player == null) return;
 
-        foreach (var effectData in m_Data.PassiveEffects)
+        foreach (var effect in m_Data.CreatePassiveEffects())
         {
-            var effect = effectData.CreateEffect() as ITickableEffect;
-            if (effect != null)
+            if (effect is IDurationalEffect durationalEffect)
+            {
+                durationalEffect.Apply(player.gameObject, m_Position);
+                m_ActiveDurationalEffects.Add(durationalEffect);
+            }
+            else
             {
                 effect.Apply(player.gameObject, m_Position);
-                m_ActiveTickableEffects.Add(effect);
             }
         }
     }

@@ -30,9 +30,17 @@ MonoBehaviour:
   m_ValueColor: {r: 0.6792453, g: 0.10893546, b: 0.5409787, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PassiveEffects:
-  - {fileID: 11400000, guid: 88c9dee50cde4014bad908951c7cd6c1, type: 2}
+  - Template: {fileID: 11400000, guid: 88c9dee50cde4014bad908951c7cd6c1, type: 2}
+    m_OverrideFlags:
+      m_Entries: []
+    m_OverrideValues:
+      m_Entries: []
   m_ActiveEffects:
-  - {fileID: 11400000, guid: d1b8ed2475309234d95d975877f22ab1, type: 2}
+  - Template: {fileID: 11400000, guid: d1b8ed2475309234d95d975877f22ab1, type: 2}
+    m_OverrideFlags:
+      m_Entries: []
+    m_OverrideValues:
+      m_Entries: []
   m_MonsterType: 8
   m_MaxHp: 10
   m_BaseDamage: 2

@@ -4,20 +4,18 @@ using RPGMinesweeper.Grid;
 
 namespace RPGMinesweeper.Effects
 {
-    public class ConfusionEffect : ITickableEffect
+    public class ConfusionEffect : IDurationalEffect
     {
         #region Private Fields
         private readonly float m_Duration;
         private readonly float m_Radius;
         private readonly GridShape m_Shape;
         private readonly HashSet<Vector2Int> m_AffectedCells;
-        private readonly float m_TickInterval = 1f;
         #endregion
 
         #region Public Properties
         public EffectTargetType TargetType => EffectTargetType.Grid;
         public float Duration => m_Duration;
-        public float TickInterval => m_TickInterval;
         #endregion
 
         public ConfusionEffect(float duration, float radius, GridShape shape = GridShape.Square)
@@ -65,11 +63,6 @@ namespace RPGMinesweeper.Effects
             m_AffectedCells.Clear();
 
             MineValuePropagator.PropagateValues(mineManager, gridManager);
-        }
-
-        public void OnTick(GameObject source, Vector2Int sourcePosition)
-        {
-            Apply(source, sourcePosition);
         }
         #endregion
     }

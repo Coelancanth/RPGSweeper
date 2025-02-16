@@ -12,13 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a83e070eac373e44aa51dae3dba6abc, type: 3}
   m_Name: TargetedRevealEffectData
   m_EditorClassIdentifier: 
-  Type: 2
-  Duration: 5
-  Magnitude: 13
-  Shape: 2
+  Shape: 5
   Radius: 13
   TargetLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Duration: 5
+  Duration: 5
+  Magnitude: 13
   m_TargetMonsterType: 9

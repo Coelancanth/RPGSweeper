@@ -30,13 +30,6 @@ namespace RPGMinesweeper.Effects
         // Just inherits Apply from IEffect
     }
 
-    // For effects that need periodic updates
-    public interface ITickableEffect : IDurationalEffect
-    {
-        float TickInterval { get; }
-        void OnTick(GameObject source, Vector2Int sourcePosition);
-    }
-
     // For effects that react to mine removal
     public interface IMineReactiveEffect : IEffect
     {

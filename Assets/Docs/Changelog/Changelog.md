@@ -1,3 +1,67 @@
+# v0.1.27 - 2025-02-17 02:20:51
+## Overview
+Enhanced the effect system with dynamic property overrides using reflection, enabling automatic discovery and customization of effect properties while maintaining performance through caching.
+
+## Change Details
+### Architecture Improvements
+#### Dynamic Effect Property System
+- Implemented reflection-based property discovery with caching
+- Added OverridablePropertyAttribute for marking customizable properties
+- Created SerializableDictionary for Unity-compatible override storage
+- Enhanced inspector UI with dynamic property overrides
+
+```mermaid
+classDiagram
+class EffectInstance {
+-m_OverrideFlags: SerializableDictionary
+-m_OverrideValues: SerializableDictionary
+-s_CachedProperties: Dictionary
+-s_CachedAttributes: Dictionary
++Template: EffectData
++CreateEffect()
+}
+class OverridablePropertyAttribute {
++DisplayName: string
+}
+class CustomPropertyOverride {
++Name: string
++Override: bool
++Value: object
+}
+EffectInstance --> CustomPropertyOverride : Creates
+EffectInstance ..> OverridablePropertyAttribute : Uses
+note for EffectInstance "Cached reflection for\nperformance optimization"
+```
+
+### Adjustments and Refactoring
+#### Property Override Management
+- Implemented caching system for reflection operations
+- Enhanced property discovery with attribute system
+- Improved serialization support for Unity
+
+```mermaid
+classDiagram
+class PropertySystem {
+CachedReflection
+DynamicOverrides
+SerializableStorage
+}
+class Implementation {
+AttributeDiscovery
+TypeSafeModification
+PerformanceOptimization
+}
+PropertySystem --> Implementation
+note for PropertySystem "Automatic property handling\nwith performance focus"
+```
+
+### Optimizations
+- Cached reflection results for better performance
+- Optimized property discovery through static caching
+- Enhanced memory usage with proper cleanup
+- Improved inspector responsiveness
+
+
 # v0.1.26 - 2025-02-17 01:43:51
 ## Overview
 Simplified the effect system by removing the EffectTemplate wrapper and implementing direct ScriptableObject editing with Odin Inspector, improving maintainability and usability.
