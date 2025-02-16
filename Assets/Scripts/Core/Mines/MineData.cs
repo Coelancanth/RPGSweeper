@@ -48,71 +48,19 @@ public class MineData : SerializedScriptableObject
     public Color ValueColor => m_ValueColor;
     public Color MineValueColor => m_MineValueColor;
     
-    [TabGroup("Effects", "Passive")]
-    [Tooltip("Effects that are always active while the mine exists")]
+    [BoxGroup("Effects")]
+    [TabGroup("Effects/Tabs", "Passive")]
+    [Tooltip("Effects that are applied while the mine is active")]
     [ListDrawerSettings(ShowIndexLabels = true)]
-    [SerializeField] private EffectTemplate[] m_PassiveEffects;
-    
-    [TabGroup("Effects", "Active")]
-    [Tooltip("Effects that trigger when the mine is removed")]
+    [SerializeField] private EffectData[] m_PassiveEffects;
+
+    [TabGroup("Effects/Tabs", "Active")]
+    [Tooltip("Effects that are applied when the mine is destroyed")]
     [ListDrawerSettings(ShowIndexLabels = true)]
-    [SerializeField] private EffectTemplate[] m_ActiveEffects;
+    [SerializeField] private EffectData[] m_ActiveEffects;
 
-    private EffectData[] m_PassiveEffectInstances;
-    private EffectData[] m_ActiveEffectInstances;
-
-    public EffectData[] PassiveEffects => m_PassiveEffectInstances;
-    public EffectData[] ActiveEffects => m_ActiveEffectInstances;
-
-    private void OnEnable()
-    {
-        CreateEffectInstances();
-    }
-
-    private void CreateEffectInstances()
-    {
-        // Create passive effect instances
-        if (m_PassiveEffects != null)
-        {
-            m_PassiveEffectInstances = new EffectData[m_PassiveEffects.Length];
-            for (int i = 0; i < m_PassiveEffects.Length; i++)
-            {
-                m_PassiveEffectInstances[i] = m_PassiveEffects[i]?.CreateInstance();
-            }
-        }
-
-        // Create active effect instances
-        if (m_ActiveEffects != null)
-        {
-            m_ActiveEffectInstances = new EffectData[m_ActiveEffects.Length];
-            for (int i = 0; i < m_ActiveEffects.Length; i++)
-            {
-                m_ActiveEffectInstances[i] = m_ActiveEffects[i]?.CreateInstance();
-            }
-        }
-    }
-
-    #if UNITY_EDITOR
-    private void OnValidate()
-    {
-        // Validate effect templates
-        if (m_PassiveEffects != null)
-        {
-            foreach (var effect in m_PassiveEffects)
-            {
-                effect?.OnValidate();
-            }
-        }
-
-        if (m_ActiveEffects != null)
-        {
-            foreach (var effect in m_ActiveEffects)
-            {
-                effect?.OnValidate();
-            }
-        }
-    }
-    #endif
+    public EffectData[] PassiveEffects => m_PassiveEffects;
+    public EffectData[] ActiveEffects => m_ActiveEffects;
 
     public List<Vector2Int> GetAffectedPositions(Vector2Int center)
     {

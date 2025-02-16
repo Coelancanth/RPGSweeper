@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b1d932e8ebc7643b822c0b7c81c039, type: 3}
   m_Name: ConfusionEffectData
   m_EditorClassIdentifier: 
-  Type: 8
-  Duration: 0
-  Magnitude: 0
-  Shape: 0
-  Radius: 1
+  Shape: 1
+  Radius: 3
   TargetLayers:
     serializedVersion: 2
     m_Bits: 0
+  Duration: 0
+  Magnitude: 0
+  TickInterval: 1
