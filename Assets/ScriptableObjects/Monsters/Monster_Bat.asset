@@ -30,12 +30,7 @@ MonoBehaviour:
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PassiveEffects: []
-  m_ActiveEffects:
-  - Template: {fileID: 0}
-    m_OverrideFlags:
-      m_Entries: []
-    m_OverrideValues:
-      m_Entries: []
+  m_ActiveEffects: []
   m_MonsterType: 9
   m_MaxHp: 5
   m_BaseDamage: 1

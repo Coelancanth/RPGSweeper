@@ -1,3 +1,58 @@
+# v0.1.28 - 2025-02-17 02:31:30
+## Overview
+Simplified the effect system by removing the property override mechanism, leveraging ScriptableObject's natural template functionality instead of using a complex reflection-based system.
+
+## Change Details
+### Architecture Improvements
+#### Effect System Simplification
+- Removed reflection-based property override system
+- Simplified EffectInstance to use direct template reference
+- Enhanced code maintainability through reduced complexity
+```mermaid
+classDiagram
+class EffectInstance {
+    +Template: EffectData
+    +CreateEffect()
+}
+class EffectData {
+    +Shape: GridShape
+    +Radius: int
+    +Duration: float
+    +Magnitude: float
+    +CreateEffect()
+}
+EffectInstance --> EffectData : Uses directly
+note for EffectData "Properties directly editable\nin ScriptableObject template"
+note for EffectInstance "Simplified to basic\ntemplate reference"
+```
+
+### Adjustments and Refactoring
+#### Code Cleanup
+- Removed OverridablePropertyAttribute
+- Removed SerializableDictionary implementation
+- Simplified property declarations in effect data classes
+```mermaid
+classDiagram
+class Before {
+    ReflectionSystem
+    PropertyOverrides
+    SerializableDictionary
+}
+class After {
+    DirectProperties
+    TemplatePattern
+    ScriptableObjects
+}
+Before --> After : Simplified to
+note for After "Leveraging Unity's built-in\nScriptableObject functionality"
+```
+
+### Optimizations
+- Reduced runtime overhead by removing reflection
+- Improved memory usage by eliminating override tracking
+- Enhanced inspector performance
+- Simplified effect instance creation
+
 # v0.1.27 - 2025-02-17 02:20:51
 ## Overview
 Enhanced the effect system with dynamic property overrides using reflection, enabling automatic discovery and customization of effect properties while maintaining performance through caching.

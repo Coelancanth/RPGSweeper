@@ -251,7 +251,6 @@ class EffectData {
     +Duration: float
     +Magnitude: float
     +Shape: GridShape
-    +TickInterval: float
     +CreateEffect()
 }
 class ConfusionEffectData {
@@ -261,39 +260,26 @@ class TargetedRevealEffectData {
     -m_TargetMonsterType: MonsterType
     +CreateEffect()
 }
-class ConfusionEffect {
-    -m_Duration: float
-    -m_Radius: float
-    -m_Shape: GridShape
-    +Apply()
-    +Remove()
-    +OnTick()
-}
-class TargetedRevealEffect {
-    -m_Radius: float
-    -m_TargetMonsterType: MonsterType
-    +Apply()
-}
 class MineData {
-    -m_PassiveEffects: EffectData[]
-    -m_ActiveEffects: EffectData[]
-    +PassiveEffects: EffectData[]
-    +ActiveEffects: EffectData[]
+    -m_PassiveEffects: EffectInstance[]
+    -m_ActiveEffects: EffectInstance[]
+    +CreatePassiveEffects()
+    +CreateActiveEffects()
+}
+class EffectInstance {
+    +Template: EffectData
+    +CreateEffect()
 }
 IEffect <|-- IDurationalEffect
 IEffect <|-- IInstantEffect
 IDurationalEffect <|-- ITickableEffect
-ITickableEffect <|.. ConfusionEffect
-IInstantEffect <|.. TargetedRevealEffect
 EffectData <|-- ConfusionEffectData
 EffectData <|-- TargetedRevealEffectData
-ConfusionEffectData ..> ConfusionEffect : Creates
-TargetedRevealEffectData ..> TargetedRevealEffect : Creates
-MineData --> EffectData : Uses directly
-note for IEffect "Base interface with\nminimal requirements"
-note for ITickableEffect "For effects needing\nperiodic updates"
-note for EffectData "ScriptableObject base\nwith inline editing"
-note for MineData "Direct effect management\nwith automatic cloning"
+MineData --> EffectInstance : Contains
+EffectInstance --> EffectData : Uses template
+note for EffectData "ScriptableObject-based\neffect configuration"
+note for EffectInstance "Simple template reference\nfor effect creation"
+note for MineData "Direct effect management\nwith ScriptableObjects"
 ```
 
 ### Value Modification System
