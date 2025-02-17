@@ -9,14 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96ad64510b373ba48be76716827923d8, type: 3}
-  m_Name: RangeRevealEffectData
+  m_Script: {fileID: 11500000, guid: 2a8768efe710b6c4796c741999f816f3, type: 3}
+  m_Name: SplitEffectData
   m_EditorClassIdentifier: 
-  m_Shape: 1
-  m_Radius: 3
+  m_Shape: 0
+  m_Radius: 1
   m_TargetLayers:
     serializedVersion: 2
     m_Bits: 0
   m_Duration: 0
   m_Magnitude: 0
-  m_TriggerPositionType: 1
+  m_SplitRadius: 2
+  m_HealthModifier: 0.5
+  m_SplitCount: 2
