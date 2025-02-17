@@ -19,12 +19,18 @@ public class SplitEffectData : EffectData
     [SerializeField, Range(2, 4)] 
     private int m_SplitCount = 2;
 
+    [Header("Split Trigger Settings")]
+    [SerializeField, Range(0f, 1f), Tooltip("HP ratio threshold that triggers split (for persistent mode)")]
+    private float m_DamageThreshold = 0.5f;
+
     public float SplitRadius => m_SplitRadius;
     public float HealthModifier => m_HealthModifier;
     public int SplitCount => m_SplitCount;
+    public float DamageThreshold => m_DamageThreshold;
 
     public override IEffect CreateEffect()
     {
-        return new SplitEffect(m_SplitRadius, Shape, m_HealthModifier, m_SplitCount);
+        var effect = new SplitEffect(m_SplitRadius, Shape, m_HealthModifier, m_SplitCount, m_DamageThreshold);
+        return effect;
     }
 } 

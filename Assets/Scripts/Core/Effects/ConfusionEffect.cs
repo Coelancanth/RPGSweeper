@@ -1,22 +1,21 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using RPGMinesweeper.Grid;
 
 namespace RPGMinesweeper.Effects
 {
-    public class ConfusionEffect : IPersistentEffect
+    public class ConfusionEffect : BaseEffect, IPersistentEffect, ITriggerableEffect
     {
         #region Private Fields
         private readonly float m_Duration;
         private readonly float m_Radius;
         private readonly GridShape m_Shape;
-        private readonly HashSet<Vector2Int> m_AffectedCells;
         private bool m_IsActive;
         #endregion
 
         #region Public Properties
-        public EffectType Type => EffectType.Persistent;
-        public string Name => "Confusion";
+        public override EffectType[] SupportedTypes => new[] { EffectType.Persistent, EffectType.Triggerable };
         public bool IsActive => m_IsActive;
         #endregion
 
@@ -25,54 +24,55 @@ namespace RPGMinesweeper.Effects
             m_Duration = duration;
             m_Radius = radius;
             m_Shape = shape;
-            m_AffectedCells = new HashSet<Vector2Int>();
             m_IsActive = false;
+            m_CurrentMode = EffectType.Persistent; // Default to persistent mode
         }
+
+        #region Protected Methods
+        protected override void ApplyPersistent(GameObject target, Vector2Int sourcePosition)
+        {
+            m_IsActive = true;
+            RegisterEffectInArea(sourcePosition, m_Radius, m_Shape);
+            PropagateValueChanges();
+        }
+
+        protected override void ApplyTriggerable(GameObject target, Vector2Int sourcePosition)
+        {
+            m_IsActive = true;
+            RegisterEffectInArea(sourcePosition, m_Radius, m_Shape);
+            PropagateValueChanges();
+            
+            // Auto-remove after duration for triggerable mode
+            GameObject.FindFirstObjectByType<MonoBehaviour>()?.StartCoroutine(RemoveAfterDelay());
+        }
+        #endregion
 
         #region Public Methods
-        public void Apply(GameObject target, Vector2Int sourcePosition)
-        {
-            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            if (gridManager == null) return;
-
-            m_IsActive = true;
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, Mathf.RoundToInt(m_Radius));
-            
-            foreach (var pos in affectedPositions)
-            {
-                if (gridManager.IsValidPosition(pos))
-                {
-                    m_AffectedCells.Add(pos);
-                    MineValueModifier.RegisterEffect(pos, this);
-                }
-            }
-
-            var mineManager = GameObject.FindFirstObjectByType<MineManager>();
-            if (mineManager != null)
-            {
-                MineValuePropagator.PropagateValues(mineManager, gridManager);
-            }
-        }
-
         public void Update(float deltaTime)
         {
             // Update confusion effect (e.g., visual feedback)
+            if (m_CurrentMode == EffectType.Persistent)
+            {
+                // Add any persistent-specific update logic here
+            }
         }
 
         public void Remove(GameObject target)
         {
             m_IsActive = false;
-            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            var mineManager = GameObject.FindFirstObjectByType<MineManager>();
-            if (gridManager == null || mineManager == null) return;
+            UnregisterEffectFromArea();
+            PropagateValueChanges();
+        }
+        #endregion
 
-            foreach (var pos in m_AffectedCells)
+        #region Private Methods
+        private IEnumerator RemoveAfterDelay()
+        {
+            yield return new WaitForSeconds(m_Duration);
+            if (m_IsActive)
             {
-                MineValueModifier.UnregisterEffect(pos, this);
+                Remove(null);
             }
-            m_AffectedCells.Clear();
-
-            MineValuePropagator.PropagateValues(mineManager, gridManager);
         }
         #endregion
     }

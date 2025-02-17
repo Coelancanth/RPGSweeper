@@ -328,14 +328,17 @@ class UnfreezeEffect {
 class SplitEffect {
     -m_HealthModifier: float
     -m_SplitCount: int
-    -CalculateNewHP()
+    -m_DamageThreshold: float
+    -m_IsActive: bool
+    +OnMonsterDamaged(position, currentHPRatio)
+    -PerformSplit(sourcePosition)
     -ValidateHPRatio()
-    +Apply(GameObject, Vector2Int)
 }
 
 IEffect <|-- IPersistentEffect
 IEffect <|-- ITriggerableEffect
 IPersistentEffect <|.. ConfusionEffect
+IPersistentEffect <|.. SplitEffect
 ITriggerableEffect <|.. RangeRevealEffect
 ITriggerableEffect <|.. SummonEffect
 ITriggerableEffect <|.. FreezeEffect
@@ -345,33 +348,7 @@ EffectTemplate --> EffectData : References
 EffectData --> IEffect : Creates
 note for RangeRevealEffect "Configurable trigger positions\nfor revealing cells"
 note for SummonEffect "Flexible mine placement\nwith position selection"
-note for SplitEffect "HP calculation: H * k / n\nwith ratio validation"
+note for SplitEffect "HP threshold-based splitting\nwith dual-mode support"
 note for IPersistentEffect "Long-lasting effects\nwith state management"
 note for ITriggerableEffect "One-time effects\nwith immediate impact"
-```
-
-### Value Modification System
-```mermaid
-classDiagram
-class MineValueModifier {
--s_ActiveEffects: Dictionary<Vector2Int, HashSet<IEffect>>
-+RegisterEffect(Vector2Int, IEffect)
-+UnregisterEffect(Vector2Int, IEffect)
-+ModifyValue(Vector2Int, int)
-+ModifyValueAndGetColor(Vector2Int, int)
-+Clear()
-}
-class MineValuePropagator {
-+PropagateValues(MineManager, GridManager)
--PropagateValueFromMine()
-}
-class IEffect {
-<<interface>>
-+Type: EffectType
-+Apply()
-+Remove()
-}
-MineValuePropagator --> MineValueModifier
-IEffect --> MineValueModifier
-note for MineValueModifier "Centralized effect and color management"
 ```

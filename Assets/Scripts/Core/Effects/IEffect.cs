@@ -8,6 +8,13 @@ namespace RPGMinesweeper.Effects
         Triggerable    // One-time effects that trigger on certain conditions (e.g., Summon, Split)
     }
 
+    // Interface for effects that can operate in multiple modes
+    public interface IMultiModeEffect : IEffect
+    {
+        EffectType[] SupportedTypes { get; }
+        void SetMode(EffectType mode);
+    }
+
     // Base interface for all effects
     public interface IEffect
     {

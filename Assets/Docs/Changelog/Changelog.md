@@ -1,3 +1,60 @@
+# v0.1.36 - 2025-02-18 00:15:00
+## Overview
+Enhanced the split effect system with configurable HP threshold and dual-mode support, improving monster splitting mechanics and gameplay flexibility.
+
+## Change Details
+### Architecture Improvements
+#### Split Effect Enhancement
+- Added configurable HP threshold for triggering split in persistent mode
+- Improved HP ratio validation for split conditions
+- Enhanced mode handling through UI tab assignment
+```mermaid
+classDiagram
+class SplitEffect {
+    -m_HealthModifier: float
+    -m_SplitCount: int
+    -m_DamageThreshold: float
+    +OnMonsterDamaged(position, currentHPRatio)
+    -PerformSplit(sourcePosition)
+    -ValidateHPRatio()
+}
+class SplitEffectData {
+    -m_HealthModifier: float
+    -m_SplitCount: int
+    -m_DamageThreshold: float
+    +CreateEffect()
+}
+SplitEffectData --> SplitEffect : Creates
+note for SplitEffect "Supports both persistent\nand triggerable modes"
+```
+
+### Adjustments and Refactoring
+#### Effect Mode Management
+- Removed explicit mode field from effect data
+- Leveraged UI tab assignment for mode selection
+- Standardized mode handling across effects
+```mermaid
+classDiagram
+class EffectSystem {
+    TabBasedModes
+    ImplicitTypeSelection
+    ConsistentBehavior
+}
+class Implementation {
+    PersistentMode[HP_threshold]
+    TriggerableMode[immediate]
+    ModeInheritance[UI_tabs]
+}
+EffectSystem --> Implementation
+note for EffectSystem "Cleaner mode management\nthrough UI structure"
+```
+
+### Optimizations
+- Improved HP threshold validation
+- Enhanced split condition checks
+- Streamlined mode selection
+- Better code organization
+
 # v0.1.35 - 2025-02-17 23:28:25
 ## Overview
 Refactored the effect system to use more descriptive interface names and standardized parameter types, improving code clarity and maintainability.
