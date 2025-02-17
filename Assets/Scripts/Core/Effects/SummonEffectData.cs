@@ -2,6 +2,7 @@ using UnityEngine;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper.Effects;
 using RPGMinesweeper;  // For GridPositionType
+using Sirenix.OdinInspector;  // For better inspector attributes
 
 namespace RPGMinesweeper.Effects
 {
@@ -14,12 +15,13 @@ namespace RPGMinesweeper.Effects
         private MineType m_MineType = MineType.Standard;
 
         [Tooltip("Type of monster to summon (if mine type is Monster)")]
-        [SerializeField]
+        [SerializeField, ShowIf("m_MineType", MineType.Monster)]
         private MonsterType m_MonsterType = MonsterType.None;
 
         [Tooltip("Number of mines to summon")]
         [SerializeField]
-        [Min(1)]
+        [PropertyRange(1, 10)]
+        [OnValueChanged("ValidateCount")]
         private int m_Count = 1;
 
         [Header("Trigger Position")]
@@ -30,6 +32,11 @@ namespace RPGMinesweeper.Effects
         [Tooltip("Custom trigger position (optional, overrides position type)")]
         [SerializeField]
         private Vector2Int? m_TriggerPosition = null;
+
+        private void ValidateCount()
+        {
+            m_Count = Mathf.Max(1, m_Count);
+        }
 
         public MineType MineType
         {
@@ -46,7 +53,11 @@ namespace RPGMinesweeper.Effects
         public int Count
         {
             get => m_Count;
-            set => m_Count = Mathf.Max(1, value);
+            set
+            {
+                m_Count = Mathf.Max(1, value);
+                ValidateCount();
+            }
         }
 
         public GridPositionType TriggerPositionType
@@ -65,5 +76,12 @@ namespace RPGMinesweeper.Effects
         {
             return new SummonEffect(Radius, Shape, m_MineType, m_MonsterType, m_Count, m_TriggerPosition, m_TriggerPositionType);
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            ValidateCount();
+        }
+#endif
     }
 } 

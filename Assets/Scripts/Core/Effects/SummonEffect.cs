@@ -7,6 +7,10 @@ namespace RPGMinesweeper.Effects
 {
     public class SummonEffect : IInstantEffect
     {
+        // Static flag to prevent recursive summoning
+        private static bool s_IsSummoning = false;
+        private static HashSet<MonsterType> s_CurrentlySummoningTypes = new HashSet<MonsterType>();
+
         private readonly float m_Radius;
         private readonly GridShape m_Shape;
         private readonly MineType m_MineType;
@@ -72,48 +76,74 @@ namespace RPGMinesweeper.Effects
 
         public void Apply(GameObject source, Vector2Int sourcePosition)
         {
+            // Prevent recursive summoning of the same monster type
+            if (s_IsSummoning && m_MineType == MineType.Monster && s_CurrentlySummoningTypes.Contains(m_MonsterType))
+            {
+                Debug.LogWarning($"Prevented recursive summoning of monster type {m_MonsterType}");
+                return;
+            }
+
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             var mineManager = GameObject.FindFirstObjectByType<MineManager>();
             
             if (gridManager == null || mineManager == null) return;
 
-            var effectivePosition = GetEffectivePosition(sourcePosition, gridManager);
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(effectivePosition, m_Shape, Mathf.RoundToInt(m_Radius));
-            var validPositions = new List<Vector2Int>();
-
-            // Filter for valid and empty positions
-            foreach (var pos in affectedPositions)
+            try
             {
-                if (gridManager.IsValidPosition(pos) && !mineManager.HasMineAt(pos))
-                {
-                    validPositions.Add(pos);
-                }
-            }
-
-            // Randomly select positions to place mines
-            int minesToPlace = Mathf.Min(m_Count, validPositions.Count);
-            for (int i = 0; i < minesToPlace; i++)
-            {
-                if (validPositions.Count == 0) break;
-
-                // Randomly select a position from remaining valid positions
-                int randomIndex = Random.Range(0, validPositions.Count);
-                Vector2Int selectedPos = validPositions[randomIndex];
-                validPositions.RemoveAt(randomIndex);
-
-                // Attempt to add the mine
+                s_IsSummoning = true;
                 if (m_MineType == MineType.Monster)
                 {
-                    GameEvents.RaiseMineAddAttempted(selectedPos, m_MineType, m_MonsterType);
+                    s_CurrentlySummoningTypes.Add(m_MonsterType);
                 }
-                else
+
+                var effectivePosition = GetEffectivePosition(sourcePosition, gridManager);
+                var affectedPositions = GridShapeHelper.GetAffectedPositions(effectivePosition, m_Shape, Mathf.RoundToInt(m_Radius));
+                var validPositions = new List<Vector2Int>();
+
+                // Filter for valid and empty positions
+                foreach (var pos in affectedPositions)
                 {
-                    GameEvents.RaiseMineAddAttempted(selectedPos, m_MineType, null);
+                    if (gridManager.IsValidPosition(pos) && !mineManager.HasMineAt(pos))
+                    {
+                        validPositions.Add(pos);
+                    }
+                }
+
+                // Randomly select positions to place mines
+                int minesToPlace = Mathf.Min(m_Count, validPositions.Count);
+                for (int i = 0; i < minesToPlace; i++)
+                {
+                    if (validPositions.Count == 0) break;
+
+                    int randomIndex = Random.Range(0, validPositions.Count);
+                    Vector2Int selectedPos = validPositions[randomIndex];
+                    validPositions.RemoveAt(randomIndex);
+
+                    // Attempt to add the mine
+                    if (m_MineType == MineType.Monster)
+                    {
+                        GameEvents.RaiseMineAddAttempted(selectedPos, m_MineType, m_MonsterType);
+                    }
+                    else
+                    {
+                        GameEvents.RaiseMineAddAttempted(selectedPos, m_MineType, null);
+                    }
+                }
+
+                // Recalculate values for all affected cells
+                MineValuePropagator.PropagateValues(mineManager, gridManager);
+            }
+            finally
+            {
+                if (m_MineType == MineType.Monster)
+                {
+                    s_CurrentlySummoningTypes.Remove(m_MonsterType);
+                }
+                if (s_CurrentlySummoningTypes.Count == 0)
+                {
+                    s_IsSummoning = false;
                 }
             }
-
-            // Recalculate values for all affected cells
-            MineValuePropagator.PropagateValues(mineManager, gridManager);
         }
     }
 } 

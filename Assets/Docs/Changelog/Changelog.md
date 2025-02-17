@@ -1,4 +1,60 @@
-# v0.1.32 - 2025-02-17 13:35:29
+# v0.1.33 - 2025-02-17 13:59:00
+## Overview
+Fixed infinite recursion issue in SummonEffect when used as a passive effect, improving stability and preventing stack overflow errors.
+
+## Change Details
+### Bug Fixes
+#### Summon Effect System
+- Fixed infinite recursion when monster mines use summon as passive effect
+- Added static tracking of active summon operations
+- Implemented monster type tracking to prevent recursive summoning
+- Enhanced error handling with proper cleanup
+
+```mermaid
+classDiagram
+class SummonEffect {
+    -s_IsSummoning: bool
+    -s_CurrentlySummoningTypes: HashSet
+    +Apply(GameObject, Vector2Int)
+    -PreventRecursion()
+    -CleanupSummonState()
+}
+class MonsterMine {
+    +PassiveEffects: EffectData[]
+    +InitializeDurationalEffects()
+}
+SummonEffect --> MonsterMine : Prevents recursion
+note for SummonEffect "Static state tracking\nfor summon prevention"
+```
+
+### Adjustments and Refactoring
+#### Effect State Management
+- Implemented proper state tracking for summon operations
+- Added cleanup in finally block for consistent state
+- Enhanced error handling with warning logs
+
+```mermaid
+classDiagram
+class SummonState {
+    ActiveSummons
+    MonsterTypes
+    Cleanup
+}
+class Implementation {
+    PreventRecursion
+    TrackTypes
+    EnsureCleanup
+}
+SummonState --> Implementation
+note for SummonState "Safe summon operations\nwith proper cleanup"
+```
+
+### Optimizations
+- Improved summon effect stability
+- Enhanced error handling and logging
+- Optimized state management for summon operations
+
+# v0.1.32 - 2025-02-17 04:30:00
 ## Overview
 Enhanced split effect system with improved HP calculations and trigger conditions, ensuring more balanced and intuitive monster splitting mechanics.
 

@@ -54,8 +54,26 @@ class RangeRevealEffect {
 -m_Duration: float
 -m_Radius: float
 -m_TargetMonsterType: MonsterType
+-m_Shape: GridShape
+-m_TriggerPosition: Vector2Int?
+-m_TriggerPositionType: GridPositionType
 +Apply()
-+Remove()
+-GetEffectivePosition()
+}
+class SummonEffect {
+-s_IsSummoning: bool
+-s_CurrentlySummoningTypes: HashSet
+-m_Radius: float
+-m_Shape: GridShape
+-m_MineType: MineType
+-m_MonsterType: MonsterType
+-m_Count: int
+-m_TriggerPosition: Vector2Int?
+-m_TriggerPositionType: GridPositionType
++Apply()
+-GetEffectivePosition()
+-PreventRecursion()
+-CleanupSummonState()
 }
 class ConfusionEffect {
 -m_Shape: GridShape
@@ -64,16 +82,25 @@ class ConfusionEffect {
 +Remove()
 +OnTick()
 }
+class SplitEffect {
+-m_HealthModifier: float
+-m_SplitCount: int
+-CalculateNewHP()
+-ValidateHPRatio()
++Apply(GameObject, Vector2Int)
+}
 IEffect <|-- IPassiveEffect
 IPassiveEffect <|.. ConfusionEffect
 IEffect <|.. RangeRevealEffect
-ConfusionEffect --> GridShapeHelper
+IEffect <|.. SummonEffect
 EffectTemplate --> EffectData : References
 EffectData --> IEffect : Creates
 GridShapeHelper --> GridManager : Uses
 GridShapeHelper --> GridShape : Implements
 note for EffectTemplate "Allows per-mine\ncustomization of effects"
-note for RangeRevealEffect "Reveals specific\nmonster types"
+note for RangeRevealEffect "Configurable trigger positions\nfor revealing cells"
+note for SummonEffect "Prevents recursive summoning\nwith state tracking"
+note for SplitEffect "HP calculation: H * k / n\nwith ratio validation"
 note for GridShape "Supports both local\nand global shapes"
 note for WholeGrid "Grid-wide effects\nignore range parameter"
 note for Row "Affects entire row\nat center position"
