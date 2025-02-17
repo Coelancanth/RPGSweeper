@@ -2,37 +2,38 @@ using UnityEngine;
 
 namespace RPGMinesweeper.Effects
 {
-    public enum EffectTargetType
+    public enum EffectType
     {
-        Player,     // Effects that target the player (heal, damage, shield)
-        Grid,       // Effects that target grid cells (reveal)
-        Area,       // Effects that target an area (explosion, chain reaction)
-        Global      // Effects that affect the game state (time slow, difficulty change)
+        Persistent,    // Long-lasting effects that persist (e.g., Poison, Curse, Confusion)
+        Triggerable    // One-time effects that trigger on certain conditions (e.g., Summon, Split)
     }
 
     // Base interface for all effects
     public interface IEffect
     {
-        EffectTargetType TargetType { get; }
-        void Apply(GameObject source, Vector2Int sourcePosition);
+        EffectType Type { get; }
+        string Name { get; }
+        void Apply(GameObject target, Vector2Int sourcePosition);
     }
 
-    // For effects that need duration and cleanup
-    public interface IDurationalEffect : IEffect
+    // For persistent effects that maintain state
+    public interface IPersistentEffect : IEffect
     {
-        float Duration { get; }
-        void Remove(GameObject source, Vector2Int sourcePosition);
+        bool IsActive { get; }
+        void Update(float deltaTime);
+        void Remove(GameObject target);
     }
 
-    // For instant effects (no cleanup needed)
-    public interface IInstantEffect : IEffect
+    // For triggerable effects that apply once
+    public interface ITriggerableEffect : IEffect
     {
         // Just inherits Apply from IEffect
+        // Triggerable effects are one-time triggers that may apply states
     }
 
-    // For effects that react to mine removal
-    public interface IMineReactiveEffect : IEffect
+    // For effects that need to react to specific game events
+    public interface IReactiveEffect : IEffect
     {
-        void OnMineRemoved(GameObject source, Vector2Int sourcePosition);
+        void OnTrigger(GameObject source, Vector2Int sourcePosition);
     }
 } 

@@ -1,28 +1,31 @@
 using UnityEngine;
 using System.Collections.Generic;
 using RPGMinesweeper.Grid;
+using RPGMinesweeper.States;
 
 namespace RPGMinesweeper.Effects
 {
-    public class FreezeEffect : IDurationalEffect
+    public class FreezeEffect : ITriggerableEffect
     {
+        #region Private Fields
         private readonly float m_Duration;
         private readonly int m_Radius;
         private readonly GridShape m_Shape;
-        private readonly HashSet<Vector2Int> m_FrozenCells;
+        #endregion
 
-        public float Duration => m_Duration;
-        public EffectTargetType TargetType => EffectTargetType.Grid;
+        #region Public Properties
+        public EffectType Type => EffectType.Triggerable;
+        public string Name => "Freeze";
+        #endregion
 
         public FreezeEffect(float duration, int radius, GridShape shape)
         {
             m_Duration = duration;
             m_Radius = radius;
             m_Shape = shape;
-            m_FrozenCells = new HashSet<Vector2Int>();
         }
 
-        public void Apply(GameObject source, Vector2Int sourcePosition)
+        public void Apply(GameObject target, Vector2Int sourcePosition)
         {
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             if (gridManager == null) return;
@@ -30,7 +33,7 @@ namespace RPGMinesweeper.Effects
             // Get affected positions based on shape and radius
             var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, m_Radius);
 
-            // Freeze each valid cell
+            // Apply frozen state to each valid cell
             foreach (var pos in affectedPositions)
             {
                 if (gridManager.IsValidPosition(pos))
@@ -38,36 +41,43 @@ namespace RPGMinesweeper.Effects
                     var cellObject = gridManager.GetCellObject(pos);
                     if (cellObject != null)
                     {
-                        var cellView = cellObject.GetComponent<CellView>();
-                        if (cellView != null)
+                        var stateManager = cellObject.GetComponent<StateManager>();
+                        if (stateManager == null)
                         {
-                            cellView.SetFrozen(true);
-                            m_FrozenCells.Add(pos);
+                            stateManager = cellObject.AddComponent<StateManager>();
                         }
+                        stateManager.AddState(new FrozenState(m_Duration));
                     }
                 }
             }
         }
+    }
 
-        public void Remove(GameObject source, Vector2Int sourcePosition)
+    // Define the FrozenState
+    public class FrozenState : BaseState
+    {
+        public FrozenState(float duration) : base("Frozen", duration)
         {
-            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            if (gridManager == null) return;
+        }
 
-            // Unfreeze all affected cells
-            foreach (var pos in m_FrozenCells)
+        public override void Enter(GameObject target)
+        {
+            base.Enter(target);
+            var cellView = target.GetComponent<CellView>();
+            if (cellView != null)
             {
-                var cellObject = gridManager.GetCellObject(pos);
-                if (cellObject != null)
-                {
-                    var cellView = cellObject.GetComponent<CellView>();
-                    if (cellView != null)
-                    {
-                        cellView.SetFrozen(false);
-                    }
-                }
+                cellView.SetFrozen(true);
             }
-            m_FrozenCells.Clear();
+        }
+
+        public override void Exit(GameObject target)
+        {
+            base.Exit(target);
+            var cellView = target.GetComponent<CellView>();
+            if (cellView != null)
+            {
+                cellView.SetFrozen(false);
+            }
         }
     }
 } 

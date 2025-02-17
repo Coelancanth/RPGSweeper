@@ -9,7 +9,7 @@ public class StandardMine : IMine
     private readonly MineData m_Data;
     private readonly Vector2Int m_Position;
     private readonly List<Vector2Int> m_AffectedPositions;
-    private readonly List<IDurationalEffect> m_ActiveDurationalEffects = new();
+    private readonly List<IPersistentEffect> m_ActivePersistentEffects = new();
     private float m_ElapsedTime;
     private GameObject m_GameObject;
     #endregion
@@ -25,7 +25,7 @@ public class StandardMine : IMine
         m_Data = _data;
         m_Position = _position;
         m_AffectedPositions = GridShapeHelper.GetAffectedPositions(m_Position, m_Data.Shape, m_Data.Radius);
-        InitializeDurationalEffects();
+        InitializePersistentEffects();
     }
     #endregion
 
@@ -35,10 +35,10 @@ public class StandardMine : IMine
         // Standard mines only apply effects, they don't deal damage
         foreach (var effect in m_Data.CreatePassiveEffects())
         {
-            if (effect is IDurationalEffect durationalEffect)
+            if (effect is IPersistentEffect persistentEffect)
             {
-                durationalEffect.Apply(_player.gameObject, m_Position);
-                m_ActiveDurationalEffects.Add(durationalEffect);
+                persistentEffect.Apply(_player.gameObject, m_Position);
+                m_ActivePersistentEffects.Add(persistentEffect);
             }
             else
             {
@@ -58,47 +58,49 @@ public class StandardMine : IMine
             }
         }
 
-        // Clean up durational effects
-        foreach (var effect in m_ActiveDurationalEffects)
+        // Clean up persistent effects
+        foreach (var effect in m_ActivePersistentEffects)
         {
-            effect.Remove(GameObject.FindFirstObjectByType<PlayerComponent>()?.gameObject, m_Position);
+            effect.Remove(player?.gameObject);
         }
-        m_ActiveDurationalEffects.Clear();
+        m_ActivePersistentEffects.Clear();
     }
 
     public void Update(float deltaTime)
     {
         m_ElapsedTime += deltaTime;
         
-        // Check for expired effects
-        for (int i = m_ActiveDurationalEffects.Count - 1; i >= 0; i--)
+        // Update persistent effects
+        foreach (var effect in m_ActivePersistentEffects)
         {
-            var effect = m_ActiveDurationalEffects[i];
-            if (m_ElapsedTime >= effect.Duration)
+            effect.Update(deltaTime);
+            if (!effect.IsActive)
             {
                 var player = GameObject.FindFirstObjectByType<PlayerComponent>();
                 if (player != null)
                 {
-                    effect.Remove(player.gameObject, m_Position);
+                    effect.Remove(player.gameObject);
                 }
-                m_ActiveDurationalEffects.RemoveAt(i);
             }
         }
+        
+        // Remove inactive effects
+        m_ActivePersistentEffects.RemoveAll(effect => !effect.IsActive);
     }
     #endregion
 
     #region Private Methods
-    private void InitializeDurationalEffects()
+    private void InitializePersistentEffects()
     {
         var player = GameObject.FindFirstObjectByType<PlayerComponent>();
         if (player == null) return;
 
         foreach (var effect in m_Data.CreatePassiveEffects())
         {
-            if (effect is IDurationalEffect durationalEffect)
+            if (effect is IPersistentEffect persistentEffect)
             {
-                durationalEffect.Apply(player.gameObject, m_Position);
-                m_ActiveDurationalEffects.Add(durationalEffect);
+                persistentEffect.Apply(player.gameObject, m_Position);
+                m_ActivePersistentEffects.Add(persistentEffect);
             }
             else
             {

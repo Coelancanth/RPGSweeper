@@ -17,3 +17,14 @@
 - 特定的生成模板
 	- 特殊的绝对位置（比如棋盘的边缘）
 	- 特殊的相对位置（某种雷被某种其他的雷所包围）
+	
+
+- Passive Effects: 
+	- Persistent, fundamental conditions
+	- They are applied and persist until removed
+- Active Effects: 
+	- One-time triggers
+	- 
+- State: 
+	- Temporary conditions set by active effects 
+	- With clear enter/ exit points

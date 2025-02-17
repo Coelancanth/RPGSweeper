@@ -1,31 +1,37 @@
 using UnityEngine;
 using System.Collections.Generic;
 using RPGMinesweeper.Grid;
+using RPGMinesweeper.States;
 
 namespace RPGMinesweeper.Effects
 {
-    public class UnfreezeEffect : IInstantEffect
+    public class UnfreezeEffect : ITriggerableEffect
     {
-        private readonly int m_Radius;
+        #region Private Fields
+        private readonly float m_Radius;
         private readonly GridShape m_Shape;
+        #endregion
 
-        public EffectTargetType TargetType => EffectTargetType.Grid;
+        #region Public Properties
+        public EffectType Type => EffectType.Triggerable;
+        public string Name => "Unfreeze";
+        #endregion
 
-        public UnfreezeEffect(int radius, GridShape shape)
+        public UnfreezeEffect(float radius, GridShape shape)
         {
             m_Radius = radius;
             m_Shape = shape;
         }
 
-        public void Apply(GameObject source, Vector2Int sourcePosition)
+        public void Apply(GameObject target, Vector2Int sourcePosition)
         {
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             if (gridManager == null) return;
 
             // Get affected positions based on shape and radius
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, m_Radius);
+            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, Mathf.RoundToInt(m_Radius));
 
-            // Unfreeze each valid cell
+            // Remove frozen state from each valid cell
             foreach (var pos in affectedPositions)
             {
                 if (gridManager.IsValidPosition(pos))
@@ -33,10 +39,10 @@ namespace RPGMinesweeper.Effects
                     var cellObject = gridManager.GetCellObject(pos);
                     if (cellObject != null)
                     {
-                        var cellView = cellObject.GetComponent<CellView>();
-                        if (cellView != null)
+                        var stateManager = cellObject.GetComponent<StateManager>();
+                        if (stateManager != null)
                         {
-                            cellView.SetFrozen(false);
+                            stateManager.RemoveState("Frozen");
                         }
                     }
                 }

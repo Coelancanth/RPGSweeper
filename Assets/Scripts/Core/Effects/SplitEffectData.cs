@@ -1,5 +1,6 @@
 using UnityEngine;
 using RPGMinesweeper.Effects;
+using RPGMinesweeper.Grid;
 
 /*!SECTION
 - 分体HP = H x k / n
@@ -24,6 +25,6 @@ public class SplitEffectData : EffectData
 
     public override IEffect CreateEffect()
     {
-        return new SplitEffect(m_SplitRadius, m_HealthModifier, m_SplitCount);
+        return new SplitEffect(m_SplitRadius, Shape, m_HealthModifier, m_SplitCount);
     }
 } 

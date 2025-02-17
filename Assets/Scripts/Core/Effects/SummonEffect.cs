@@ -5,8 +5,9 @@ using RPGMinesweeper;  // For GridPositionType
 
 namespace RPGMinesweeper.Effects
 {
-    public class SummonEffect : IInstantEffect
+    public class SummonEffect : ITriggerableEffect
     {
+        #region Private Fields
         // Static flag to prevent recursive summoning
         private static bool s_IsSummoning = false;
         private static HashSet<MonsterType> s_CurrentlySummoningTypes = new HashSet<MonsterType>();
@@ -18,8 +19,12 @@ namespace RPGMinesweeper.Effects
         private readonly int m_Count;
         private readonly Vector2Int? m_TriggerPosition;
         private readonly GridPositionType m_TriggerPositionType;
+        #endregion
 
-        public EffectTargetType TargetType => EffectTargetType.Grid;
+        #region Public Properties
+        public EffectType Type => EffectType.Triggerable;
+        public string Name => "Summon";
+        #endregion
 
         public SummonEffect(float radius, GridShape shape, MineType mineType, MonsterType monsterType, int count, Vector2Int? triggerPosition = null, GridPositionType triggerPositionType = GridPositionType.Source)
         {
@@ -74,7 +79,7 @@ namespace RPGMinesweeper.Effects
             return new Vector2Int(x, y);
         }
 
-        public void Apply(GameObject source, Vector2Int sourcePosition)
+        public void Apply(GameObject target, Vector2Int sourcePosition)
         {
             // Prevent recursive summoning of the same monster type
             if (s_IsSummoning && m_MineType == MineType.Monster && s_CurrentlySummoningTypes.Contains(m_MonsterType))

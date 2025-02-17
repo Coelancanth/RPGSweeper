@@ -255,20 +255,25 @@ class IEffect {
 <<interface>>
 +Type: EffectType
 +TargetType: EffectTargetType
-+Duration: float
++Name: string
 +Apply(GameObject, Vector2Int)
+}
+class IPersistentEffect {
+<<interface>>
++IsActive: bool
++Update(GameObject, Vector2Int)
 +Remove(GameObject, Vector2Int)
 }
-class IPassiveEffect {
+class ITriggerableEffect {
 <<interface>>
-+OnTick(GameObject, Vector2Int)
++Apply(GameObject, Vector2Int)
 }
 class EffectTemplate {
 -m_Template: EffectData
 -m_Duration: float
 -m_Magnitude: float
 -m_Shape: GridShape
--m_Radius: int
+-m_Radius: float
 -m_TargetMonsterType: MonsterType
 +CreateInstance()
 +OnValidate()
@@ -304,29 +309,22 @@ class ConfusionEffect {
 -m_AffectedCells: HashSet
 +Apply()
 +Remove()
-+OnTick()
++Update()
 }
 
 class FreezeEffect {
     -m_Duration: float
-    -m_Radius: int
+    -m_Radius: float
     -m_Shape: GridShape
     -m_FrozenCells: HashSet
     +Apply()
     +Remove()
 }
 class UnfreezeEffect {
-    -m_Radius: int
+    -m_Radius: float
     -m_Shape: GridShape
     +Apply()
 }
-IDurationalEffect <|.. FreezeEffect
-IInstantEffect <|.. UnfreezeEffect
-note for FreezeEffect "Round-based duration\nwith area effect"
-note for UnfreezeEffect "Instant removal of\nfrozen state"
-
-[Update the Effect System section in Architecture.md with:]
-
 class SplitEffect {
     -m_HealthModifier: float
     -m_SplitCount: int
@@ -335,15 +333,21 @@ class SplitEffect {
     +Apply(GameObject, Vector2Int)
 }
 
-IEffect <|-- IPassiveEffect
-IPassiveEffect <|.. ConfusionEffect
-IEffect <|.. RangeRevealEffect
-IEffect <|.. SummonEffect
+IEffect <|-- IPersistentEffect
+IEffect <|-- ITriggerableEffect
+IPersistentEffect <|.. ConfusionEffect
+ITriggerableEffect <|.. RangeRevealEffect
+ITriggerableEffect <|.. SummonEffect
+ITriggerableEffect <|.. FreezeEffect
+ITriggerableEffect <|.. UnfreezeEffect
+ITriggerableEffect <|.. SplitEffect
 EffectTemplate --> EffectData : References
 EffectData --> IEffect : Creates
 note for RangeRevealEffect "Configurable trigger positions\nfor revealing cells"
 note for SummonEffect "Flexible mine placement\nwith position selection"
 note for SplitEffect "HP calculation: H * k / n\nwith ratio validation"
+note for IPersistentEffect "Long-lasting effects\nwith state management"
+note for ITriggerableEffect "One-time effects\nwith immediate impact"
 ```
 
 ### Value Modification System

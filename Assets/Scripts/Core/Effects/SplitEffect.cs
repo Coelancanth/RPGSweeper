@@ -5,22 +5,29 @@ using RPGMinesweeper;  // For MonsterType
 
 namespace RPGMinesweeper.Effects
 {
-    public class SplitEffect : IInstantEffect
+    public class SplitEffect : ITriggerableEffect
     {
-        private readonly int m_Radius;
+        #region Private Fields
+        private readonly float m_Radius;
+        private readonly GridShape m_Shape;
         private readonly float m_HealthModifier;
         private readonly int m_SplitCount;
+        #endregion
 
-        public EffectTargetType TargetType => EffectTargetType.Grid;
+        #region Public Properties
+        public EffectType Type => EffectType.Triggerable;
+        public string Name => "Split";
+        #endregion
 
-        public SplitEffect(int radius, float healthModifier, int splitCount)
+        public SplitEffect(float radius, GridShape shape, float healthModifier, int splitCount)
         {
             m_Radius = radius;
+            m_Shape = shape;
             m_HealthModifier = healthModifier;
             m_SplitCount = splitCount;
         }
 
-        public void Apply(GameObject source, Vector2Int sourcePosition)
+        public void Apply(GameObject target, Vector2Int sourcePosition)
         {
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             var mineManager = GameObject.FindFirstObjectByType<MineManager>();
@@ -49,32 +56,23 @@ namespace RPGMinesweeper.Effects
             
             if (splitHP <= 0 || currentHPRatio <= splitHPRatio)
             {
-                //Debug.Log($"Split cancelled - Current HP ratio ({currentHPRatio:F2}) <= Split HP ratio ({splitHPRatio:F2})");
                 return;
             }
-            
-            //Debug.Log($"Split Effect - Current HP: {currentHP}, Max HP: {maxHP}, New HP: {splitHP}, Health Modifier: {m_HealthModifier}, Split Count: {m_SplitCount}");
-            
-            // Get valid positions in radius for spawning split monsters
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, GridShape.Diamond, Mathf.RoundToInt(m_Radius));
+
+            // Get valid positions for new monsters
+            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, Mathf.RoundToInt(m_Radius));
             var validPositions = new List<Vector2Int>();
 
             foreach (var pos in affectedPositions)
             {
-                if (pos == sourcePosition) continue; // Skip source position
                 if (gridManager.IsValidPosition(pos) && !mineManager.HasMineAt(pos))
                 {
                     validPositions.Add(pos);
                 }
             }
 
-            // Spawn split monsters
-            int monstersToSpawn = Mathf.Min(m_SplitCount - 1, validPositions.Count); // -1 because source transforms into one
-            
-            // Update source monster's HP
-            sourceMonster.MaxHp = splitHP;
-
-            for (int i = 0; i < monstersToSpawn; i++)
+            // Spawn new monsters
+            for (int i = 0; i < m_SplitCount - 1; i++)  // -1 because original monster counts as one
             {
                 if (validPositions.Count == 0) break;
 
@@ -92,6 +90,9 @@ namespace RPGMinesweeper.Effects
                     newMonster.MaxHp = splitHP;
                 }
             }
+
+            // Update original monster's HP
+            sourceMonster.MaxHp = splitHP;
 
             // Recalculate values for all affected cells
             MineValuePropagator.PropagateValues(mineManager, gridManager);

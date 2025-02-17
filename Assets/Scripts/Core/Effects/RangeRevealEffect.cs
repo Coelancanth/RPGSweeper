@@ -1,18 +1,24 @@
 using UnityEngine;
+using System.Collections.Generic;
 using RPGMinesweeper.Grid;
 using Random = UnityEngine.Random;
 using RPGMinesweeper;  // For GridPositionType
 
 namespace RPGMinesweeper.Effects
 {
-    public class RangeRevealEffect : IInstantEffect
+    public class RangeRevealEffect : ITriggerableEffect
     {
+        #region Private Fields
         private readonly float m_Radius;
         private readonly GridShape m_Shape;
         private readonly Vector2Int? m_TriggerPosition;
         private readonly GridPositionType m_TriggerPositionType;
+        #endregion
 
-        public EffectTargetType TargetType => EffectTargetType.Grid;
+        #region Public Properties
+        public EffectType Type => EffectType.Triggerable;
+        public string Name => "Range Reveal";
+        #endregion
 
         public RangeRevealEffect(float radius, GridShape shape = GridShape.Square, Vector2Int? triggerPosition = null, GridPositionType triggerPositionType = GridPositionType.Source)
         {
@@ -64,7 +70,7 @@ namespace RPGMinesweeper.Effects
             return new Vector2Int(x, y);
         }
 
-        public void Apply(GameObject source, Vector2Int sourcePosition)
+        public void Apply(GameObject target, Vector2Int sourcePosition)
         {
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             var mineManager = GameObject.FindFirstObjectByType<MineManager>();

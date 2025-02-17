@@ -4,18 +4,20 @@ using RPGMinesweeper.Grid;
 
 namespace RPGMinesweeper.Effects
 {
-    public class ConfusionEffect : IDurationalEffect
+    public class ConfusionEffect : IPersistentEffect
     {
         #region Private Fields
         private readonly float m_Duration;
         private readonly float m_Radius;
         private readonly GridShape m_Shape;
         private readonly HashSet<Vector2Int> m_AffectedCells;
+        private bool m_IsActive;
         #endregion
 
         #region Public Properties
-        public EffectTargetType TargetType => EffectTargetType.Grid;
-        public float Duration => m_Duration;
+        public EffectType Type => EffectType.Persistent;
+        public string Name => "Confusion";
+        public bool IsActive => m_IsActive;
         #endregion
 
         public ConfusionEffect(float duration, float radius, GridShape shape = GridShape.Square)
@@ -24,14 +26,16 @@ namespace RPGMinesweeper.Effects
             m_Radius = radius;
             m_Shape = shape;
             m_AffectedCells = new HashSet<Vector2Int>();
+            m_IsActive = false;
         }
 
         #region Public Methods
-        public void Apply(GameObject source, Vector2Int sourcePosition)
+        public void Apply(GameObject target, Vector2Int sourcePosition)
         {
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             if (gridManager == null) return;
 
+            m_IsActive = true;
             var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, Mathf.RoundToInt(m_Radius));
             
             foreach (var pos in affectedPositions)
@@ -50,8 +54,14 @@ namespace RPGMinesweeper.Effects
             }
         }
 
-        public void Remove(GameObject source, Vector2Int sourcePosition)
+        public void Update(float deltaTime)
         {
+            // Update confusion effect (e.g., visual feedback)
+        }
+
+        public void Remove(GameObject target)
+        {
+            m_IsActive = false;
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             var mineManager = GameObject.FindFirstObjectByType<MineManager>();
             if (gridManager == null || mineManager == null) return;
