@@ -307,6 +307,24 @@ class ConfusionEffect {
 +OnTick()
 }
 
+class FreezeEffect {
+    -m_Duration: float
+    -m_Radius: int
+    -m_Shape: GridShape
+    -m_FrozenCells: HashSet
+    +Apply()
+    +Remove()
+}
+class UnfreezeEffect {
+    -m_Radius: int
+    -m_Shape: GridShape
+    +Apply()
+}
+IDurationalEffect <|.. FreezeEffect
+IInstantEffect <|.. UnfreezeEffect
+note for FreezeEffect "Round-based duration\nwith area effect"
+note for UnfreezeEffect "Instant removal of\nfrozen state"
+
 [Update the Effect System section in Architecture.md with:]
 
 class SplitEffect {

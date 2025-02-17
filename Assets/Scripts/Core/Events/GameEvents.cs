@@ -11,6 +11,7 @@ public static class GameEvents
     public static event Action<Vector2Int, MineType, MonsterType?> OnMineAddAttempted;
     public static event Action<Vector2Int> OnMineRemovalAttempted;
     public static event Action<int> OnShieldChanged;
+    public static event Action OnRoundAdvanced;
 
     public static void RaiseCellRevealed(Vector2Int position)
     {
@@ -45,5 +46,10 @@ public static class GameEvents
     public static void RaiseShieldChanged(int newShieldAmount)
     {
         OnShieldChanged?.Invoke(newShieldAmount);
+    }
+
+    public static void RaiseRoundAdvanced()
+    {
+        OnRoundAdvanced?.Invoke();
     }
 } 

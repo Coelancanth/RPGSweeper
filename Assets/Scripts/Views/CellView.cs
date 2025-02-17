@@ -25,6 +25,7 @@ public class CellView : MonoBehaviour
     
     private Vector2Int m_Position;
     private bool m_IsRevealed;
+    private bool m_IsFrozen;
     private Sprite m_CurrentMineSprite;
     private bool m_HasMine;
     private int m_CurrentValue;
@@ -146,6 +147,7 @@ public class CellView : MonoBehaviour
     private void ResetCell()
     {
         m_IsRevealed = false;
+        m_IsFrozen = false;
         m_HasMine = false;
         m_CurrentMineSprite = null;
         m_CurrentValue = 0;
@@ -298,8 +300,21 @@ public class CellView : MonoBehaviour
         }
     }
 
+    public void SetFrozen(bool frozen)
+    {
+        m_IsFrozen = frozen;
+        if (m_BackgroundRenderer != null)
+        {
+            // Add a blue tint to indicate frozen state
+            m_BackgroundRenderer.color = frozen ? new Color(0.8f, 0.8f, 1f) : Color.white;
+        }
+    }
+
     private void OnMouseDown()
     {
+        // Prevent interaction if cell is frozen
+        if (m_IsFrozen) return;
+
         if (!m_IsRevealed)
         {
             GameEvents.RaiseCellRevealed(m_Position);

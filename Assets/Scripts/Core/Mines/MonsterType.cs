@@ -16,6 +16,10 @@ namespace RPGMinesweeper
         Slime,
         Ghost,
         Skeleton,
-        Dragon
+        Dragon, 
+        WaterElement,
+        FireElement,
+        EarthElement,
+        AirElement,
     }
 } 

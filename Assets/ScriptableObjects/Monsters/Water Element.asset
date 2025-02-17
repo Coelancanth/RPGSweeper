@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5df1cce5e6b07834d97e337ef27886e3, type: 3}
-  m_Name: Skeleton
+  m_Name: Water Element
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -22,20 +22,20 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   Type: 7
-  Value: 3
+  Value: 7
   Shape: 2
   Radius: 1
   SpawnStrategy: 1
-  MineSprite: {fileID: 8363364309010103659, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  MineSprite: {fileID: 4317999874980683056, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PassiveEffects:
   - Template: {fileID: 11400000, guid: 2f04ca7d8c369704aa8da018a77e7af5, type: 2}
   m_ActiveEffects:
-  - Template: {fileID: 11400000, guid: d79322b58d6a52645ba87f1df34a73f9, type: 2}
-  m_MonsterType: 13
+  - Template: {fileID: 11400000, guid: 2732e492c2a6b4d43b7c8fd6bb3fe121, type: 2}
+  m_MonsterType: 15
   m_MaxHp: 7
-  m_BaseDamage: 1
-  m_DamagePerHit: 1
+  m_BaseDamage: 3
+  m_DamagePerHit: 2
   m_HasEnrageState: 0
   m_EnrageDamageMultiplier: 1

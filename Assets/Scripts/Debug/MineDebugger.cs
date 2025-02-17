@@ -9,6 +9,7 @@ public class MineDebugger : MonoBehaviour
     [SerializeField] private KeyCode m_DebugKey = KeyCode.D;
     [SerializeField] private KeyCode m_InspectKey = KeyCode.I;  // New key for cell inspection
     [SerializeField] private KeyCode m_RevealAllKey = KeyCode.R;  // New key for revealing all cells
+    [SerializeField] private KeyCode m_NextRoundKey = KeyCode.N; // New key for advancing round
     [SerializeField] private GridManager m_GridManager;
     #endregion
 
@@ -17,6 +18,7 @@ public class MineDebugger : MonoBehaviour
     private bool m_IsDebugMode = false;
     private Dictionary<Vector2Int, int> m_CachedValues = new Dictionary<Vector2Int, int>();
     private Dictionary<Vector2Int, Color> m_CachedColors = new Dictionary<Vector2Int, Color>();
+    private int m_RoundCount = 0;
     #endregion
 
     #region Unity Lifecycle
@@ -60,16 +62,19 @@ public class MineDebugger : MonoBehaviour
             ToggleDebugVisuals();
         }
 
-        // Add cell inspection on key press
         if (Input.GetKeyDown(m_InspectKey))
         {
             InspectCellUnderMouse();
         }
 
-        // Add reveal all cells on key press
         if (Input.GetKeyDown(m_RevealAllKey))
         {
             RevealAllCells();
+        }
+
+        if (Input.GetKeyDown(m_NextRoundKey))
+        {
+            AdvanceRound();
         }
     }
     #endregion
@@ -195,6 +200,13 @@ public class MineDebugger : MonoBehaviour
                 cellView.UpdateVisuals(true);
             }
         }
+    }
+
+    private void AdvanceRound()
+    {
+        m_RoundCount++;
+        Debug.Log($"Advancing to round {m_RoundCount}...");
+        GameEvents.RaiseRoundAdvanced();
     }
     #endregion
 }

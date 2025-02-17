@@ -429,6 +429,9 @@ MonoBehaviour:
   - MineData: {fileID: 11400000, guid: 3596c02c22aa62d4f9267f585331fc4d, type: 2}
     SpawnCount: 1
     IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: 08798aff13a7352489f5bcf68933bada, type: 2}
+    SpawnCount: 2
+    IsEnabled: 1
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429
 Transform:
@@ -1358,7 +1361,8 @@ MonoBehaviour:
   m_DebugKey: 282
   m_InspectKey: 105
   m_RevealAllKey: 114
-  m_GridManager: {fileID: 0}
+  m_NextRoundKey: 32
+  m_GridManager: {fileID: 1433877669}
 --- !u!4 &1910772196
 Transform:
   m_ObjectHideFlags: 0

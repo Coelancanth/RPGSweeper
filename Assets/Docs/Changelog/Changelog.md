@@ -1,3 +1,67 @@
+# v0.1.34 - 2025-02-17 14:30:00
+## Overview
+Added new freeze and unfreeze effects system with round-based duration tracking, enhancing tactical gameplay with temporary cell disablement mechanics.
+
+## Change Details
+### New Features
+#### Freeze Effect System
+- Implemented FreezeEffect with configurable duration and area of effect
+- Added UnfreezeEffect for removing frozen state from cells
+- Enhanced CellView with frozen state management and visual feedback
+- Added round advancement system for testing duration-based effects
+
+```mermaid
+classDiagram
+class FreezeEffect {
+-m_Duration: float
+-m_Radius: int
+-m_Shape: GridShape
+-m_FrozenCells: HashSet
++Apply()
++Remove()
+}
+class UnfreezeEffect {
+-m_Radius: int
+-m_Shape: GridShape
++Apply()
+}
+class CellView {
+-m_IsFrozen: bool
++SetFrozen(bool)
+}
+IDurationalEffect <|.. FreezeEffect
+IInstantEffect <|.. UnfreezeEffect
+FreezeEffect --> CellView : Modifies
+UnfreezeEffect --> CellView : Modifies
+note for FreezeEffect "Round-based duration\nwith area effect"
+```
+
+### Adjustments and Refactoring
+#### Round System Implementation
+- Added round advancement system in MineDebugger
+- Implemented round tracking with GameEvents
+- Enhanced effect system with round-based duration support
+```mermaid
+classDiagram
+class GameEvents {
++OnRoundAdvanced: Action
++RaiseRoundAdvanced()
+}
+class MineDebugger {
+-m_RoundCount: int
+-AdvanceRound()
+}
+MineDebugger --> GameEvents : Raises
+note for MineDebugger "Testing tool for\nduration-based effects"
+```
+
+### Optimizations
+- Improved frozen state visualization with proper tint
+- Enhanced effect area calculation efficiency
+- Optimized cell state management
+
+
+
 # v0.1.33 - 2025-02-17 13:59:00
 ## Overview
 Fixed infinite recursion issue in SummonEffect when used as a passive effect, improving stability and preventing stack overflow errors.
