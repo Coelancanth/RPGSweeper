@@ -172,9 +172,9 @@ public class MineDebugger : MonoBehaviour
 
     private void RevealAllCells()
     {
-        if (m_GridManager == null)
+        if (m_GridManager == null || m_MineManager == null)
         {
-            Debug.LogError("Required GridManager reference not set in MineDebugger!");
+            Debug.LogError("Required references not set in MineDebugger!");
             return;
         }
 
@@ -182,7 +182,17 @@ public class MineDebugger : MonoBehaviour
         {
             if (cellView != null)
             {
-                GameEvents.RaiseCellRevealed(cellView.GridPosition);
+                // Get mine data if there is a mine at this position
+                var position = cellView.GridPosition;
+                var mineData = m_MineManager.GetMineDataAt(position);
+                var mine = m_MineManager.GetMines().TryGetValue(position, out IMine value) ? value : null;
+
+                // Update visuals directly without triggering events
+                if (mine != null && mineData != null)
+                {
+                    cellView.ShowMineSprite(mineData.MineSprite, mine, mineData);
+                }
+                cellView.UpdateVisuals(true);
             }
         }
     }

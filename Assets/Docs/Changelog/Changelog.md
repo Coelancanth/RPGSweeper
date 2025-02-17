@@ -1,3 +1,61 @@
+# v0.1.32 - 2025-02-17 13:35:29
+## Overview
+Enhanced split effect system with improved HP calculations and trigger conditions, ensuring more balanced and intuitive monster splitting mechanics.
+
+## Change Details
+### Bug Fixes
+#### Split Effect System
+- Fixed split effect triggering on death instead of hit
+- Corrected HP calculation formula for split monsters
+- Added proper HP ratio validation
+- Ensured correct current HP setting
+
+```mermaid
+classDiagram
+class SplitEffect {
+-m_HealthModifier: float
+-m_SplitCount: int
++Apply(GameObject, Vector2Int)
+-CalculateNewHP()
+-ValidateHPRatio()
+}
+class MonsterMine {
++CurrentHp: int
++MaxHp: int
++SetHP(int)
+}
+SplitEffect --> MonsterMine : Modifies
+note for SplitEffect "Improved HP calculation\nand validation"
+```
+
+### Adjustments and Refactoring
+#### HP Management System
+- Implemented H * k / n formula for HP calculation
+- Added HP ratio validation to prevent invalid splits
+- Enhanced HP setting for consistent state
+
+```mermaid
+classDiagram
+class HPCalculation {
+OriginalHP[H]
+Modifier[k]
+SplitCount[n]
+Formula[Hk/n]
+}
+class Validation {
+CheckCurrentRatio
+CompareSplitRatio
+ValidateResult
+}
+HPCalculation --> Validation
+note for HPCalculation "Clear formula application\nwith proper validation"
+```
+
+### Optimizations
+- Improved HP calculation accuracy
+- Enhanced split condition validation
+- Optimized HP state management
+
 # v0.1.31 - 2025-02-17 04:00:00
 ## Overview
 Enhanced SummonEffect system with standardized position handling using GridPositionType, improving flexibility and consistency in mine placement mechanics.

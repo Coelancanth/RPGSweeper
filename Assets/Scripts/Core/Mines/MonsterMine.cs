@@ -44,7 +44,8 @@ public class MonsterMine : IDamagingMine
         {
             m_MaxHp = value;
             // Adjust current HP proportionally
-            m_CurrentHp = Mathf.RoundToInt((float)m_CurrentHp / m_MaxHp * value);
+            //m_CurrentHp = Mathf.RoundToInt((float)m_CurrentHp / m_MaxHp * value);
+            m_CurrentHp = m_MaxHp;
             OnHpChanged?.Invoke(m_Position, HpPercentage);
         }
     }

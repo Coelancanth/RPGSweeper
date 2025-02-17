@@ -306,6 +306,17 @@ class ConfusionEffect {
 +Remove()
 +OnTick()
 }
+
+[Update the Effect System section in Architecture.md with:]
+
+class SplitEffect {
+    -m_HealthModifier: float
+    -m_SplitCount: int
+    -CalculateNewHP()
+    -ValidateHPRatio()
+    +Apply(GameObject, Vector2Int)
+}
+
 IEffect <|-- IPassiveEffect
 IPassiveEffect <|.. ConfusionEffect
 IEffect <|.. RangeRevealEffect
@@ -314,6 +325,7 @@ EffectTemplate --> EffectData : References
 EffectData --> IEffect : Creates
 note for RangeRevealEffect "Configurable trigger positions\nfor revealing cells"
 note for SummonEffect "Flexible mine placement\nwith position selection"
+note for SplitEffect "HP calculation: H * k / n\nwith ratio validation"
 ```
 
 ### Value Modification System

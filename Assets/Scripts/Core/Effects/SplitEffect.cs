@@ -32,14 +32,28 @@ namespace RPGMinesweeper.Effects
                 sourceMine is not MonsterMine sourceMonster) return;
 
             int currentHP = sourceMonster.CurrentHp;
+            int maxHP = sourceMonster.MaxHp;
             
             // Only split if monster has enough HP to survive the split
             if (currentHP <= 0) return;
             
-            int newHP = Mathf.RoundToInt(currentHP * m_HealthModifier);
-            if (newHP <= 0) return; // Don't split if it would result in 0 HP monsters
+            // Calculate HP after potential split
+            int splitHP = Mathf.RoundToInt(currentHP * m_HealthModifier / m_SplitCount);
             
-            Debug.Log($"Split Effect - Current HP: {currentHP}, New HP: {newHP}");
+            // Don't split if:
+            // 1. Split would result in 0 HP monsters
+            // 2. Current HP ratio is already less than what it would be after split
+            // This prevents splitting when monster is already damaged significantly
+            float currentHPRatio = (float)currentHP / maxHP;
+            float splitHPRatio = (float)splitHP / maxHP;
+            
+            if (splitHP <= 0 || currentHPRatio <= splitHPRatio)
+            {
+                //Debug.Log($"Split cancelled - Current HP ratio ({currentHPRatio:F2}) <= Split HP ratio ({splitHPRatio:F2})");
+                return;
+            }
+            
+            //Debug.Log($"Split Effect - Current HP: {currentHP}, Max HP: {maxHP}, New HP: {splitHP}, Health Modifier: {m_HealthModifier}, Split Count: {m_SplitCount}");
             
             // Get valid positions in radius for spawning split monsters
             var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, GridShape.Diamond, Mathf.RoundToInt(m_Radius));
@@ -55,15 +69,10 @@ namespace RPGMinesweeper.Effects
             }
 
             // Spawn split monsters
-            // NOTE: not sure how this trick work, so far it works
             int monstersToSpawn = Mathf.Min(m_SplitCount - 1, validPositions.Count); // -1 because source transforms into one
             
             // Update source monster's HP
-            // Since setting MaxHp adjusts current HP proportionally, we need to set it to double what we want
-            // This way when it's halved by the proportion, it will be the correct value
-            sourceMonster.MaxHp = newHP * 2;
-            // Now set it to the actual max we want, which will set current HP to newHP
-            sourceMonster.MaxHp = newHP;
+            sourceMonster.MaxHp = splitHP;
 
             for (int i = 0; i < monstersToSpawn; i++)
             {
@@ -80,9 +89,7 @@ namespace RPGMinesweeper.Effects
                 if (mineManager.GetMines().TryGetValue(selectedPos, out IMine newMine) && 
                     newMine is MonsterMine newMonster)
                 {
-                    // Same trick for the new monsters - set double then actual to get correct current HP
-                    newMonster.MaxHp = newHP * 2;
-                    newMonster.MaxHp = newHP;
+                    newMonster.MaxHp = splitHP;
                 }
             }
 

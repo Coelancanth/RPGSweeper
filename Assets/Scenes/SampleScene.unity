@@ -413,17 +413,20 @@ MonoBehaviour:
   m_MineSpawnData:
   - MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
     SpawnCount: 5
-    IsEnabled: 1
+    IsEnabled: 0
   - MineData: {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
     SpawnCount: 5
-    IsEnabled: 1
+    IsEnabled: 0
   - MineData: {fileID: 11400000, guid: db6bce0002eeb0a44a9438ff8a493153, type: 2}
     SpawnCount: 2
-    IsEnabled: 1
+    IsEnabled: 0
   - MineData: {fileID: 11400000, guid: 024aecf8dd3067745ae1da9c91b5d3cc, type: 2}
     SpawnCount: 1
-    IsEnabled: 1
+    IsEnabled: 0
   - MineData: {fileID: 11400000, guid: 4b84624f2f3856847a990bd2e227903d, type: 2}
+    SpawnCount: 1
+    IsEnabled: 0
+  - MineData: {fileID: 11400000, guid: 3596c02c22aa62d4f9267f585331fc4d, type: 2}
     SpawnCount: 1
     IsEnabled: 1
   m_GridManager: {fileID: 1433877669}

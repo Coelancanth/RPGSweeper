@@ -21,19 +21,20 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  Type: 0
-  Value: 1
+  Type: 7
+  Value: 3
   Shape: 2
   Radius: 1
   SpawnStrategy: 1
-  MineSprite: {fileID: 0}
+  MineSprite: {fileID: 8363364309010103659, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  m_PassiveEffects: []
+  m_PassiveEffects:
+  - Template: {fileID: 11400000, guid: 2f04ca7d8c369704aa8da018a77e7af5, type: 2}
   m_ActiveEffects: []
-  m_MonsterType: 0
-  m_MaxHp: 100
-  m_BaseDamage: 20
-  m_DamagePerHit: 25
-  m_HasEnrageState: 1
-  m_EnrageDamageMultiplier: 1.5
+  m_MonsterType: 13
+  m_MaxHp: 7
+  m_BaseDamage: 1
+  m_DamagePerHit: 1
+  m_HasEnrageState: 0
+  m_EnrageDamageMultiplier: 1
