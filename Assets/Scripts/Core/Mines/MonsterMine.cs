@@ -133,7 +133,7 @@ public class MonsterMine : IDamagingMine
         // Apply effects if monster is still alive
         if (m_CurrentHp > 0)
         {
-            foreach (var effect in m_Data.CreatePassiveEffects())
+            foreach (var effect in m_Data.CreatePersistentEffects())
             {
                 if (effect is IPersistentEffect persistentEffect)
                 {
@@ -156,7 +156,7 @@ public class MonsterMine : IDamagingMine
         var player = GameObject.FindFirstObjectByType<PlayerComponent>();
         if (player != null)
         {
-            foreach (var effect in m_Data.CreateActiveEffects())
+            foreach (var effect in m_Data.CreateTriggerableEffects())
             {
                 effect.Apply(player.gameObject, m_Position);
             }
@@ -199,7 +199,7 @@ public class MonsterMine : IDamagingMine
         var player = GameObject.FindFirstObjectByType<PlayerComponent>();
         if (player == null) return;
 
-        foreach (var effect in m_Data.CreatePassiveEffects())
+        foreach (var effect in m_Data.CreatePersistentEffects())
         {
             if (effect is IPersistentEffect persistentEffect)
             {

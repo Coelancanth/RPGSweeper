@@ -33,7 +33,7 @@ public class StandardMine : IMine
     public void OnTrigger(PlayerComponent _player)
     {
         // Standard mines only apply effects, they don't deal damage
-        foreach (var effect in m_Data.CreatePassiveEffects())
+        foreach (var effect in m_Data.CreatePersistentEffects())
         {
             if (effect is IPersistentEffect persistentEffect)
             {
@@ -52,7 +52,7 @@ public class StandardMine : IMine
         var player = GameObject.FindFirstObjectByType<PlayerComponent>();
         if (player != null)
         {
-            foreach (var effect in m_Data.CreateActiveEffects())
+            foreach (var effect in m_Data.CreateTriggerableEffects())
             {
                 effect.Apply(player.gameObject, m_Position);
             }
@@ -95,7 +95,7 @@ public class StandardMine : IMine
         var player = GameObject.FindFirstObjectByType<PlayerComponent>();
         if (player == null) return;
 
-        foreach (var effect in m_Data.CreatePassiveEffects())
+        foreach (var effect in m_Data.CreatePersistentEffects())
         {
             if (effect is IPersistentEffect persistentEffect)
             {

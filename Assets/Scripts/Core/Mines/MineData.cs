@@ -178,34 +178,34 @@ public class MineData : SerializedScriptableObject
     public Color MineValueColor => m_MineValueColor;
     
     [BoxGroup("Effects")]
-    [TabGroup("Effects/Tabs", "Passive")]
+    [TabGroup("Effects/Tabs", "Persistent")]
     [Tooltip("Effects that are applied while the mine is active")]
     [ListDrawerSettings(ShowIndexLabels = true, Expanded = true)]
-    [SerializeField] private EffectInstance[] m_PassiveEffects;
+    [SerializeField] private EffectInstance[] m_PersistentEffects;
 
-    [TabGroup("Effects/Tabs", "Active")]
+    [TabGroup("Effects/Tabs", "Triggerable")]
     [Tooltip("Effects that are applied when the mine is destroyed")]
     [ListDrawerSettings(ShowIndexLabels = true, Expanded = true)]
-    [SerializeField] private EffectInstance[] m_ActiveEffects;
+    [SerializeField] private EffectInstance[] m_TriggerableEffects;
 
-    public IEffect[] CreatePassiveEffects()
+    public IEffect[] CreatePersistentEffects()
     {
-        if (m_PassiveEffects == null) return Array.Empty<IEffect>();
-        var effects = new IEffect[m_PassiveEffects.Length];
-        for (int i = 0; i < m_PassiveEffects.Length; i++)
+        if (m_PersistentEffects == null) return Array.Empty<IEffect>();
+        var effects = new IEffect[m_PersistentEffects.Length];
+        for (int i = 0; i < m_PersistentEffects.Length; i++)
         {
-            effects[i] = m_PassiveEffects[i].CreateEffect();
+            effects[i] = m_PersistentEffects[i].CreateEffect();
         }
         return effects;
     }
 
-    public IEffect[] CreateActiveEffects()
+    public IEffect[] CreateTriggerableEffects()
     {
-        if (m_ActiveEffects == null) return Array.Empty<IEffect>();
-        var effects = new IEffect[m_ActiveEffects.Length];
-        for (int i = 0; i < m_ActiveEffects.Length; i++)
+        if (m_TriggerableEffects == null) return Array.Empty<IEffect>();
+        var effects = new IEffect[m_TriggerableEffects.Length];
+        for (int i = 0; i < m_TriggerableEffects.Length; i++)
         {
-            effects[i] = m_ActiveEffects[i].CreateEffect();
+            effects[i] = m_TriggerableEffects[i].CreateEffect();
         }
         return effects;
     }

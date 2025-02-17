@@ -3,40 +3,45 @@ using System.Collections.Generic;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper.Effects;
 
-public class MineValueModifier
+public static class MineValueModifier
 {
-    private static Dictionary<Vector2Int, HashSet<IEffect>> s_ActiveEffects = new Dictionary<Vector2Int, HashSet<IEffect>>();
+    #region Private Fields
+    private static Dictionary<Vector2Int, HashSet<IEffect>> s_RegisteredEffects = new Dictionary<Vector2Int, HashSet<IEffect>>();
+    #endregion
 
+    #region Public Methods
     public static void RegisterEffect(Vector2Int position, IEffect effect)
     {
-        if (!s_ActiveEffects.ContainsKey(position))
+        if (!s_RegisteredEffects.ContainsKey(position))
         {
-            s_ActiveEffects[position] = new HashSet<IEffect>();
+            s_RegisteredEffects[position] = new HashSet<IEffect>();
         }
-        s_ActiveEffects[position].Add(effect);
+        s_RegisteredEffects[position].Add(effect);
     }
 
     public static void UnregisterEffect(Vector2Int position, IEffect effect)
     {
-        if (s_ActiveEffects.ContainsKey(position))
+        if (s_RegisteredEffects.ContainsKey(position))
         {
-            s_ActiveEffects[position].Remove(effect);
-            if (s_ActiveEffects[position].Count == 0)
+            s_RegisteredEffects[position].Remove(effect);
+            if (s_RegisteredEffects[position].Count == 0)
             {
-                s_ActiveEffects.Remove(position);
+                s_RegisteredEffects.Remove(position);
             }
         }
     }
 
-    public static int ModifyValue(Vector2Int position, int originalValue)
+    public static int ModifyValue(Vector2Int position, int baseValue)
     {
-        if (!s_ActiveEffects.ContainsKey(position))
+        int modifiedValue = baseValue;
+
+        if (!s_RegisteredEffects.ContainsKey(position))
         {
-            return originalValue;
+            return modifiedValue;
         }
 
         // Check for confusion effects
-        foreach (var effect in s_ActiveEffects[position])
+        foreach (var effect in s_RegisteredEffects[position])
         {
             if (effect is ConfusionEffect)
             {
@@ -44,18 +49,21 @@ public class MineValueModifier
             }
         }
 
-        return originalValue;
+        return modifiedValue;
     }
 
-    public static (int value, Color color) ModifyValueAndGetColor(Vector2Int position, int originalValue)
+    public static (int value, Color color) ModifyValueAndGetColor(Vector2Int position, int baseValue)
     {
-        if (!s_ActiveEffects.ContainsKey(position))
+        int modifiedValue = baseValue;
+        Color color = Color.white;
+
+        if (!s_RegisteredEffects.ContainsKey(position))
         {
-            return (originalValue, Color.white);
+            return (modifiedValue, color);
         }
 
         // Check for confusion effects
-        foreach (var effect in s_ActiveEffects[position])
+        foreach (var effect in s_RegisteredEffects[position])
         {
             if (effect is ConfusionEffect)
             {
@@ -63,11 +71,12 @@ public class MineValueModifier
             }
         }
 
-        return (originalValue, Color.white);
+        return (modifiedValue, color);
     }
 
     public static void Clear()
     {
-        s_ActiveEffects.Clear();
+        s_RegisteredEffects.Clear();
     }
+    #endregion
 } 
