@@ -197,6 +197,52 @@ class GameEvents {
 }
 ```
 
+### Turn System
+```mermaid
+classDiagram
+class TurnManager {
+    -m_TurnCount: int
+    -m_PendingTurns: Queue~ITurn~
+    -m_CurrentTurn: ITurn
+    +CurrentTurn: int
+    +ActiveTurn: ITurn
+    +PendingTurnsCount: int
+    +QueueTurn(ITurn)
+    +CompleteTurn()
+    +ResetTurnCount()
+}
+class ITurn {
+    <<interface>>
+    +IsComplete: bool
+    +Begin()
+    +End()
+}
+class PlayerTurn {
+    -m_Position: Vector2Int
+    -m_IsComplete: bool
+    +Begin()
+    +End()
+}
+class ReactionTurn {
+    -m_MineType: MineType
+    -m_IsComplete: bool
+    +Begin()
+    +End()
+}
+class EffectTurn {
+    -m_Position: Vector2Int
+    -m_IsComplete: bool
+    +Begin()
+    +End()
+}
+ITurn <|.. PlayerTurn
+ITurn <|.. ReactionTurn
+ITurn <|.. EffectTurn
+TurnManager --> ITurn : Manages
+note for TurnManager "Event-driven turn processing\nwith debug tracing"
+note for ITurn "Base interface for all\nturn types"
+```
+
 ### Visualization System
 ```mermaid
 classDiagram

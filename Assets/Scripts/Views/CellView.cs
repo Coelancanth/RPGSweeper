@@ -319,10 +319,12 @@ public class CellView : MonoBehaviour, IInteractable
     {
         if (CanInteract)
         {
+            Debug.Log($"[CellView] Revealing cell at {m_Position}, CanInteract: {CanInteract}, IsFrozen: {m_IsFrozen}, IsRevealed: {m_IsRevealed}");
             GameEvents.RaiseCellRevealed(m_Position);
         }
         else if (m_IsRevealed && m_HasMine)
         {
+            Debug.Log($"[CellView] Interacting with revealed mine at {m_Position}, IsCollectable: {(m_CurrentMine as MonsterMine)?.IsCollectable}");
             // For monster mines, process interaction on every click
             var monsterMine = m_CurrentMine as MonsterMine;
             if (monsterMine != null)
@@ -344,6 +346,10 @@ public class CellView : MonoBehaviour, IInteractable
             {
                 GameEvents.RaiseMineRemovalAttempted(m_Position);
             }
+        }
+        else
+        {
+            Debug.Log($"[CellView] Cannot interact with cell at {m_Position}, CanInteract: {CanInteract}, IsFrozen: {m_IsFrozen}, IsRevealed: {m_IsRevealed}");
         }
     }
 

@@ -1,3 +1,69 @@
+# v0.1.39 - 2025-02-18 20:00:00
+## Overview
+Enhanced the turn system with event-driven flow and improved debug tracing, making turn progression more predictable and easier to debug.
+
+## Change Details
+### Architecture Improvements
+#### Turn System Enhancement
+- Removed Update() polling in favor of event-driven turn processing
+- Added turn counter with proper event notification
+- Enhanced debug logging throughout interaction flow
+- Improved turn completion logic in PlayerTurn
+```mermaid
+classDiagram
+class TurnManager {
+    -m_TurnCount: int
+    -m_PendingTurns: Queue~ITurn~
+    -m_CurrentTurn: ITurn
+    +CurrentTurn: int
+    +ActiveTurn: ITurn
+    +PendingTurnsCount: int
+    +CompleteTurn()
+    +QueueTurn(ITurn)
+}
+class PlayerTurn {
+    -m_Position: Vector2Int
+    -m_IsComplete: bool
+    +Begin()
+    +End()
+}
+class Events {
+    OnTurnStarted
+    OnTurnEnded
+    OnTurnCountChanged
+}
+TurnManager --> PlayerTurn : Manages
+TurnManager --> Events : Raises
+note for TurnManager "Event-driven turn processing\nwith debug tracing"
+```
+
+### Adjustments and Refactoring
+#### Debug System Enhancement
+- Added comprehensive debug logging in TurnManager
+- Enhanced interaction flow tracing in CellView
+- Improved turn state visibility
+```mermaid
+classDiagram
+class DebugFlow {
+    TurnCounting
+    InteractionTracing
+    StateLogging
+}
+class Implementation {
+    TurnProgression[counter]
+    CellInteraction[states]
+    TurnCompletion[events]
+}
+DebugFlow --> Implementation
+note for DebugFlow "Clear visibility into\nturn progression"
+```
+
+### Optimizations
+- Improved turn processing efficiency by removing polling
+- Enhanced debugging capabilities
+- Better turn state management
+- Clearer interaction flow tracing
+
 # v0.1.38 - 2025-02-18 19:30:00
 ## Overview
 Implemented a new input system with proper separation of concerns, improving code maintainability and following SOLID principles.
