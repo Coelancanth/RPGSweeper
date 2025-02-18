@@ -128,6 +128,15 @@ public class MonsterMine : IDamagingMine
         if (previousHp != m_CurrentHp)
         {
             OnHpChanged?.Invoke(m_Position, HpPercentage);
+            
+            // Notify split effects of HP change
+            foreach (var effect in m_ActivePersistentEffects)
+            {
+                if (effect is SplitEffect splitEffect)
+                {
+                    splitEffect.OnMonsterDamaged(m_Position, HpPercentage);
+                }
+            }
         }
         
         // Apply effects if monster is still alive

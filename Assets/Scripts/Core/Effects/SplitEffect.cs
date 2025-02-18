@@ -19,7 +19,6 @@ namespace RPGMinesweeper.Effects
         #region Public Properties
         public override EffectType[] SupportedTypes => new[] { EffectType.Persistent, EffectType.Triggerable };
         public bool IsActive => m_IsActive;
-        public EffectType Type => EffectType.Triggerable;
         public string Name => "Split";
         #endregion
 
@@ -30,6 +29,7 @@ namespace RPGMinesweeper.Effects
             m_HealthModifier = healthModifier;
             m_SplitCount = splitCount;
             m_DamageThreshold = Mathf.Clamp01(damageThreshold); // Ensure threshold is between 0 and 1
+            m_CurrentMode = EffectType.Persistent; // Default to persistent mode
         }
 
         #region Protected Methods

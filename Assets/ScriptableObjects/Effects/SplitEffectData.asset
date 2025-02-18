@@ -21,4 +21,5 @@ MonoBehaviour:
   m_Magnitude: 0
   m_SplitRadius: 2
   m_HealthModifier: 1
-  m_SplitCount: 2
+  m_SplitCount: 3
+  m_DamageThreshold: 0.5

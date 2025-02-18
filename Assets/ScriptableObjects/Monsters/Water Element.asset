@@ -25,13 +25,12 @@ MonoBehaviour:
   Value: 7
   Shape: 2
   Radius: 1
-  SpawnStrategy: 1
+  SpawnStrategy: 4
   MineSprite: {fileID: 4317999874980683056, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  m_PassiveEffects:
-  - Template: {fileID: 11400000, guid: 2f04ca7d8c369704aa8da018a77e7af5, type: 2}
-  m_ActiveEffects:
+  m_PersistentEffects: []
+  m_TriggerableEffects:
   - Template: {fileID: 11400000, guid: 2732e492c2a6b4d43b7c8fd6bb3fe121, type: 2}
   m_MonsterType: 15
   m_MaxHp: 7
