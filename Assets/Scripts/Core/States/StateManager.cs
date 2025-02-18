@@ -48,6 +48,28 @@ namespace RPGMinesweeper.States
         {
             return m_ActiveStates.ContainsKey(stateName);
         }
+
+        public void OnTurnEnd()
+        {
+            List<string> expiredStates = new List<string>();
+            
+            foreach (var state in m_ActiveStates.Values)
+            {
+                if (state is ITurnBasedState turnState)
+                {
+                    turnState.OnTurnEnd();
+                    if (turnState.IsExpired)
+                    {
+                        expiredStates.Add(state.Name);
+                    }
+                }
+            }
+
+            foreach (var stateName in expiredStates)
+            {
+                RemoveState(stateName);
+            }
+        }
         #endregion
 
         #region Private Methods
@@ -57,10 +79,13 @@ namespace RPGMinesweeper.States
             
             foreach (var state in m_ActiveStates.Values)
             {
-                state.Update(Time.deltaTime);
-                if (state.IsExpired)
+                if (!(state is ITurnBasedState)) // Only update time-based states
                 {
-                    expiredStates.Add(state.Name);
+                    state.Update(Time.deltaTime);
+                    if (state.IsExpired)
+                    {
+                        expiredStates.Add(state.Name);
+                    }
                 }
             }
 

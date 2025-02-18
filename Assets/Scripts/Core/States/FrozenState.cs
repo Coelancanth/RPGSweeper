@@ -3,17 +3,17 @@ using RPGMinesweeper.Grid;
 
 namespace RPGMinesweeper.States
 {
-    public class FrozenState : BaseState
+    public class FrozenState : BaseTurnState
     {
         #region Private Fields
-        private readonly float m_Radius;
+        private readonly int m_Radius;
         private readonly GridShape m_Shape;
         private readonly Vector2Int m_SourcePosition;
         #endregion
 
         #region Constructor
-        public FrozenState(float duration, float radius, Vector2Int sourcePosition, GridShape shape = GridShape.Square) 
-            : base("Frozen", duration)
+        public FrozenState(int turns, int radius, Vector2Int sourcePosition, GridShape shape = GridShape.Square) 
+            : base("Frozen", turns)
         {
             m_Radius = radius;
             m_Shape = shape;

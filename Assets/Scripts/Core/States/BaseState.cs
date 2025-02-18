@@ -13,7 +13,7 @@ namespace RPGMinesweeper.States
         #region Public Properties
         public string Name => m_Name;
         public float Duration => m_Duration;
-        public bool IsExpired => m_ElapsedTime >= m_Duration;
+        public virtual bool IsExpired => m_ElapsedTime >= m_Duration;
         #endregion
 
         #region Constructor
