@@ -1,57 +1,127 @@
-# v0.1.37 - 2025-02-18 18:51:10
+# v0.1.38 - 2025-02-18 19:30:00
 ## Overview
-Refactored UnfreezeEffect to utilize the state system, improving consistency and maintainability of the effect system implementation.
+Implemented a new input system with proper separation of concerns, improving code maintainability and following SOLID principles.
 
 ## Change Details
 ### Architecture Improvements
-#### State System Integration
-- Updated UnfreezeEffect to use StateManager for state handling
-- Standardized parameter types across freeze-related effects
-- Enhanced code organization with proper regions
+#### Input System Refactoring
+- Separated input handling from cell view logic
+- Introduced IInteractable interface for standardized interaction
+- Added dedicated InputManager for centralized input handling
+- Enhanced debug capabilities with turn system logging
 ```mermaid
 classDiagram
-class UnfreezeEffect {
-    -m_Radius: int
-    -m_Shape: GridShape
-    -m_StateManager: StateManager
-    +Apply()
-    -RemoveFrozenStates()
+class InputManager {
+    -m_MainCamera: Camera
+    -m_CellLayer: LayerMask
+    -m_IsInputEnabled: bool
+    +EnableInput(bool)
+    -HandleMouseClick()
 }
-class StateManager {
-    +AddState()
-    +RemoveState()
-    +HasState()
+class IInteractable {
+    <<interface>>
+    +CanInteract: bool
+    +Position: Vector2Int
+    +OnInteract()
 }
-UnfreezeEffect --> StateManager : Uses
-note for UnfreezeEffect "State-based implementation\nfor frozen state removal"
+class CellView {
+    +CanInteract: bool
+    +Position: Vector2Int
+    +OnInteract()
+}
+class InteractionHandler {
+    -m_GridManager: GridManager
+    -HandleCellClicked(Vector2Int)
+}
+InputManager --> InteractionHandler : Notifies
+InteractionHandler --> IInteractable : Uses
+IInteractable <|.. CellView
+note for InputManager "Centralized input handling\nwith layer-based filtering"
 ```
 
 ### Adjustments and Refactoring
-#### Effect Implementation
-- Converted direct state manipulation to StateManager usage
-- Improved parameter type consistency
-- Enhanced error handling and validation
+#### Component Organization
+- Added Systems GameObject for input management
+- Configured Cell layer for proper raycast filtering
+- Enhanced debug visualization for turn system
 ```mermaid
 classDiagram
-class EffectSystem {
-    StateBasedManagement
-    ConsistentTypes
-    ImprovedValidation
+class SystemsSetup {
+    InputManager
+    InteractionHandler
+    LayerConfiguration
 }
 class Implementation {
-    StateManager
-    TypeStandardization
-    ErrorHandling
+    CellLayer[3]
+    RaycastFiltering
+    DebugLogging
 }
-EffectSystem --> Implementation
-note for EffectSystem "Better state management\nthrough StateManager"
+SystemsSetup --> Implementation
+note for SystemsSetup "Proper component organization\nwith clear responsibilities"
 ```
 
 ### Optimizations
-- Improved state management consistency
-- Enhanced type safety
+- Improved input handling efficiency with layer-based filtering
+- Enhanced debug capabilities
+- Better organized component hierarchy
+- Cleaner interaction flow
+
+# v0.1.37 - 2025-02-18 18:51:10
+## Overview
+Enhanced the split effect system with configurable HP threshold and dual-mode support, improving monster splitting mechanics and gameplay flexibility.
+
+## Change Details
+### Architecture Improvements
+#### Split Effect Enhancement
+- Added configurable HP threshold for triggering split in persistent mode
+- Improved HP ratio validation for split conditions
+- Enhanced mode handling through UI tab assignment
+```mermaid
+classDiagram
+class SplitEffect {
+    -m_HealthModifier: float
+    -m_SplitCount: int
+    -m_DamageThreshold: float
+    +OnMonsterDamaged(position, currentHPRatio)
+    -PerformSplit(sourcePosition)
+    -ValidateHPRatio()
+}
+class SplitEffectData {
+    -m_HealthModifier: float
+    -m_SplitCount: int
+    -m_DamageThreshold: float
+    +CreateEffect()
+}
+SplitEffectData --> SplitEffect : Creates
+note for SplitEffect "Supports both persistent\nand triggerable modes"
+```
+
+### Adjustments and Refactoring
+#### Effect Mode Management
+- Removed explicit mode field from effect data
+- Leveraged UI tab assignment for mode selection
+- Standardized mode handling across effects
+```mermaid
+classDiagram
+class EffectSystem {
+    TabBasedModes
+    ImplicitTypeSelection
+    ConsistentBehavior
+}
+class Implementation {
+    PersistentMode[HP_threshold]
+    TriggerableMode[immediate]
+    ModeInheritance[UI_tabs]
+}
+EffectSystem --> Implementation
+note for EffectSystem "Cleaner mode management\nthrough UI structure"
+```
+
+### Optimizations
+- Improved HP threshold validation
+- Enhanced split condition checks
+- Streamlined mode selection
 - Better code organization
-- Standardized parameter handling
 
 # v0.1.36 - 2025-02-18 00:15:00
 ## Overview

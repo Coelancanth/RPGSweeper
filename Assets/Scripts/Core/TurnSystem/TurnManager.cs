@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using RPGMinesweeper.TurnSystem;
 
 namespace RPGMinesweeper.TurnSystem
 {
@@ -14,6 +15,7 @@ namespace RPGMinesweeper.TurnSystem
         private Queue<ITurn> m_PendingTurns = new Queue<ITurn>();
         private ITurn m_CurrentTurn;
         private bool m_IsProcessingTurns;
+        [SerializeField] private bool m_DebugMode;
         #endregion
 
         #region Unity Lifecycle
@@ -56,6 +58,11 @@ namespace RPGMinesweeper.TurnSystem
 
             try
             {
+                if (m_DebugMode)
+                {
+                    Debug.Log($"[TurnManager] Processing turns. Current: {m_CurrentTurn?.GetType().Name ?? "None"}, Pending: {m_PendingTurns.Count}");
+                }
+
                 // Process current turn if it exists
                 if (m_CurrentTurn != null)
                 {
@@ -84,6 +91,10 @@ namespace RPGMinesweeper.TurnSystem
 
             m_CurrentTurn = m_PendingTurns.Dequeue();
             m_CurrentTurn.Begin();
+            if (m_DebugMode)
+            {
+                Debug.Log($"[TurnManager] Starting turn: {m_CurrentTurn.GetType().Name}");
+            }
             OnTurnStarted?.Invoke(m_CurrentTurn);
         }
 
@@ -91,6 +102,10 @@ namespace RPGMinesweeper.TurnSystem
         {
             if (m_CurrentTurn == null) return;
 
+            if (m_DebugMode)
+            {
+                Debug.Log($"[TurnManager] Ending turn: {m_CurrentTurn.GetType().Name}");
+            }
             m_CurrentTurn.End();
             OnTurnEnded?.Invoke(m_CurrentTurn);
             m_CurrentTurn = null;

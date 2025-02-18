@@ -17,7 +17,7 @@ MonoBehaviour:
   m_TargetLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Duration: 0
+  m_Duration: 2
   m_Magnitude: 0
   m_SplitRadius: 2
   m_HealthModifier: 1

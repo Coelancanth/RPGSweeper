@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using System.Collections.Generic;
-
+using RPGMinesweeper.TurnSystem;
 public class MineDebugger : MonoBehaviour
 {
     #region Inspector Fields
@@ -10,12 +10,15 @@ public class MineDebugger : MonoBehaviour
     [SerializeField] private KeyCode m_InspectKey = KeyCode.I;  // New key for cell inspection
     [SerializeField] private KeyCode m_RevealAllKey = KeyCode.R;  // New key for revealing all cells
     [SerializeField] private KeyCode m_NextRoundKey = KeyCode.N; // New key for advancing round
+    [SerializeField] private KeyCode m_TurnDebugKey = KeyCode.T;
     [SerializeField] private GridManager m_GridManager;
+    [SerializeField] private TurnManager m_TurnManager;
     #endregion
 
     #region Private Fields
     private Dictionary<Vector2Int, CellView> m_CellViews = new Dictionary<Vector2Int, CellView>();
     private bool m_IsDebugMode = false;
+    private bool m_IsTurnDebugMode = false;
     private Dictionary<Vector2Int, int> m_CachedValues = new Dictionary<Vector2Int, int>();
     private Dictionary<Vector2Int, Color> m_CachedColors = new Dictionary<Vector2Int, Color>();
     private int m_RoundCount = 0;
@@ -46,6 +49,17 @@ public class MineDebugger : MonoBehaviour
             }
         }
 
+        if (m_TurnManager == null)
+        {
+            m_TurnManager = FindFirstObjectByType<TurnManager>();
+            if (m_TurnManager == null)
+            {
+                Debug.LogError("MineDebugger: Could not find TurnManager in scene!");
+                enabled = false;
+                return;
+            }
+        }
+
         // Cache all cell views
         var cellViews = FindObjectsOfType<CellView>();
         foreach (var cellView in cellViews)
@@ -60,6 +74,12 @@ public class MineDebugger : MonoBehaviour
         {
             m_IsDebugMode = !m_IsDebugMode;
             ToggleDebugVisuals();
+        }
+
+        if (Input.GetKeyDown(m_TurnDebugKey))
+        {
+            m_IsTurnDebugMode = !m_IsTurnDebugMode;
+            ToggleTurnDebug();
         }
 
         if (Input.GetKeyDown(m_InspectKey))
@@ -207,6 +227,18 @@ public class MineDebugger : MonoBehaviour
         m_RoundCount++;
         Debug.Log($"Advancing to round {m_RoundCount}...");
         GameEvents.RaiseRoundAdvanced();
+    }
+
+    private void ToggleTurnDebug()
+    {
+        if (m_TurnManager == null) return;
+        
+        var debugField = m_TurnManager.GetType().GetField("m_DebugMode", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (debugField != null)
+        {
+            debugField.SetValue(m_TurnManager, m_IsTurnDebugMode);
+            Debug.Log($"[MineDebugger] Turn debug mode: {(m_IsTurnDebugMode ? "Enabled" : "Disabled")}");
+        }
     }
     #endregion
 }

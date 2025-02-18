@@ -2,6 +2,39 @@
 
 ## Core Systems
 
+### Input System
+```mermaid
+classDiagram
+class InputManager {
+    -m_MainCamera: Camera
+    -m_CellLayer: LayerMask
+    -m_IsInputEnabled: bool
+    +EnableInput(bool)
+    -HandleMouseClick()
+    +OnCellClicked: Action~Vector2Int~
+}
+class IInteractable {
+    <<interface>>
+    +CanInteract: bool
+    +Position: Vector2Int
+    +OnInteract()
+}
+class InteractionHandler {
+    -m_GridManager: GridManager
+    -HandleCellClicked(Vector2Int)
+}
+class CellView {
+    +CanInteract: bool
+    +Position: Vector2Int
+    +OnInteract()
+}
+InputManager --> InteractionHandler : Notifies
+InteractionHandler --> IInteractable : Uses
+IInteractable <|.. CellView
+note for InputManager "Centralized input handling\nwith layer-based filtering"
+note for IInteractable "Standard interface for\ninteractive objects"
+```
+
 ### Grid System
 ```mermaid
 classDiagram

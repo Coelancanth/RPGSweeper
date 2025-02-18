@@ -1,7 +1,8 @@
 using UnityEngine;
 using TMPro;
+using RPGMinesweeper.Input;
 
-public class CellView : MonoBehaviour
+public class CellView : MonoBehaviour, IInteractable
 {
     [Header("References")]
     [SerializeField] private SpriteRenderer m_BackgroundRenderer;
@@ -43,6 +44,10 @@ public class CellView : MonoBehaviour
     public SpriteRenderer BackgroundRenderer => m_BackgroundRenderer;
     public SpriteRenderer MineRenderer => m_MineRenderer;
     public MineDisplayConfig DisplayConfig => m_DisplayConfig;
+
+    public bool CanInteract => !m_IsFrozen && !m_IsRevealed;
+    public Vector2Int Position => m_Position;
+    public bool IsFrozen => m_IsFrozen;
 
     private void Awake()
     {
@@ -310,16 +315,13 @@ public class CellView : MonoBehaviour
         }
     }
 
-    private void OnMouseDown()
+    public void OnInteract()
     {
-        // Prevent interaction if cell is frozen
-        if (m_IsFrozen) return;
-
-        if (!m_IsRevealed)
+        if (CanInteract)
         {
             GameEvents.RaiseCellRevealed(m_Position);
         }
-        else if (m_HasMine)
+        else if (m_IsRevealed && m_HasMine)
         {
             // For monster mines, process interaction on every click
             var monsterMine = m_CurrentMine as MonsterMine;
@@ -327,12 +329,10 @@ public class CellView : MonoBehaviour
             {
                 if (monsterMine.IsCollectable)
                 {
-                    // If monster is already defeated and in collectable state, remove it
                     GameEvents.RaiseMineRemovalAttempted(m_Position);
                 }
                 else
                 {
-                    // Process the monster mine interaction (combat)
                     var player = GameObject.FindFirstObjectByType<PlayerComponent>();
                     if (player != null)
                     {
@@ -342,7 +342,6 @@ public class CellView : MonoBehaviour
             }
             else
             {
-                // Non-monster mines can be removed normally
                 GameEvents.RaiseMineRemovalAttempted(m_Position);
             }
         }
