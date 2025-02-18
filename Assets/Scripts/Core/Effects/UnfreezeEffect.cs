@@ -1,52 +1,56 @@
 using UnityEngine;
-using System.Collections.Generic;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper.States;
 
 namespace RPGMinesweeper.Effects
 {
-    public class UnfreezeEffect : ITriggerableEffect
+    public class UnfreezeEffect : BaseEffect
     {
         #region Private Fields
-        private readonly float m_Radius;
+        private readonly int m_Radius;
         private readonly GridShape m_Shape;
+        private StateManager m_StateManager;
         #endregion
 
         #region Public Properties
-        public EffectType Type => EffectType.Triggerable;
-        public string Name => "Unfreeze";
+        public override EffectType[] SupportedTypes => new[] { EffectType.Triggerable };
         #endregion
 
-        public UnfreezeEffect(float radius, GridShape shape)
+        public UnfreezeEffect(int radius, GridShape shape = GridShape.Square)
         {
             m_Radius = radius;
             m_Shape = shape;
+            m_CurrentMode = EffectType.Triggerable;
         }
 
-        public void Apply(GameObject target, Vector2Int sourcePosition)
+        #region Protected Methods
+        protected override void ApplyTriggerable(GameObject target, Vector2Int sourcePosition)
         {
-            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            if (gridManager == null) return;
-
-            // Get affected positions based on shape and radius
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, Mathf.RoundToInt(m_Radius));
-
-            // Remove frozen state from each valid cell
+            EnsureStateManager(target);
+            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, m_Radius);
+            
             foreach (var pos in affectedPositions)
             {
-                if (gridManager.IsValidPosition(pos))
+                if (m_StateManager.HasState("Frozen", StateTarget.Cell, pos))
                 {
-                    var cellObject = gridManager.GetCellObject(pos);
-                    if (cellObject != null)
-                    {
-                        var stateManager = cellObject.GetComponent<StateManager>();
-                        if (stateManager != null)
-                        {
-                            stateManager.RemoveState("Frozen");
-                        }
-                    }
+                    m_StateManager.RemoveState(("Frozen", StateTarget.Cell, pos));
                 }
             }
         }
+        #endregion
+
+        #region Private Methods
+        private void EnsureStateManager(GameObject target)
+        {
+            if (m_StateManager == null)
+            {
+                m_StateManager = target.GetComponent<StateManager>();
+                if (m_StateManager == null)
+                {
+                    m_StateManager = target.AddComponent<StateManager>();
+                }
+            }
+        }
+        #endregion
     }
 } 

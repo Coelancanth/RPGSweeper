@@ -12,6 +12,7 @@ namespace RPGMinesweeper.Effects
         private readonly GridShape m_Shape;
         private bool m_IsActive;
         private StateManager m_StateManager;
+        private Vector2Int m_CurrentPosition; // Store the current position for removal
         #endregion
 
         #region Public Properties
@@ -56,7 +57,7 @@ namespace RPGMinesweeper.Effects
         {
             if (m_StateManager != null && m_IsActive)
             {
-                m_StateManager.RemoveState("Frozen");
+                m_StateManager.RemoveState(("Frozen", StateTarget.Cell, m_CurrentPosition));
                 m_IsActive = false;
             }
         }
@@ -77,6 +78,7 @@ namespace RPGMinesweeper.Effects
 
         private void ApplyFrozenState(GameObject target, Vector2Int sourcePosition)
         {
+            m_CurrentPosition = sourcePosition; // Store the position for later removal
             var frozenState = new FrozenState(m_Duration, m_Radius, sourcePosition, m_Shape);
             m_StateManager.AddState(frozenState);
         }

@@ -13,7 +13,7 @@ namespace RPGMinesweeper.States
 
         #region Constructor
         public FrozenState(int turns, int radius, Vector2Int sourcePosition, GridShape shape = GridShape.Square) 
-            : base("Frozen", turns)
+            : base("Frozen", turns, StateTarget.Cell, sourcePosition)
         {
             m_Radius = radius;
             m_Shape = shape;
@@ -41,7 +41,7 @@ namespace RPGMinesweeper.States
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             if (gridManager == null) return;
 
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(m_SourcePosition, m_Shape, Mathf.RoundToInt(m_Radius));
+            var affectedPositions = GridShapeHelper.GetAffectedPositions(m_SourcePosition, m_Shape, m_Radius);
             foreach (var pos in affectedPositions)
             {
                 if (gridManager.IsValidPosition(pos))
@@ -64,7 +64,7 @@ namespace RPGMinesweeper.States
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
             if (gridManager == null) return;
 
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(m_SourcePosition, m_Shape, Mathf.RoundToInt(m_Radius));
+            var affectedPositions = GridShapeHelper.GetAffectedPositions(m_SourcePosition, m_Shape, m_Radius);
             foreach (var pos in affectedPositions)
             {
                 if (gridManager.IsValidPosition(pos))

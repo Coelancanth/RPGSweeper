@@ -14,7 +14,8 @@ namespace RPGMinesweeper.States
         #endregion
 
         #region Constructor
-        protected BaseTurnState(string name, int turns) : base(name, float.MaxValue)
+        protected BaseTurnState(string name, int turns, StateTarget target, object targetId) 
+            : base(name, turns, target, targetId)
         {
             m_TurnsRemaining = turns;
         }

@@ -1,12 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RPGMinesweeper.States
 {
     public class StateManager : MonoBehaviour
     {
         #region Private Fields
-        private Dictionary<string, IState> m_ActiveStates = new Dictionary<string, IState>();
+        private Dictionary<(string Name, StateTarget Target, object TargetId), IState> m_ActiveStates = 
+            new Dictionary<(string Name, StateTarget Target, object TargetId), IState>();
         #endregion
 
         #region Events
@@ -24,74 +26,82 @@ namespace RPGMinesweeper.States
         #region Public Methods
         public void AddState(IState state)
         {
-            if (m_ActiveStates.ContainsKey(state.Name))
+            var key = (state.Name, state.Target, state.TargetId);
+            if (m_ActiveStates.ContainsKey(key))
             {
-                RemoveState(state.Name);
+                RemoveState(key);
             }
 
-            m_ActiveStates[state.Name] = state;
+            m_ActiveStates[key] = state;
             state.Enter(gameObject);
             OnStateAdded?.Invoke(state);
         }
 
-        public void RemoveState(string stateName)
+        public void RemoveState((string Name, StateTarget Target, object TargetId) key)
         {
-            if (m_ActiveStates.TryGetValue(stateName, out IState state))
+            if (m_ActiveStates.TryGetValue(key, out IState state))
             {
                 state.Exit(gameObject);
-                m_ActiveStates.Remove(stateName);
+                m_ActiveStates.Remove(key);
                 OnStateRemoved?.Invoke(state);
             }
         }
 
-        public bool HasState(string stateName)
+        public bool HasState(string stateName, StateTarget target, object targetId)
         {
-            return m_ActiveStates.ContainsKey(stateName);
+            return m_ActiveStates.ContainsKey((stateName, target, targetId));
         }
 
         public void OnTurnEnd()
         {
-            List<string> expiredStates = new List<string>();
+            var expiredStates = new List<(string Name, StateTarget Target, object TargetId)>();
             
-            foreach (var state in m_ActiveStates.Values)
+            foreach (var kvp in m_ActiveStates)
             {
-                if (state is ITurnBasedState turnState)
+                if (kvp.Value is ITurnBasedState turnState)
                 {
                     turnState.OnTurnEnd();
                     if (turnState.IsExpired)
                     {
-                        expiredStates.Add(state.Name);
+                        expiredStates.Add(kvp.Key);
                     }
                 }
             }
 
-            foreach (var stateName in expiredStates)
+            foreach (var key in expiredStates)
             {
-                RemoveState(stateName);
+                RemoveState(key);
             }
+        }
+
+        public IEnumerable<IState> GetStatesForTarget(StateTarget target, object targetId)
+        {
+            return m_ActiveStates
+                .Where(kvp => kvp.Key.Target == target && Equals(kvp.Key.TargetId, targetId))
+                .Select(kvp => kvp.Value);
         }
         #endregion
 
         #region Private Methods
         private void UpdateStates()
         {
-            List<string> expiredStates = new List<string>();
+            var expiredStates = new List<(string Name, StateTarget Target, object TargetId)>();
             
-            foreach (var state in m_ActiveStates.Values)
+            foreach (var kvp in m_ActiveStates)
             {
-                if (!(state is ITurnBasedState)) // Only update time-based states
+                if (!(kvp.Value is ITurnBasedState)) // Only update time-based states
                 {
-                    state.Update(Time.deltaTime);
-                    if (state.IsExpired)
+                    kvp.Value.Update(Time.deltaTime);
+                    if (kvp.Value.IsExpired)
                     {
-                        expiredStates.Add(state.Name);
+                        expiredStates.Add(kvp.Key);
                     }
                 }
             }
 
-            foreach (var stateName in expiredStates)
+            foreach (var key in expiredStates)
             {
-                RemoveState(stateName);
+                RemoveState(key);
             }
         }
         #endregion
