@@ -1,3 +1,58 @@
+# v0.1.37 - 2025-02-18 18:51:10
+## Overview
+Refactored UnfreezeEffect to utilize the state system, improving consistency and maintainability of the effect system implementation.
+
+## Change Details
+### Architecture Improvements
+#### State System Integration
+- Updated UnfreezeEffect to use StateManager for state handling
+- Standardized parameter types across freeze-related effects
+- Enhanced code organization with proper regions
+```mermaid
+classDiagram
+class UnfreezeEffect {
+    -m_Radius: int
+    -m_Shape: GridShape
+    -m_StateManager: StateManager
+    +Apply()
+    -RemoveFrozenStates()
+}
+class StateManager {
+    +AddState()
+    +RemoveState()
+    +HasState()
+}
+UnfreezeEffect --> StateManager : Uses
+note for UnfreezeEffect "State-based implementation\nfor frozen state removal"
+```
+
+### Adjustments and Refactoring
+#### Effect Implementation
+- Converted direct state manipulation to StateManager usage
+- Improved parameter type consistency
+- Enhanced error handling and validation
+```mermaid
+classDiagram
+class EffectSystem {
+    StateBasedManagement
+    ConsistentTypes
+    ImprovedValidation
+}
+class Implementation {
+    StateManager
+    TypeStandardization
+    ErrorHandling
+}
+EffectSystem --> Implementation
+note for EffectSystem "Better state management\nthrough StateManager"
+```
+
+### Optimizations
+- Improved state management consistency
+- Enhanced type safety
+- Better code organization
+- Standardized parameter handling
+
 # v0.1.36 - 2025-02-18 00:15:00
 ## Overview
 Enhanced the split effect system with configurable HP threshold and dual-mode support, improving monster splitting mechanics and gameplay flexibility.
@@ -178,8 +233,6 @@ note for MineDebugger "Testing tool for\nduration-based effects"
 - Improved frozen state visualization with proper tint
 - Enhanced effect area calculation efficiency
 - Optimized cell state management
-
-
 
 # v0.1.33 - 2025-02-17 13:59:00
 ## Overview
@@ -579,7 +632,6 @@ note for PropertySystem "Automatic property handling\nwith performance focus"
 - Optimized property discovery through static caching
 - Enhanced memory usage with proper cleanup
 - Improved inspector responsiveness
-
 
 # v0.1.26 - 2025-02-17 01:43:51
 ## Overview

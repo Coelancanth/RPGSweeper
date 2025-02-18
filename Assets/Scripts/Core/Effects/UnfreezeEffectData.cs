@@ -2,11 +2,16 @@ using UnityEngine;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper.Effects;
 
-[CreateAssetMenu(fileName = "UnfreezeEffectData", menuName = "RPGMinesweeper/Effects/Unfreeze Effect")]
-public class UnfreezeEffectData : EffectData
+namespace RPGMinesweeper.Effects
 {
-    public override IEffect CreateEffect()
+    [CreateAssetMenu(fileName = "UnfreezeEffectData", menuName = "RPGMinesweeper/Effects/UnfreezeEffect")]
+    public class UnfreezeEffectData : EffectData
     {
-        return new UnfreezeEffect(Radius, Shape);
+
+        public override IEffect CreateEffect()
+        {
+            var effect = new UnfreezeEffect(Radius, Shape);
+            return effect;
+        }
     }
 } 

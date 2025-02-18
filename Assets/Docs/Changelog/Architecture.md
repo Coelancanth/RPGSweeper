@@ -268,87 +268,43 @@ class ITriggerableEffect {
 <<interface>>
 +Apply(GameObject, Vector2Int)
 }
-class EffectTemplate {
--m_Template: EffectData
+class StateManager {
++AddState(StateInfo)
++RemoveState(StateInfo)
++HasState(string, StateTarget, object)
+}
+class FreezeEffect {
 -m_Duration: float
--m_Magnitude: float
--m_Shape: GridShape
--m_Radius: float
--m_TargetMonsterType: MonsterType
-+CreateInstance()
-+OnValidate()
-}
-class EffectData {
-+Type: EffectType
-+Duration: float
-+Magnitude: float
-+Shape: GridShape
-+CreateEffect()
-}
-class RangeRevealEffect {
 -m_Radius: float
 -m_Shape: GridShape
--m_TriggerPosition: Vector2Int?
--m_TriggerPositionType: GridPositionType
-+Apply()
--GetEffectivePosition()
-}
-class SummonEffect {
--m_Radius: float
--m_Shape: GridShape
--m_MineType: MineType
--m_MonsterType: MonsterType
--m_Count: int
--m_TriggerPosition: Vector2Int?
--m_TriggerPositionType: GridPositionType
-+Apply()
--GetEffectivePosition()
-}
-class ConfusionEffect {
--m_Shape: GridShape
--m_AffectedCells: HashSet
+-m_StateManager: StateManager
 +Apply()
 +Remove()
-+Update()
-}
-
-class FreezeEffect {
-    -m_Duration: float
-    -m_Radius: float
-    -m_Shape: GridShape
-    -m_FrozenCells: HashSet
-    +Apply()
-    +Remove()
 }
 class UnfreezeEffect {
-    -m_Radius: float
-    -m_Shape: GridShape
-    +Apply()
+-m_Radius: float
+-m_Shape: GridShape
+-m_StateManager: StateManager
++Apply()
+-RemoveFrozenStates()
 }
 class SplitEffect {
-    -m_HealthModifier: float
-    -m_SplitCount: int
-    -m_DamageThreshold: float
-    -m_IsActive: bool
-    +OnMonsterDamaged(position, currentHPRatio)
-    -PerformSplit(sourcePosition)
-    -ValidateHPRatio()
+-m_HealthModifier: float
+-m_SplitCount: int
+-m_DamageThreshold: float
+-m_IsActive: bool
++OnMonsterDamaged(position, currentHPRatio)
+-PerformSplit(sourcePosition)
+-ValidateHPRatio()
 }
 
 IEffect <|-- IPersistentEffect
 IEffect <|-- ITriggerableEffect
-IPersistentEffect <|.. ConfusionEffect
-IPersistentEffect <|.. SplitEffect
-ITriggerableEffect <|.. RangeRevealEffect
-ITriggerableEffect <|.. SummonEffect
-ITriggerableEffect <|.. FreezeEffect
+IPersistentEffect <|.. FreezeEffect
 ITriggerableEffect <|.. UnfreezeEffect
-ITriggerableEffect <|.. SplitEffect
-EffectTemplate --> EffectData : References
-EffectData --> IEffect : Creates
-note for RangeRevealEffect "Configurable trigger positions\nfor revealing cells"
-note for SummonEffect "Flexible mine placement\nwith position selection"
-note for SplitEffect "HP threshold-based splitting\nwith dual-mode support"
-note for IPersistentEffect "Long-lasting effects\nwith state management"
-note for ITriggerableEffect "One-time effects\nwith immediate impact"
+FreezeEffect --> StateManager : Uses
+UnfreezeEffect --> StateManager : Uses
+note for StateManager "Centralized state management\nfor effect system"
+note for FreezeEffect "Applies frozen state\nwith duration"
+note for UnfreezeEffect "Removes frozen state\nfrom affected cells"
 ```
