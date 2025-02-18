@@ -15,7 +15,7 @@ namespace RPGMinesweeper.Effects
         [SerializeField]
         private LayerMask m_TargetLayers;
         [SerializeField]
-        private float m_Duration;
+        private int m_Duration;
         [SerializeField]
         private float m_Magnitude;
 
@@ -41,7 +41,7 @@ namespace RPGMinesweeper.Effects
         }
 
         [Tooltip("Duration of the effect (if applicable)")]
-        public float Duration
+        public int Duration
         {
             get => m_Duration;
             set => m_Duration = value;

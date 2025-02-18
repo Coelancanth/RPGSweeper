@@ -1,16 +1,17 @@
 using UnityEngine;
-using System.Collections;
 using RPGMinesweeper.Grid;
+using RPGMinesweeper.States;
 
 namespace RPGMinesweeper.Effects
 {
     public class FreezeEffect : BaseEffect, IPersistentEffect, ITriggerableEffect
     {
         #region Private Fields
-        private readonly float m_Duration;
-        private readonly float m_Radius;
+        private readonly int m_Duration;
+        private readonly int m_Radius;
         private readonly GridShape m_Shape;
         private bool m_IsActive;
+        private StateManager m_StateManager;
         #endregion
 
         #region Public Properties
@@ -20,7 +21,7 @@ namespace RPGMinesweeper.Effects
         public string Name => "Freeze";
         #endregion
 
-        public FreezeEffect(float duration, float radius, GridShape shape = GridShape.Square)
+        public FreezeEffect(int duration, int radius, GridShape shape = GridShape.Square)
         {
             m_Duration = duration;
             m_Radius = radius;
@@ -33,88 +34,51 @@ namespace RPGMinesweeper.Effects
         protected override void ApplyPersistent(GameObject target, Vector2Int sourcePosition)
         {
             m_IsActive = true;
-            ApplyFreezeToArea(sourcePosition);
+            EnsureStateManager(target);
+            ApplyFrozenState(target, sourcePosition);
         }
 
         protected override void ApplyTriggerable(GameObject target, Vector2Int sourcePosition)
         {
             m_IsActive = true;
-            ApplyFreezeToArea(sourcePosition);
-            
-            // Auto-remove after duration for triggerable mode
-            GameObject.FindFirstObjectByType<MonoBehaviour>()?.StartCoroutine(RemoveAfterDelay());
+            EnsureStateManager(target);
+            ApplyFrozenState(target, sourcePosition);
         }
         #endregion
 
         #region Public Methods
         public void Update(float deltaTime)
         {
-            // Update freeze effect (e.g., visual feedback)
-            if (m_CurrentMode == EffectType.Persistent)
-            {
-                // Add any persistent-specific update logic here
-            }
+            // State updates are handled by StateManager
         }
 
         public void Remove(GameObject target)
         {
-            m_IsActive = false;
-            RemoveFreezeFromArea();
+            if (m_StateManager != null && m_IsActive)
+            {
+                m_StateManager.RemoveState("Frozen");
+                m_IsActive = false;
+            }
         }
         #endregion
 
         #region Private Methods
-        private void ApplyFreezeToArea(Vector2Int sourcePosition)
+        private void EnsureStateManager(GameObject target)
         {
-            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            if (gridManager == null) return;
-
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, Mathf.RoundToInt(m_Radius));
-            foreach (var pos in affectedPositions)
+            if (m_StateManager == null)
             {
-                if (gridManager.IsValidPosition(pos))
+                m_StateManager = target.GetComponent<StateManager>();
+                if (m_StateManager == null)
                 {
-                    m_AffectedCells.Add(pos);
-                    var cellObject = gridManager.GetCellObject(pos);
-                    if (cellObject != null)
-                    {
-                        var cellView = cellObject.GetComponent<CellView>();
-                        if (cellView != null)
-                        {
-                            cellView.SetFrozen(true);
-                        }
-                    }
+                    m_StateManager = target.AddComponent<StateManager>();
                 }
             }
         }
 
-        private void RemoveFreezeFromArea()
+        private void ApplyFrozenState(GameObject target, Vector2Int sourcePosition)
         {
-            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            if (gridManager == null) return;
-
-            foreach (var pos in m_AffectedCells)
-            {
-                var cellObject = gridManager.GetCellObject(pos);
-                if (cellObject != null)
-                {
-                    var cellView = cellObject.GetComponent<CellView>();
-                    if (cellView != null)
-                    {
-                        cellView.SetFrozen(false);
-                    }
-                }
-            }
-            m_AffectedCells.Clear();
-        }
-
-        private IEnumerator RemoveAfterDelay()
-        {
-            yield return new WaitForSeconds(m_Duration);
-            if (m_IsActive)
-            {
-                Remove(null);
-            }
+            var frozenState = new FrozenState(m_Duration, m_Radius, sourcePosition, m_Shape);
+            m_StateManager.AddState(frozenState);
         }
         #endregion
     }
