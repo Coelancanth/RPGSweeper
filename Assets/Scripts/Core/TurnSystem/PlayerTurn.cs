@@ -7,7 +7,7 @@ namespace RPGMinesweeper.TurnSystem
         #region Private Fields
         private readonly Vector2Int m_Position;
         private bool m_IsComplete;
-        private bool m_DebugMode = true; // Enable debug logging for player turns
+        private bool m_DebugMode = false; // Disable debug logging for player turns
         private TurnManager m_TurnManager;
         #endregion
 

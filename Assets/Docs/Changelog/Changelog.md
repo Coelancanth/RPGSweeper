@@ -1,3 +1,68 @@
+# v0.1.40 - 2025-02-18 21:30:00
+## Overview
+Enhanced state management system with centralized control and improved debug tracing, ensuring better state handling and cleaner logging.
+
+## Change Details
+### Architecture Improvements
+#### State Management Enhancement
+- Added centralized StateManager GameObject to scene
+- Improved state cleanup with proper event handling
+- Enhanced debug tracing with conditional logging
+- Optimized round advancement integration
+```mermaid
+classDiagram
+class StateManager {
+    -m_ActiveStates: Dictionary
+    -m_DebugMode: bool
+    +AddState(IState)
+    +RemoveState(key)
+    +OnTurnEnd()
+    -HandleRoundAdvanced()
+}
+class GameEvents {
+    OnRoundAdvanced
+    OnStateAdded
+    OnStateRemoved
+}
+class FrozenState {
+    -m_AffectedPositions: List
+    -m_DebugMode: bool
+    +OnTurnEnd()
+    -ApplyFrozenState()
+    -RemoveFrozenState()
+}
+StateManager --> GameEvents : Subscribes
+StateManager --> FrozenState : Manages
+note for StateManager "Centralized state control\nwith debug tracing"
+```
+
+### Adjustments and Refactoring
+#### Debug System Enhancement
+- Disabled debug modes by default across components
+- Added conditional logging with proper context
+- Improved state tracking visibility
+```mermaid
+classDiagram
+class DebugSystem {
+    ConditionalLogging
+    ContextualMessages
+    StateTracking
+}
+class Implementation {
+    DisabledByDefault[components]
+    ProperContext[messages]
+    CleanerOutput[conditional]
+}
+DebugSystem --> Implementation
+note for DebugSystem "Better organized debug\nwith cleaner output"
+```
+
+### Optimizations
+- Improved state management efficiency
+- Enhanced debug output clarity
+- Better state cleanup handling
+- Cleaner round advancement integration
+
 # v0.1.39 - 2025-02-18 20:00:00
 ## Overview
 Enhanced the turn system with event-driven flow and improved debug tracing, making turn progression more predictable and easier to debug.

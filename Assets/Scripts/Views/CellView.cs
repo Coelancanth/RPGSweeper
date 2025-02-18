@@ -24,6 +24,9 @@ public class CellView : MonoBehaviour, IInteractable
     [SerializeField] private int m_MineSortingOrder = 1;
     [SerializeField] private int m_ValueSortingOrder = 2;
     
+    [Header("Debug")]
+    [SerializeField] private bool m_DebugMode = false;
+
     private Vector2Int m_Position;
     private bool m_IsRevealed;
     private bool m_IsFrozen;
@@ -319,12 +322,18 @@ public class CellView : MonoBehaviour, IInteractable
     {
         if (CanInteract)
         {
-            Debug.Log($"[CellView] Revealing cell at {m_Position}, CanInteract: {CanInteract}, IsFrozen: {m_IsFrozen}, IsRevealed: {m_IsRevealed}");
+            if (m_DebugMode)
+            {
+                Debug.Log($"[CellView] Revealing cell at {m_Position}, CanInteract: {CanInteract}, IsFrozen: {m_IsFrozen}, IsRevealed: {m_IsRevealed}");
+            }
             GameEvents.RaiseCellRevealed(m_Position);
         }
         else if (m_IsRevealed && m_HasMine)
         {
-            Debug.Log($"[CellView] Interacting with revealed mine at {m_Position}, IsCollectable: {(m_CurrentMine as MonsterMine)?.IsCollectable}");
+            if (m_DebugMode)
+            {
+                Debug.Log($"[CellView] Interacting with revealed mine at {m_Position}, IsCollectable: {(m_CurrentMine as MonsterMine)?.IsCollectable}");
+            }
             // For monster mines, process interaction on every click
             var monsterMine = m_CurrentMine as MonsterMine;
             if (monsterMine != null)
@@ -349,13 +358,19 @@ public class CellView : MonoBehaviour, IInteractable
         }
         else
         {
-            Debug.Log($"[CellView] Cannot interact with cell at {m_Position}, CanInteract: {CanInteract}, IsFrozen: {m_IsFrozen}, IsRevealed: {m_IsRevealed}");
+            if (m_DebugMode)
+            {
+                Debug.Log($"[CellView] Cannot interact with cell at {m_Position}, CanInteract: {CanInteract}, IsFrozen: {m_IsFrozen}, IsRevealed: {m_IsRevealed}");
+            }
         }
     }
 
     public void ApplyEffect()
     {
-        Debug.Log($"Effect applied at position {m_Position}");
+        if (m_DebugMode)
+        {
+            Debug.Log($"Effect applied at position {m_Position}");
+        }
     }
 
     public void UpdateDisplayConfig(MineDisplayConfig newConfig)

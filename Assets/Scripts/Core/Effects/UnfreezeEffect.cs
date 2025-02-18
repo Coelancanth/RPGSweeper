@@ -12,6 +12,7 @@ namespace RPGMinesweeper.Effects
         private bool m_IsActive;
         private StateManager m_StateManager;
         private Vector2Int m_CurrentPosition;
+        private bool m_DebugMode = false;
         #endregion
 
         #region Public Properties
@@ -33,14 +34,14 @@ namespace RPGMinesweeper.Effects
         protected override void ApplyPersistent(GameObject target, Vector2Int sourcePosition)
         {
             m_IsActive = true;
-            EnsureStateManager(target);
+            EnsureStateManager();
             RemoveFrozenStates(target, sourcePosition);
         }
 
         protected override void ApplyTriggerable(GameObject target, Vector2Int sourcePosition)
         {
             m_IsActive = true;
-            EnsureStateManager(target);
+            EnsureStateManager();
             RemoveFrozenStates(target, sourcePosition);
         }
         #endregion
@@ -58,14 +59,22 @@ namespace RPGMinesweeper.Effects
         #endregion
 
         #region Private Methods
-        private void EnsureStateManager(GameObject target)
+        private void EnsureStateManager()
         {
             if (m_StateManager == null)
             {
-                m_StateManager = target.GetComponent<StateManager>();
+                // Try to find existing StateManager
+                m_StateManager = GameObject.FindFirstObjectByType<StateManager>();
+                
+                // If none exists, create a new one on a dedicated GameObject
                 if (m_StateManager == null)
                 {
-                    m_StateManager = target.AddComponent<StateManager>();
+                    var stateManagerObj = new GameObject("StateManager");
+                    m_StateManager = stateManagerObj.AddComponent<StateManager>();
+                    if (m_DebugMode)
+                    {
+                        Debug.Log("[UnfreezeEffect] Created new StateManager");
+                    }
                 }
             }
         }
@@ -77,10 +86,19 @@ namespace RPGMinesweeper.Effects
             // Get affected positions based on shape and radius
             var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, m_Radius);
             
+            if (m_DebugMode)
+            {
+                Debug.Log($"[UnfreezeEffect] Removing frozen states in radius {m_Radius} at {sourcePosition}");
+            }
+            
             // Remove frozen states from all affected positions
             foreach (var position in affectedPositions)
             {
                 m_StateManager.RemoveState((Name: "Frozen", Target: StateTarget.Cell, TargetId: position));
+                if (m_DebugMode)
+                {
+                    Debug.Log($"[UnfreezeEffect] Removed frozen state at {position}");
+                }
             }
         }
         #endregion

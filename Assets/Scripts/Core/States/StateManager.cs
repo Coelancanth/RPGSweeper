@@ -9,6 +9,7 @@ namespace RPGMinesweeper.States
         #region Private Fields
         private Dictionary<(string Name, StateTarget Target, object TargetId), IState> m_ActiveStates = 
             new Dictionary<(string Name, StateTarget Target, object TargetId), IState>();
+        [SerializeField] private bool m_DebugMode = true;
         #endregion
 
         #region Events
@@ -17,6 +18,20 @@ namespace RPGMinesweeper.States
         #endregion
 
         #region Unity Lifecycle
+        private void Awake()
+        {
+            GameEvents.OnRoundAdvanced += HandleRoundAdvanced;
+            if (m_DebugMode)
+            {
+                Debug.Log("[StateManager] Initialized and subscribed to round events");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            GameEvents.OnRoundAdvanced -= HandleRoundAdvanced;
+        }
+
         private void Update()
         {
             UpdateStates();
@@ -35,12 +50,22 @@ namespace RPGMinesweeper.States
             m_ActiveStates[key] = state;
             state.Enter(gameObject);
             OnStateAdded?.Invoke(state);
+            
+            if (m_DebugMode)
+            {
+                Debug.Log($"[StateManager] Added state {state.Name} for target {state.Target} at {state.TargetId}");
+            }
         }
 
         public void RemoveState((string Name, StateTarget Target, object TargetId) key)
         {
             if (m_ActiveStates.TryGetValue(key, out IState state))
             {
+                if (m_DebugMode)
+                {
+                    Debug.Log($"[StateManager] Removing state {state.Name} for target {state.Target} at {state.TargetId}");
+                }
+                
                 state.Exit(gameObject);
                 m_ActiveStates.Remove(key);
                 OnStateRemoved?.Invoke(state);
@@ -54,6 +79,11 @@ namespace RPGMinesweeper.States
 
         public void OnTurnEnd()
         {
+            if (m_DebugMode)
+            {
+                Debug.Log($"[StateManager] Processing turn end for {m_ActiveStates.Count} states");
+            }
+
             var expiredStates = new List<(string Name, StateTarget Target, object TargetId)>();
             
             foreach (var kvp in m_ActiveStates)
@@ -64,6 +94,10 @@ namespace RPGMinesweeper.States
                     if (turnState.IsExpired)
                     {
                         expiredStates.Add(kvp.Key);
+                        if (m_DebugMode)
+                        {
+                            Debug.Log($"[StateManager] State {turnState.Name} at {turnState.TargetId} has expired");
+                        }
                     }
                 }
             }
@@ -83,6 +117,15 @@ namespace RPGMinesweeper.States
         #endregion
 
         #region Private Methods
+        private void HandleRoundAdvanced()
+        {
+            if (m_DebugMode)
+            {
+                Debug.Log("[StateManager] Round advanced, processing turn-based states");
+            }
+            OnTurnEnd();
+        }
+
         private void UpdateStates()
         {
             var expiredStates = new List<(string Name, StateTarget Target, object TargetId)>();
@@ -95,6 +138,10 @@ namespace RPGMinesweeper.States
                     if (kvp.Value.IsExpired)
                     {
                         expiredStates.Add(kvp.Key);
+                        if (m_DebugMode)
+                        {
+                            Debug.Log($"[StateManager] Time-based state {kvp.Value.Name} at {kvp.Value.TargetId} has expired");
+                        }
                     }
                 }
             }

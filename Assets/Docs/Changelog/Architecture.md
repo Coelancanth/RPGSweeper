@@ -348,9 +348,13 @@ class ITriggerableEffect {
 +Apply(GameObject, Vector2Int)
 }
 class StateManager {
+-m_ActiveStates: Dictionary
+-m_DebugMode: bool
 +AddState(StateInfo)
 +RemoveState(StateInfo)
 +HasState(string, StateTarget, object)
++OnTurnEnd()
+-HandleRoundAdvanced()
 }
 class FreezeEffect {
 -m_Duration: float
@@ -383,7 +387,7 @@ IPersistentEffect <|.. FreezeEffect
 ITriggerableEffect <|.. UnfreezeEffect
 FreezeEffect --> StateManager : Uses
 UnfreezeEffect --> StateManager : Uses
-note for StateManager "Centralized state management\nfor effect system"
+note for StateManager "Centralized state management\nwith debug tracing"
 note for FreezeEffect "Applies frozen state\nwith duration"
 note for UnfreezeEffect "Removes frozen state\nfrom affected cells"
 ```

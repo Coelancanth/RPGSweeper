@@ -1,5 +1,6 @@
 using UnityEngine;
 using RPGMinesweeper.Grid;
+using System.Collections.Generic;
 
 namespace RPGMinesweeper.States
 {
@@ -9,6 +10,8 @@ namespace RPGMinesweeper.States
         private readonly int m_Radius;
         private readonly GridShape m_Shape;
         private readonly Vector2Int m_SourcePosition;
+        [SerializeField] private bool m_DebugMode = false;
+        private List<Vector2Int> m_AffectedPositions;
         #endregion
 
         #region Constructor
@@ -18,6 +21,11 @@ namespace RPGMinesweeper.States
             m_Radius = radius;
             m_Shape = shape;
             m_SourcePosition = sourcePosition;
+            
+            if (m_DebugMode)
+            {
+                Debug.Log($"[FrozenState] Created new frozen state at {sourcePosition} with radius {radius}, duration {turns} turns");
+            }
         }
         #endregion
 
@@ -25,13 +33,30 @@ namespace RPGMinesweeper.States
         public override void Enter(GameObject target)
         {
             base.Enter(target);
+            if (m_DebugMode)
+            {
+                Debug.Log($"[FrozenState] Entering frozen state at {m_SourcePosition}, {TurnsRemaining} turns remaining");
+            }
             ApplyFrozenState();
         }
 
         public override void Exit(GameObject target)
         {
-            base.Exit(target);
+            if (m_DebugMode)
+            {
+                Debug.Log($"[FrozenState] Exiting frozen state at {m_SourcePosition}");
+            }
             RemoveFrozenState();
+            base.Exit(target);
+        }
+
+        public override void OnTurnEnd()
+        {
+            base.OnTurnEnd();
+            if (m_DebugMode)
+            {
+                Debug.Log($"[FrozenState] Turn ended, {TurnsRemaining} turns remaining at {m_SourcePosition}");
+            }
         }
         #endregion
 
@@ -39,10 +64,17 @@ namespace RPGMinesweeper.States
         private void ApplyFrozenState()
         {
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            if (gridManager == null) return;
+            if (gridManager == null)
+            {
+                if (m_DebugMode)
+                {
+                    Debug.LogError("[FrozenState] Could not find GridManager!");
+                }
+                return;
+            }
 
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(m_SourcePosition, m_Shape, m_Radius);
-            foreach (var pos in affectedPositions)
+            m_AffectedPositions = GridShapeHelper.GetAffectedPositions(m_SourcePosition, m_Shape, m_Radius);
+            foreach (var pos in m_AffectedPositions)
             {
                 if (gridManager.IsValidPosition(pos))
                 {
@@ -53,6 +85,10 @@ namespace RPGMinesweeper.States
                         if (cellView != null)
                         {
                             cellView.SetFrozen(true);
+                            if (m_DebugMode)
+                            {
+                                Debug.Log($"[FrozenState] Froze cell at {pos}");
+                            }
                         }
                     }
                 }
@@ -62,20 +98,33 @@ namespace RPGMinesweeper.States
         private void RemoveFrozenState()
         {
             var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            if (gridManager == null) return;
-
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(m_SourcePosition, m_Shape, m_Radius);
-            foreach (var pos in affectedPositions)
+            if (gridManager == null)
             {
-                if (gridManager.IsValidPosition(pos))
+                if (m_DebugMode)
                 {
-                    var cellObject = gridManager.GetCellObject(pos);
-                    if (cellObject != null)
+                    Debug.LogError("[FrozenState] Could not find GridManager during cleanup!");
+                }
+                return;
+            }
+
+            if (m_AffectedPositions != null)
+            {
+                foreach (var pos in m_AffectedPositions)
+                {
+                    if (gridManager.IsValidPosition(pos))
                     {
-                        var cellView = cellObject.GetComponent<CellView>();
-                        if (cellView != null)
+                        var cellObject = gridManager.GetCellObject(pos);
+                        if (cellObject != null)
                         {
-                            cellView.SetFrozen(false);
+                            var cellView = cellObject.GetComponent<CellView>();
+                            if (cellView != null)
+                            {
+                                cellView.SetFrozen(false);
+                                if (m_DebugMode)
+                                {
+                                    Debug.Log($"[FrozenState] Unfroze cell at {pos}");
+                                }
+                            }
                         }
                     }
                 }

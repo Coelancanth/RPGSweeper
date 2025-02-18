@@ -13,6 +13,7 @@ namespace RPGMinesweeper.Effects
         private bool m_IsActive;
         private StateManager m_StateManager;
         private Vector2Int m_CurrentPosition; // Store the current position for removal
+        private bool m_DebugMode = false;
         #endregion
 
         #region Public Properties
@@ -35,14 +36,14 @@ namespace RPGMinesweeper.Effects
         protected override void ApplyPersistent(GameObject target, Vector2Int sourcePosition)
         {
             m_IsActive = true;
-            EnsureStateManager(target);
+            EnsureStateManager();
             ApplyFrozenState(target, sourcePosition);
         }
 
         protected override void ApplyTriggerable(GameObject target, Vector2Int sourcePosition)
         {
             m_IsActive = true;
-            EnsureStateManager(target);
+            EnsureStateManager();
             ApplyFrozenState(target, sourcePosition);
         }
         #endregion
@@ -64,14 +65,22 @@ namespace RPGMinesweeper.Effects
         #endregion
 
         #region Private Methods
-        private void EnsureStateManager(GameObject target)
+        private void EnsureStateManager()
         {
             if (m_StateManager == null)
             {
-                m_StateManager = target.GetComponent<StateManager>();
+                // Try to find existing StateManager
+                m_StateManager = GameObject.FindFirstObjectByType<StateManager>();
+                
+                // If none exists, create a new one on a dedicated GameObject
                 if (m_StateManager == null)
                 {
-                    m_StateManager = target.AddComponent<StateManager>();
+                    var stateManagerObj = new GameObject("StateManager");
+                    m_StateManager = stateManagerObj.AddComponent<StateManager>();
+                    if (m_DebugMode)
+                    {
+                        Debug.Log("[FreezeEffect] Created new StateManager");
+                    }
                 }
             }
         }
@@ -81,6 +90,10 @@ namespace RPGMinesweeper.Effects
             m_CurrentPosition = sourcePosition; // Store the position for later removal
             var frozenState = new FrozenState(m_Duration, m_Radius, sourcePosition, m_Shape);
             m_StateManager.AddState(frozenState);
+            if (m_DebugMode)
+            {
+                Debug.Log($"[FreezeEffect] Applied frozen state at {sourcePosition} with duration {m_Duration}");
+            }
         }
         #endregion
     }
