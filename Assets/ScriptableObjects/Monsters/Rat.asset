@@ -33,7 +33,7 @@ MonoBehaviour:
   m_TriggerableEffects:
   - Template: {fileID: 11400000, guid: d79322b58d6a52645ba87f1df34a73f9, type: 2}
   m_MonsterType: 1
-  m_MaxHp: 1
+  m_MaxHp: 100
   m_BaseDamage: 1
   m_DamagePerHit: 1
   m_HasEnrageState: 0

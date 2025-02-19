@@ -19,5 +19,6 @@ MonoBehaviour:
     m_Bits: 0
   m_Duration: 0
   m_Magnitude: 0
-  m_SourceMonsterType: 1
-  m_TargetMonsterType: 15
+  m_SourceMonsterTypes: 01000000
+  m_TargetMonsterType: 13
+  m_MaxTransformCount: 2

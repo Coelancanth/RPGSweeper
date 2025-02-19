@@ -11,12 +11,13 @@ namespace RPGMinesweeper.Effects
     {
         #region Private Fields
         private readonly int m_Radius;
-        private readonly MonsterType m_SourceMonsterType;
+        private readonly List<MonsterType> m_SourceMonsterTypes;
         private readonly MonsterType m_TargetMonsterType;
+        private readonly int m_MaxTransformCount;
         private readonly GridShape m_Shape;
         private bool m_IsActive;
         private Vector2Int m_CurrentPosition;
-        private float m_SourceHpPercentage;
+        private Dictionary<MonsterType, float> m_SourceHpPercentages = new();
         private bool m_DebugMode = false;
         #endregion
 
@@ -28,11 +29,12 @@ namespace RPGMinesweeper.Effects
         #endregion
 
         #region Constructor
-        public MonsterTransformEffect(int radius, MonsterType sourceMonsterType, MonsterType targetMonsterType, GridShape shape = GridShape.Square)
+        public MonsterTransformEffect(int radius, List<MonsterType> sourceMonsterTypes, MonsterType targetMonsterType, int maxTransformCount, GridShape shape = GridShape.Square)
         {
             m_Radius = radius;
-            m_SourceMonsterType = sourceMonsterType;
+            m_SourceMonsterTypes = sourceMonsterTypes;
             m_TargetMonsterType = targetMonsterType;
+            m_MaxTransformCount = maxTransformCount;
             m_Shape = shape;
             m_IsActive = false;
             m_CurrentMode = EffectType.Persistent;
@@ -45,15 +47,17 @@ namespace RPGMinesweeper.Effects
             m_IsActive = true;
             m_CurrentPosition = sourcePosition;
             
-            // Get the source monster's HP percentage
             var mineManager = GameObject.FindFirstObjectByType<MineManager>();
             if (mineManager == null) return;
 
             var mines = mineManager.GetMines();
-            if (!mines.TryGetValue(sourcePosition, out var sourceMine) || !(sourceMine is MonsterMine monsterMine)) return;
+            if (!mines.TryGetValue(sourcePosition, out var sourceMine) || !(sourceMine is MonsterMine triggerMonster)) return;
 
-            m_SourceHpPercentage = monsterMine.HpPercentage;
-            TransformMonsters(mineManager, mines);
+            // Get the HP percentage from the trigger monster (Water Element in this case)
+            float triggerHpPercentage = triggerMonster.HpPercentage;
+            Debug.Log($"[MonsterTransformEffect] Trigger monster HP percentage: {triggerHpPercentage}");
+
+            TransformMonsters(mineManager, mines, triggerHpPercentage);
         }
 
         protected override void ApplyTriggerable(GameObject target, Vector2Int sourcePosition)
@@ -65,7 +69,13 @@ namespace RPGMinesweeper.Effects
             if (mineManager == null) return;
 
             var mines = mineManager.GetMines();
-            TransformMonsters(mineManager, mines);
+            if (!mines.TryGetValue(sourcePosition, out var sourceMine) || !(sourceMine is MonsterMine triggerMonster)) return;
+
+            // Get the HP percentage from the trigger monster (Water Element in this case)
+            float triggerHpPercentage = triggerMonster.HpPercentage;
+            Debug.Log($"[MonsterTransformEffect] Trigger monster HP percentage: {triggerHpPercentage}");
+
+            TransformMonsters(mineManager, mines, triggerHpPercentage);
         }
         #endregion
 
@@ -78,28 +88,61 @@ namespace RPGMinesweeper.Effects
         public void Remove(GameObject target)
         {
             m_IsActive = false;
+            m_SourceHpPercentages.Clear();
         }
         #endregion
 
         #region Private Methods
-        private void TransformMonsters(MineManager mineManager, IReadOnlyDictionary<Vector2Int, IMine> mines)
+        private void TransformMonsters(MineManager mineManager, IReadOnlyDictionary<Vector2Int, IMine> mines, float triggerHpPercentage)
         {
+            Debug.Log($"[MonsterTransformEffect] TransformMonsters called at position {m_CurrentPosition}");
             var affectedPositions = GridShapeHelper.GetAffectedPositions(m_CurrentPosition, m_Shape, m_Radius);
             
-            foreach (var position in affectedPositions)
+            // Get all valid monsters that can be transformed
+            var transformableMines = affectedPositions
+                .Where(position => mines.TryGetValue(position, out var mine) 
+                    && mine is MonsterMine monsterMine 
+                    && m_SourceMonsterTypes.Contains(monsterMine.MonsterType))
+                .Select(position => (position, mine: mines[position] as MonsterMine))
+                .ToList();
+
+            // If max transform count is set, randomly select that many monsters
+            if (m_MaxTransformCount > 0 && transformableMines.Count > m_MaxTransformCount)
             {
-                if (!mines.TryGetValue(position, out var mine) || !(mine is MonsterMine monsterMine)) continue;
-                if (monsterMine.MonsterType != m_SourceMonsterType) continue;
+                // Fisher-Yates shuffle
+                for (int i = transformableMines.Count - 1; i > 0; i--)
+                {
+                    int j = Random.Range(0, i + 1);
+                    var temp = transformableMines[i];
+                    transformableMines[i] = transformableMines[j];
+                    transformableMines[j] = temp;
+                }
+                transformableMines = transformableMines.Take(m_MaxTransformCount).ToList();
+            }
+
+            // Transform selected monsters
+            foreach (var (position, monsterMine) in transformableMines)
+            {
+                //Debug.Log($"[MonsterTransformEffect] Transforming monster at {position}");
+                //Debug.Log($"[MonsterTransformEffect] Using trigger monster's HP percentage: {triggerHpPercentage}");
+                //Debug.Log($"[MonsterTransformEffect] Monster type: {monsterMine.MonsterType}");
 
                 // Remove the old mine
                 GameEvents.RaiseMineRemovalAttempted(position);
                 
-                // Create the new mine of the target type
+                // Create the new mine of the target type with the trigger monster's HP percentage
                 GameEvents.RaiseMineAddAttempted(position, MineType.Monster, m_TargetMonsterType);
 
-                if (m_DebugMode)
+                // Set HP percentage on the new monster using the trigger monster's HP percentage
+                if (mines.TryGetValue(position, out var newMine) && newMine is MonsterMine newMonsterMine)
                 {
-                    Debug.Log($"[MonsterTransformEffect] Transformed monster at {position} from {m_SourceMonsterType} to {m_TargetMonsterType}");
+                    int newHp = Mathf.RoundToInt(newMonsterMine.MaxHp * triggerHpPercentage);
+                    newMonsterMine.CurrentHp = newHp;
+                    
+                    if (m_DebugMode)
+                    {
+                        //Debug.Log($"[MonsterTransformEffect] Transformed monster at {position} from {monsterMine.MonsterType} to {m_TargetMonsterType} with HP: {newHp}/{newMonsterMine.MaxHp} ({triggerHpPercentage:P0})");
+                    }
                 }
             }
         }

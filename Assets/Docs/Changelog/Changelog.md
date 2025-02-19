@@ -1,3 +1,60 @@
+# v0.1.41 - 2025-02-19 16:16:28
+## Overview
+Enhanced MonsterTransformEffect with proper HP percentage calculation and limited transformation support, improving monster transformation mechanics.
+
+## Change Details
+### Bug Fixes
+#### Monster Transform Effect
+- Fixed HP percentage calculation to use trigger monster's HP
+- Added MaxTransformCount to limit number of transformations
+- Implemented random selection for limited transformations
+- Updated monster configurations for better balance
+```mermaid
+classDiagram
+class MonsterTransformEffect {
+    -m_MaxTransformCount: int
+    -m_TriggerHpPercentage: float
+    +Apply(GameObject, Vector2Int)
+    -TransformMonsters()
+    -SelectRandomMonsters()
+}
+class MonsterTransformEffectData {
+    -m_MaxTransformCount: int
+    -m_SourceMonsterTypes: List
+    -m_TargetMonsterType: MonsterType
+    +CreateEffect()
+}
+MonsterTransformEffectData --> MonsterTransformEffect : Creates
+note for MonsterTransformEffect "Uses trigger monster's HP\nwith random selection"
+```
+
+### Adjustments and Refactoring
+#### Monster Configuration
+- Standardized monster HP values to 100
+- Adjusted Water Element damage values
+- Updated spawn counts for better testing
+```mermaid
+classDiagram
+class MonsterBalance {
+    StandardHP[100]
+    WaterElementDamage[40]
+    RatSpawnCount[11]
+}
+class Implementation {
+    UpdateHP[monsters]
+    AdjustDamage[water_element]
+    BalanceSpawns[testing]
+}
+MonsterBalance --> Implementation
+note for MonsterBalance "Better balanced values\nfor testing"
+```
+
+### Optimizations
+- Improved transformation selection logic
+- Enhanced HP percentage handling
+- Better monster balance for testing
+- Cleaner effect configuration
+
 # v0.1.40 - 2025-02-18 21:30:00
 ## Overview
 Enhanced state management system with centralized control and improved debug tracing, ensuring better state handling and cleaner logging.

@@ -380,14 +380,33 @@ class SplitEffect {
 -PerformSplit(sourcePosition)
 -ValidateHPRatio()
 }
+class MonsterTransformEffect {
+    -m_MaxTransformCount: int
+    -m_SourceMonsterTypes: List<MonsterType>
+    -m_TargetMonsterType: MonsterType
+    -m_Shape: GridShape
+    -m_Radius: int
+    +Apply(GameObject, Vector2Int)
+    -TransformMonsters(MineManager, Dictionary, float)
+    -SelectRandomMonsters(List)
+}
+class MonsterTransformEffectData {
+    -m_MaxTransformCount: int
+    -m_SourceMonsterTypes: List<MonsterType>
+    -m_TargetMonsterType: MonsterType
+    +CreateEffect()
+}
 
 IEffect <|-- IPersistentEffect
 IEffect <|-- ITriggerableEffect
 IPersistentEffect <|.. FreezeEffect
 ITriggerableEffect <|.. UnfreezeEffect
+ITriggerableEffect <|.. MonsterTransformEffect
+MonsterTransformEffectData --> MonsterTransformEffect : Creates
 FreezeEffect --> StateManager : Uses
 UnfreezeEffect --> StateManager : Uses
 note for StateManager "Centralized state management\nwith debug tracing"
 note for FreezeEffect "Applies frozen state\nwith duration"
 note for UnfreezeEffect "Removes frozen state\nfrom affected cells"
+note for MonsterTransformEffect "Transforms source monsters using\ntrigger monster's HP percentage"
 ```
