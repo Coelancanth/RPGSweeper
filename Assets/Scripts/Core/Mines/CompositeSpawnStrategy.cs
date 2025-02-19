@@ -43,7 +43,6 @@ namespace RPGMinesweeper
 
             // Randomly select one of the active strategies
             var selectedStrategy = activeStrategies[Random.Range(0, activeStrategies.Count)];
-            
             if (m_StrategyMap.TryGetValue(selectedStrategy, out var strategy))
             {
                 return strategy.GetSpawnPosition(gridManager, existingMines);

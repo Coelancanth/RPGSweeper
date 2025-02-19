@@ -17,6 +17,5 @@ MonoBehaviour:
   m_TargetLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Duration: 1
+  m_Duration: 3
   m_Magnitude: 0
-  m_Mode: 0

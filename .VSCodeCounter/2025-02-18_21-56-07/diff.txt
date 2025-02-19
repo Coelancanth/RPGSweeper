@@ -1,0 +1,52 @@
+Date : 2025-02-18 21:56:07
+Directory : f:\unity\Minesweeper\Assets\Scripts
+Total : 20 files,  571 codes, 0 comments, 64 blanks, all 635 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C#       |         20 |        571 |          0 |         64 |        635 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                    | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                       |         20 |        571 |          0 |         64 |        635 |
+| Core                                                                    |         18 |        519 |          4 |         60 |        583 |
+| Core\Effects                                                            |          5 |         22 |          3 |          5 |         30 |
+| Core\Input                                                              |          3 |        163 |          0 |         19 |        182 |
+| Core\Mines                                                              |          1 |          7 |          1 |          1 |          9 |
+| Core\States                                                             |          7 |        254 |          1 |         26 |        281 |
+| Core\TurnSystem                                                         |          2 |         73 |         -1 |          9 |         81 |
+| Debug                                                                   |          1 |         29 |          0 |          3 |         32 |
+| Views                                                                   |          1 |         23 |         -4 |          1 |         20 |
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| f:\unity\Minesweeper\Assets\Scripts\Core\Effects\ConfusionEffectData.cs | C#       |         -4 |          0 |          0 |         -4 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Effects\FreezeEffect.cs        | C#       |        -18 |          0 |         -3 |        -21 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Effects\FreezeEffectData.cs    | C#       |         -4 |          0 |          0 |         -4 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Effects\UnfreezeEffect.cs      | C#       |         44 |          3 |          7 |         54 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Effects\UnfreezeEffectData.cs  | C#       |          4 |          0 |          1 |          5 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Input\IInteractable.cs         | C#       |         10 |          0 |          1 |         11 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Input\InputManager.cs          | C#       |         93 |          0 |         11 |        104 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Input\InteractionHandler.cs    | C#       |         60 |          0 |          7 |         67 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Mines\MonsterMine.cs           | C#       |          7 |          1 |          1 |          9 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\States\BaseState.cs            | C#       |          6 |          0 |          0 |          6 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\States\BaseTurnState.cs        | C#       |         30 |          1 |          5 |         36 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\States\FrozenState.cs          | C#       |        125 |          0 |         10 |        135 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\States\IState.cs               | C#       |          2 |          0 |          0 |          2 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\States\ITurnBasedState.cs      | C#       |          9 |          0 |          1 |         10 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\States\StateManager.cs         | C#       |         72 |          0 |         10 |         82 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\States\StateTarget.cs          | C#       |         10 |          0 |          0 |         10 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\TurnSystem\PlayerTurn.cs       | C#       |         23 |          0 |          2 |         25 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\TurnSystem\TurnManager.cs      | C#       |         50 |         -1 |          7 |         56 |
+| f:\unity\Minesweeper\Assets\Scripts\Debug\MineDebugger.cs               | C#       |         29 |          0 |          3 |         32 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\CellView.cs                   | C#       |         23 |         -4 |          1 |         20 |
+| Total                                                                   |          |        571 |          0 |         64 |        635 |
++-------------------------------------------------------------------------+----------+------------+------------+------------+------------+
