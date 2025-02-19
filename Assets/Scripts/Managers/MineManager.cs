@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RPGMinesweeper;  // For MonsterType and CompositeSpawnStrategy
 using RPGMinesweeper.Grid;  // For GridShape
+using RPGMinesweeper.Factory;  // For MineFactory
 
 [System.Serializable]
 public class MineTypeSpawnData
@@ -22,10 +23,12 @@ public class MineManager : MonoBehaviour
     private Dictionary<Vector2Int, IMine> m_Mines = new Dictionary<Vector2Int, IMine>();
     private Dictionary<Vector2Int, MineData> m_MineDataMap = new Dictionary<Vector2Int, MineData>();
     private Dictionary<MineSpawnStrategyType, CompositeSpawnStrategy> m_SpawnStrategies;
+    private IMineFactory m_MineFactory;
 
     private void Awake()
     {
         InitializeSpawnStrategies();
+        m_MineFactory = new MineFactory();
     }
 
     private void InitializeSpawnStrategies()
@@ -213,8 +216,8 @@ public class MineManager : MonoBehaviour
             return;
         }
 
-        // Create and add the new mine using the existing CreateMine method
-        IMine mine = CreateMine(mineData, position);
+        // Create and add the new mine using MineFactory
+        IMine mine = m_MineFactory.CreateMine(mineData, position);
         m_Mines[position] = mine;
         m_MineDataMap[position] = mineData;
 
@@ -249,7 +252,7 @@ public class MineManager : MonoBehaviour
             {
                 Vector2Int position = GetSpawnPosition(spawnData.MineData);
                 
-                IMine mine = CreateMine(spawnData.MineData, position);
+                IMine mine = m_MineFactory.CreateMine(spawnData.MineData, position);
                 m_Mines.Add(position, mine);
                 m_MineDataMap.Add(position, spawnData.MineData);
 
@@ -274,25 +277,6 @@ public class MineManager : MonoBehaviour
     {
         var strategy = GetOrCreateStrategy(mineData.SpawnStrategy);
         return strategy.GetSpawnPosition(m_GridManager, m_Mines);
-    }
-
-    private IMine CreateMine(MineData mineData, Vector2Int position)
-    {
-        switch (mineData.Type)
-        {
-            case MineType.Standard:
-                return new StandardMine(mineData, position);
-            case MineType.Monster:
-                if (mineData is MonsterMineData monsterData)
-                {
-                    return new MonsterMine(monsterData, position);
-                }
-                Debug.LogError($"MineManager: MineData for Monster type must be MonsterMineData!");
-                return new StandardMine(mineData, position);
-            default:
-                Debug.LogWarning($"Mine type {mineData.Type} not implemented yet. Using StandardMine as fallback.");
-                return new StandardMine(mineData, position);
-        }
     }
 
     private void UpdateAllGridValues()
@@ -378,8 +362,8 @@ public class MineManager : MonoBehaviour
         var sourceMine = m_Mines[_sourcePosition];
         var sourceMineData = m_MineDataMap[_sourcePosition];
 
-        // Create and place the new mine
-        IMine newMine = CreateMine(sourceMineData, _targetPosition);
+        // Create and place the new mine using MineFactory
+        IMine newMine = m_MineFactory.CreateMine(sourceMineData, _targetPosition);
         
         // Copy mine-type specific properties
         var copyStrategy = MineCopyStrategyFactory.CreateStrategy(sourceMineData.Type);
