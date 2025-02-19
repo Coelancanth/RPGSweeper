@@ -738,13 +738,256 @@ Ah, I see the issue. We're using `CellView.HandleMineRemoval()` which only updat
 
 _****_
 
-
+```diff
+              // Remove positions that have mines
+              validPositions.RemoveAll(pos => mineManager.HasMineAt(pos));
++ 
++             // Store positions to teleport to avoid modifying collection during iteration
++             var teleportOperations = new List<(Vector2Int source, Vector2Int target)>();
+  
+              // For each affected position that has a mine
+                  Vector2Int targetPos = validPositions[randomIndex];
+  
++                 // Store the operation
++                 teleportOperations.Add((sourcePos, targetPos));
++                 // Remove the target position from valid positions
++                 validPositions.RemoveAt(randomIndex);
++             }
++ 
++             // Execute teleport operations
++             foreach (var (sourcePos, targetPos) in teleportOperations)
++             {
+                  // Store mine data before removing
+                  var mineData = mineManager.GetMineDataAt(sourcePos);
+                  if (mineData == null) continue;
+  
+-                 // First copy the mine to the new position
+-                 if (mineManager.CopyMine(sourcePos, targetPos))
+-                 {
+-                     // Remove the target position from valid positions
+-                     validPositions.RemoveAt(randomIndex);
+- 
+-                     // Then remove the original mine
+-                     var cellObject = gridManager.GetCellObject(sourcePos);
+-                     if (cellObject != null)
++                 // First remove the original mine
++                 GameEvents.OnMineRemovalAttempted?.Invoke(sourcePos);
++ 
++                 // Then add the new mine
++                 if (mineData.Type == MineType.Monster)
++                 {
++                     var monsterData = mineData as MonsterMineData;
++                     if (monsterData != null)
+                      {
+-                         var cellView = cellObject.GetComponent<CellView>();
+-                         if (cellView != null)
++                         GameEvents.OnMineAddAttempted?.Invoke(targetPos, MineType.Monster, monsterData.MonsterType);
++                     }
++                 }
++                 else
+                  {
+-                             cellView.HandleMineRemoval();
+-                         }
++                     GameEvents.OnMineAddAttempted?.Invoke(targetPos, mineData.Type);
+                  }
+  
+                  if (m_DebugMode)
+                  {
+                      Debug.Log($"[TeleportState] Teleported mine from {sourcePos} to {targetPos}");
+-                     }
+                  }
+              }
+```
 
 ---
 
 _****_
 
 
+
+I see we still have the event invocation issue. Let me check how other effects handle this.
+
+---
+
+_****_
+
+<details>
+            <summary>Searched codebase "how other effects handle mine removal and addition" • **24** results</summary>
+        
+| File | Lines |
+|------|-------|
+| `Assets/Scripts/Core/Effects/SummonEffect.cs` | L120-154 |
+| `Assets/Scripts/Core/Effects/TargetedRevealEffect.cs` | L31-73 |
+| `Assets/Scripts/Core/Effects/SplitEffect.cs` | L128-154 |
+| `Assets/Scripts/Core/Effects/RangeRevealEffect.cs` | L74-110 |
+| `Assets/Scripts/Core/Effects/UnfreezeEffect.cs` | L1-60 |
+| `Assets/Scripts/Core/Effects/FreezeEffect.cs` | L1-58 |
+| `Assets/Scripts/Core/Effects/MonsterTransformEffect.cs` | L122-151 |
+| `Assets/Scripts/Core/Effects/MonsterTransformEffect.cs` | L87-122 |
+| `Assets/Scripts/Core/Effects/SummonEffect.cs` | L83-120 |
+| `Assets/Scripts/Core/Effects/SummonEffect.cs` | L1-41 |
+| `Assets/Scripts/Core/Effects/BaseEffect.cs` | L51-99 |
+| `Assets/Scripts/Core/Effects/TeleportEffect.cs` | L1-56 |
+| `Assets/Scripts/Core/Effects/MonsterTransformEffect.cs` | L43-87 |
+| `Assets/Scripts/Core/Effects/ConfusionEffect.cs` | L1-52 |
+| `Assets/Scripts/Core/Effects/SplitEffect.cs` | L1-54 |
+| `Assets/Scripts/Core/Effects/IEffect.cs` | L1-46 |
+| `Assets/Scripts/Core/Effects/BaseEffect.cs` | L1-51 |
+| `Assets/Scripts/Core/Effects/TargetedRevealEffect.cs` | L1-31 |
+| `Assets/Scripts/Core/Effects/SplitEffect.cs` | L84-128 |
+| `Assets/Scripts/Core/Effects/EffectData.cs` | L1-70 |
+| `Assets/Scripts/Core/Effects/SummonEffectData.cs` | L1-62 |
+| `Assets/Scripts/Core/Effects/RangeRevealEffect.cs` | L1-50 |
+| `Assets/Scripts/Core/Effects/UnfreezeEffectData.cs` | L1-17 |
+| `Assets/Scripts/Core/Effects/FreezeEffectData.cs` | L1-17 |
+
+</details>
+
+---
+
+_****_
+
+
+
+
+
+I see that other effects use `GameEvents.RaiseMineRemovalAttempted` and `GameEvents.RaiseMineAddAttempted` instead of directly invoking the events. Let me update the code to use these methods.
+
+---
+
+_****_
+
+```diff
+  
+                  // First remove the original mine
+-                 GameEvents.OnMineRemovalAttempted?.Invoke(sourcePos);
++                 GameEvents.RaiseMineRemovalAttempted(sourcePos);
+  
+                  // Then add the new mine
+                      if (monsterData != null)
+                      {
+-                         GameEvents.OnMineAddAttempted?.Invoke(targetPos, MineType.Monster, monsterData.MonsterType);
++                         GameEvents.RaiseMineAddAttempted(targetPos, MineType.Monster, monsterData.MonsterType);
+                      }
+                  }
+                  else
+                  {
+-                     GameEvents.OnMineAddAttempted?.Invoke(targetPos, mineData.Type);
++                     GameEvents.RaiseMineAddAttempted(targetPos, mineData.Type, null);
+                  }
+  
+```
+
+---
+
+_****_
+
+
+
+I've fixed the implementation to properly handle mine teleportation:
+
+1. Changed to use `GameEvents.RaiseMineRemovalAttempted` and `GameEvents.RaiseMineAddAttempted` instead of directly invoking events
+2. Added proper null handling for monster type when adding standard mines
+3. Kept the same logic for storing and executing teleport operations to avoid modifying collections during iteration
+
+This should now:
+1. Properly remove the original mine
+2. Create the new mine at the target position
+3. Maintain the correct mine count
+4. Work correctly for both standard and monster mines
+
+The teleport effect should now work as intended, moving mines to random positions without duplicating them.
+
+---
+
+_**User**_
+
+please check the implementation of copymine, seems it doesn't copy the "currentHP" of the monster
+
+---
+
+_**Assistant**_
+
+Ah, you're right! When we create a new mine, we need to preserve the monster's current HP. Let me modify the code to handle this.
+
+---
+
+_****_
+
+```diff
+  
+              // Store positions to teleport to avoid modifying collection during iteration
+-             var teleportOperations = new List<(Vector2Int source, Vector2Int target)>();
++             var teleportOperations = new List<(Vector2Int source, Vector2Int target, int? currentHp)>();
+  
+              // For each affected position that has a mine
+                  // If there are no more valid positions, stop teleporting
+                  if (validPositions.Count == 0) break;
++ 
++                 // Store current HP if it's a monster
++                 int? currentHp = null;
++                 var sourceMine = mineManager.GetMines()[sourcePos];
++                 if (sourceMine is MonsterMine monsterMine)
++                 {
++                     currentHp = monsterMine.CurrentHp;
++                 }
+  
+                  // Pick a random valid position
+  
+                  // Store the operation
+-                 teleportOperations.Add((sourcePos, targetPos));
++                 teleportOperations.Add((sourcePos, targetPos, currentHp));
+                  // Remove the target position from valid positions
+                  validPositions.RemoveAt(randomIndex);
+              }
+  
+              // Execute teleport operations
+-             foreach (var (sourcePos, targetPos) in teleportOperations)
++             foreach (var (sourcePos, targetPos, currentHp) in teleportOperations)
+              {
+                  // Store mine data before removing
+                      {
+                          GameEvents.RaiseMineAddAttempted(targetPos, MineType.Monster, monsterData.MonsterType);
++ 
++                         // Set the HP of the new monster to match the original
++                         if (currentHp.HasValue && mineManager.GetMines().TryGetValue(targetPos, out var newMine))
++                         {
++                             if (newMine is MonsterMine newMonsterMine)
++                             {
++                                 newMonsterMine.CurrentHp = currentHp.Value;
++                             }
++                         }
+                      }
+                  }
+```
+
+---
+
+_****_
+
+
+
+
+
+I've updated the implementation to properly handle monster HP when teleporting:
+
+1. Added `currentHp` to the teleport operation tuple to store the monster's HP before removal
+2. Before removing a mine, we check if it's a monster and store its current HP
+3. After creating the new mine, we set its HP to match the original monster's HP
+
+The changes:
+1. Store the original monster's HP before removal
+2. Create the new mine at the target position
+3. If it's a monster mine, set its HP to match the original
+4. Maintain proper debug logging
+
+Now the teleport effect should:
+1. Properly move mines to random positions
+2. Preserve monster HP during teleportation
+3. Work correctly for both standard and monster mines
+4. Not duplicate mines
+
+The monsters should now maintain their HP when teleported, making the effect work as intended.
 
 ---
 
