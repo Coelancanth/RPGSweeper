@@ -1,77 +1,108 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper.Effects;
 using RPGMinesweeper;  // For MonsterType
 
 namespace RPGMinesweeper.Effects
 {
-    public class MonsterTransformEffect : ITriggerableEffect
+    public class MonsterTransformEffect : BaseEffect, IPersistentEffect, ITriggerableEffect
     {
         #region Private Fields
         private readonly int m_Radius;
-        private readonly GridShape m_Shape;
         private readonly MonsterType m_SourceMonsterType;
         private readonly MonsterType m_TargetMonsterType;
+        private readonly GridShape m_Shape;
+        private bool m_IsActive;
+        private Vector2Int m_CurrentPosition;
+        private float m_SourceHpPercentage;
+        private bool m_DebugMode = false;
         #endregion
 
         #region Public Properties
+        public override EffectType[] SupportedTypes => new[] { EffectType.Persistent, EffectType.Triggerable };
+        public bool IsActive => m_IsActive;
         public EffectType Type => EffectType.Triggerable;
-        public string Name => "Monster Transform";
+        public string Name => "MonsterTransform";
         #endregion
 
+        #region Constructor
         public MonsterTransformEffect(int radius, MonsterType sourceMonsterType, MonsterType targetMonsterType, GridShape shape = GridShape.Square)
         {
             m_Radius = radius;
             m_SourceMonsterType = sourceMonsterType;
             m_TargetMonsterType = targetMonsterType;
             m_Shape = shape;
+            m_IsActive = false;
+            m_CurrentMode = EffectType.Persistent;
+        }
+        #endregion
+
+        #region Protected Methods
+        protected override void ApplyPersistent(GameObject target, Vector2Int sourcePosition)
+        {
+            m_IsActive = true;
+            m_CurrentPosition = sourcePosition;
+            
+            // Get the source monster's HP percentage
+            var mineManager = GameObject.FindFirstObjectByType<MineManager>();
+            if (mineManager == null) return;
+
+            var mines = mineManager.GetMines();
+            if (!mines.TryGetValue(sourcePosition, out var sourceMine) || !(sourceMine is MonsterMine monsterMine)) return;
+
+            m_SourceHpPercentage = monsterMine.HpPercentage;
+            TransformMonsters(mineManager, mines);
         }
 
-        public void Apply(GameObject target, Vector2Int sourcePosition)
+        protected override void ApplyTriggerable(GameObject target, Vector2Int sourcePosition)
         {
-            var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-            var mineManager = GameObject.FindFirstObjectByType<MineManager>();
+            m_IsActive = true;
+            m_CurrentPosition = sourcePosition;
             
-            if (gridManager == null || mineManager == null) return;
+            var mineManager = GameObject.FindFirstObjectByType<MineManager>();
+            if (mineManager == null) return;
 
-            // Get affected positions based on shape and radius
-            var affectedPositions = GridShapeHelper.GetAffectedPositions(sourcePosition, m_Shape, m_Radius);
+            var mines = mineManager.GetMines();
+            TransformMonsters(mineManager, mines);
+        }
+        #endregion
 
-            foreach (var pos in affectedPositions)
+        #region Public Methods
+        public void Update(float deltaTime)
+        {
+            // No continuous update needed for this effect
+        }
+
+        public void Remove(GameObject target)
+        {
+            m_IsActive = false;
+        }
+        #endregion
+
+        #region Private Methods
+        private void TransformMonsters(MineManager mineManager, IReadOnlyDictionary<Vector2Int, IMine> mines)
+        {
+            var affectedPositions = GridShapeHelper.GetAffectedPositions(m_CurrentPosition, m_Shape, m_Radius);
+            
+            foreach (var position in affectedPositions)
             {
-                if (gridManager.IsValidPosition(pos))
+                if (!mines.TryGetValue(position, out var mine) || !(mine is MonsterMine monsterMine)) continue;
+                if (monsterMine.MonsterType != m_SourceMonsterType) continue;
+
+                // Remove the old mine
+                GameEvents.RaiseMineRemovalAttempted(position);
+                
+                // Create the new mine of the target type
+                GameEvents.RaiseMineAddAttempted(position, MineType.Monster, m_TargetMonsterType);
+
+                if (m_DebugMode)
                 {
-                    var cellObject = gridManager.GetCellObject(pos);
-                    if (cellObject != null)
-                    {
-                        var cellView = cellObject.GetComponent<CellView>();
-                        if (cellView != null && mineManager.HasMineAt(pos))
-                        {
-                            var mines = mineManager.GetMines();
-                            if (mines.TryGetValue(pos, out var mine) && mine is MonsterMine monsterMine)
-                            {
-                                if (monsterMine.MonsterType == m_SourceMonsterType)
-                                {
-                                    // First remove the old mine
-                                    GameEvents.RaiseMineRemovalAttempted(pos);
-                                    
-                                    // Then create the new mine of the target type
-                                    GameEvents.RaiseMineAddAttempted(pos, MineType.Monster, m_TargetMonsterType);
-                                    
-                                    // Notify that an effect was applied at this position
-                                    GameEvents.RaiseEffectApplied(pos);
-                                }
-                            }
-                        }
-                    }
+                    Debug.Log($"[MonsterTransformEffect] Transformed monster at {position} from {m_SourceMonsterType} to {m_TargetMonsterType}");
                 }
             }
         }
-
-        public void Remove(GameObject source, Vector2Int sourcePosition)
-        {
-            // Transformation is permanent, no removal logic needed
-        }
+        #endregion
     }
 } 

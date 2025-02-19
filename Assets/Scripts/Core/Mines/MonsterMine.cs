@@ -28,7 +28,15 @@ public class MonsterMine : IDamagingMine
     #region Public Properties
     public MineType Type => m_Data.Type;
     public bool CanDisguise => true;
-    public int CurrentHp => m_CurrentHp;
+    public int CurrentHp
+    {
+        get => m_CurrentHp;
+        set
+        {
+            m_CurrentHp = Mathf.Clamp(value, 0, m_MaxHp);
+            OnHpChanged?.Invoke(m_Position, HpPercentage);
+        }
+    }
     public float HpPercentage => (float)m_CurrentHp / m_MaxHp;
     public bool IsEnraged => m_IsEnraged;
     public bool IsCollectable => m_CurrentHp <= 0;
