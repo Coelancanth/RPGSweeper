@@ -31,8 +31,9 @@ MonoBehaviour:
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PersistentEffects:
   - Template: {fileID: 11400000, guid: 2f04ca7d8c369704aa8da018a77e7af5, type: 2}
+  - Template: {fileID: 11400000, guid: f33b2a0d23da4dd45836e55e988ab3b0, type: 2}
   m_TriggerableEffects:
-  - Template: {fileID: 11400000, guid: 2732e492c2a6b4d43b7c8fd6bb3fe121, type: 2}
+  - Template: {fileID: 11400000, guid: f33b2a0d23da4dd45836e55e988ab3b0, type: 2}
   m_MonsterType: 15
   m_MaxHp: 120
   m_BaseDamage: 3
