@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper.Effects;
-
+using RPGMinesweeper;
 public static class MineValuePropagator
 {
     public static void PropagateValues(MineManager mineManager, GridManager gridManager)

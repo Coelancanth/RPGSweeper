@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using RPGMinesweeper;
 public class GridManager : MonoBehaviour
 {
     [SerializeField] private int m_Width = 10;

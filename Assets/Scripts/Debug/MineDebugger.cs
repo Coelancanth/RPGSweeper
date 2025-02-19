@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using RPGMinesweeper.TurnSystem;
+using RPGMinesweeper;
 public class MineDebugger : MonoBehaviour
 {
     #region Inspector Fields

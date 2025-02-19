@@ -90,42 +90,5 @@ public class ExampleClass : MonoBehaviour
     public int ItemCount => m_ItemCount;
     #endregion
 
-    #region Unity Lifecycle
-    private void Awake()
-    {
-        InitializeComponents();
-    }
-
-    private void Update()
-    {
-        UpdateGameLogic();
-    }
-    #endregion
-
-    #region Private Methods
-    private void InitializeComponents()
-    {
-        // Initialization logic
-    }
-
-    private void UpdateGameLogic()
-    {
-        // Update logic
-    }
-    #endregion
-
-    #region Public Methods
-    public void AddItem(int _amount)
-    {
-        m_ItemCount = Mathf.Min(m_ItemCount + _amount, c_MaxItems);
-    }
-    #endregion
-
-    #if UNITY_EDITOR
-    [ContextMenu("Debug Info")]
-    private void DebugInfo()
-    {
-        Debug.Log($"Current item count: {m_ItemCount}");
-    }
     #endif
 }
