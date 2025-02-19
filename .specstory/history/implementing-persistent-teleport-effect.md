@@ -991,6 +991,279 @@ The monsters should now maintain their HP when teleported, making the effect wor
 
 ---
 
+_**User**_
+
+can we refactor @MineManager.cs 's copyMine function, maybe we should extract it (i'm not sure), to make it support multiple type mine's copy (maybe you can sugget a more elegant approach
+
+---
+
+_**Assistant**_
+
+Yes, we can refactor the `CopyMine` function to make it more elegant and extensible. Here's my suggestion:
+
+---
+
+_****_
+
+
+
+---
+
+_****_
+
+
+
+Let me try again with a more focused edit:
+
+---
+
+_****_
+
+```diff
+          return null;
+      }
++ 
++     /// <summary>
++     /// Interface for mine copying strategies
++     /// </summary>
++     private interface IMineCopyStrategy
++     {
++         void CopyMineProperties(IMine sourceMine, IMine targetMine);
++     }
++ 
++     /// <summary>
++     /// Strategy for copying standard mines
++     /// </summary>
++     private class StandardMineCopyStrategy : IMineCopyStrategy
++     {
++         public void CopyMineProperties(IMine sourceMine, IMine targetMine)
++         {
++             // Standard mines don't have additional properties to copy
++         }
++     }
++ 
++     /// <summary>
++     /// Strategy for copying monster mines
++     /// </summary>
++     private class MonsterMineCopyStrategy : IMineCopyStrategy
++     {
++         public void CopyMineProperties(IMine sourceMine, IMine targetMine)
++         {
++             if (sourceMine is MonsterMine sourceMonster && targetMine is MonsterMine targetMonster)
++             {
++                 targetMonster.CurrentHp = sourceMonster.CurrentHp;
++             }
++         }
++     }
++ 
++     /// <summary>
++     /// Factory for creating mine copy strategies
++     /// </summary>
++     private static class MineCopyStrategyFactory
++     {
++         public static IMineCopyStrategy CreateStrategy(MineType type)
++         {
++             return type switch
++             {
++                 MineType.Monster => new MonsterMineCopyStrategy(),
++                 MineType.Standard => new StandardMineCopyStrategy(),
++                 _ => new StandardMineCopyStrategy() // Default to standard strategy
++             };
++         }
++     }
+  
+      /// <summary>
+      public bool CopyMine(Vector2Int _sourcePosition, Vector2Int _targetPosition)
+      {
+-         // Validate positions
+-         if (!m_GridManager.IsValidPosition(_sourcePosition) || !m_GridManager.IsValidPosition(_targetPosition))
++         if (!ValidateCopyPositions(_sourcePosition, _targetPosition)) return false;
++ 
++         // Get source mine and data
++         var sourceMine = m_Mines[_sourcePosition];
++         var sourceMineData = m_MineDataMap[_sourcePosition];
++ 
++         // Create and place the new mine
++         IMine newMine = CreateMine(sourceMineData, _targetPosition);
++         
++         // Copy mine-type specific properties
++         var copyStrategy = MineCopyStrategyFactory.CreateStrategy(sourceMineData.Type);
++         copyStrategy.CopyMineProperties(sourceMine, newMine);
++ 
++         // Add the new mine to collections
++         m_Mines[_targetPosition] = newMine;
++         m_MineDataMap[_targetPosition] = sourceMineData;
++ 
++         // Update visuals
++         UpdateCellView(_targetPosition, sourceMineData, newMine);
++ 
++         // Update grid values
++         UpdateAllGridValues();
++         return true;
++     }
++ 
++     /// <summary>
++     /// Validates positions for mine copying
++     /// </summary>
++     private bool ValidateCopyPositions(Vector2Int sourcePosition, Vector2Int targetPosition)
++     {
++         // Validate positions are within grid
++         if (!m_GridManager.IsValidPosition(sourcePosition) || !m_GridManager.IsValidPosition(targetPosition))
+          {
+-             Debug.LogError($"MineManager: Invalid position for mine copy. Source: {_sourcePosition}, Target: {_targetPosition}");
++             Debug.LogError($"MineManager: Invalid position for mine copy. Source: {sourcePosition}, Target: {targetPosition}");
+              return false;
+          }
+  
+-         // Check if source has a mine and target is empty
+-         if (!m_Mines.TryGetValue(_sourcePosition, out IMine sourceMine))
++         // Check if source has a mine
++         if (!m_Mines.ContainsKey(sourcePosition))
+          {
+-             Debug.LogError($"MineManager: No mine found at source position {_sourcePosition}");
++             Debug.LogError($"MineManager: No mine found at source position {sourcePosition}");
+              return false;
+          }
+  
+-         if (m_Mines.ContainsKey(_targetPosition))
++         // Check if target is empty
++         if (m_Mines.ContainsKey(targetPosition))
+          {
+-             Debug.LogError($"MineManager: Target position {_targetPosition} is already occupied");
++             Debug.LogError($"MineManager: Target position {targetPosition} is already occupied");
+              return false;
+          }
+  
+-         // Get the source mine data
+-         if (!m_MineDataMap.TryGetValue(_sourcePosition, out MineData sourceMineData))
++         // Check if source has mine data
++         if (!m_MineDataMap.ContainsKey(sourcePosition))
+          {
+-             Debug.LogError($"MineManager: No mine data found for position {_sourcePosition}");
++             Debug.LogError($"MineManager: No mine data found for position {sourcePosition}");
+              return false;
+          }
+  
+-         // Create new mine at target position
+-         IMine newMine = CreateMine(sourceMineData, _targetPosition);
+-         m_Mines[_targetPosition] = newMine;
+-         m_MineDataMap[_targetPosition] = sourceMineData;
+- 
+-         // Update the cell view at the target position
+-         var cellObject = m_GridManager.GetCellObject(_targetPosition);
+-         if (cellObject != null)
+-         {
++         return true;
++     }
++ 
++     /// <summary>
++     /// Updates the cell view for a copied mine
++     /// </summary>
++     private void UpdateCellView(Vector2Int position, MineData mineData, IMine mine)
++     {
++         var cellObject = m_GridManager.GetCellObject(position);
++         if (cellObject == null) return;
++ 
+          var cellView = cellObject.GetComponent<CellView>();
+-             if (cellView != null)
+-             {
+-                 cellView.SetValue(sourceMineData.Value, sourceMineData.ValueColor);
++         if (cellView == null) return;
++ 
++         cellView.SetValue(mineData.Value, mineData.ValueColor);
+          
+-                 // If the cell is already revealed, show the mine sprite immediately
+          if (cellView.IsRevealed)
+          {
+-                     cellView.ShowMineSprite(sourceMineData.MineSprite, newMine, sourceMineData);
++             cellView.ShowMineSprite(mineData.MineSprite, mine, mineData);
+              cellView.UpdateVisuals(true);
+-                 }
+-             }
+          }
+- 
+-         // Update grid values after copying the mine
+-         UpdateAllGridValues();
+-         return true;
+      }
+  } 
+```
+
+---
+
+_****_
+
+
+
+I've refactored the `CopyMine` functionality using the Strategy pattern and following SOLID principles. Here's what changed:
+
+1. Added Strategy Pattern for Mine Copying:
+   - `IMineCopyStrategy` interface defines how to copy mine properties
+   - `StandardMineCopyStrategy` for basic mines (no special properties)
+   - `MonsterMineCopyStrategy` for monster mines (copies HP)
+   - `MineCopyStrategyFactory` to create appropriate strategies
+
+2. Split `CopyMine` into smaller, focused methods:
+   - `ValidateCopyPositions` handles all position validation
+   - `UpdateCellView` handles visual updates
+   - Main `CopyMine` method orchestrates the process
+
+3. Benefits of this refactoring:
+   - Single Responsibility: Each class/method has one job
+   - Open/Closed: Easy to add new mine types without modifying existing code
+   - Dependency Inversion: High-level code depends on abstractions
+   - Better error handling and validation
+   - More maintainable and testable code
+
+4. To add a new mine type:
+   1. Create a new strategy class implementing `IMineCopyStrategy`
+   2. Add the new type to `MineCopyStrategyFactory`
+   3. No changes needed to existing code
+
+This makes the code more maintainable and easier to extend for new mine types in the future.
+
+Would you like me to make any adjustments to this refactoring?
+
+---
+
+_**User**_
+
+maybe you should extract them into a/ some files?
+
+---
+
+_**Assistant**_
+
+Yes, you're right! We should extract these copy-related classes into separate files to improve organization and maintainability. Here's how we can do it:
+
+---
+
+_****_
+
+```diff
+- 
++ using UnityEngine;
++ 
++ namespace RPGMinesweeper.Mines.Copying
++ {
++     /// <summary>
++     /// Interface for mine copying strategies
++     /// </summary>
++     public interface IMineCopyStrategy
++     {
++         void CopyMineProperties(IMine sourceMine, IMine targetMine);
++     }
++ } 
+```
+
+---
+
+_****_
+
+
+
+---
+
 
 
 ---

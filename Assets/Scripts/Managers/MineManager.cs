@@ -316,6 +316,55 @@ public class MineManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Interface for mine copying strategies
+    /// </summary>
+    private interface IMineCopyStrategy
+    {
+        void CopyMineProperties(IMine sourceMine, IMine targetMine);
+    }
+
+    /// <summary>
+    /// Strategy for copying standard mines
+    /// </summary>
+    private class StandardMineCopyStrategy : IMineCopyStrategy
+    {
+        public void CopyMineProperties(IMine sourceMine, IMine targetMine)
+        {
+            // Standard mines don't have additional properties to copy
+        }
+    }
+
+    /// <summary>
+    /// Strategy for copying monster mines
+    /// </summary>
+    private class MonsterMineCopyStrategy : IMineCopyStrategy
+    {
+        public void CopyMineProperties(IMine sourceMine, IMine targetMine)
+        {
+            if (sourceMine is MonsterMine sourceMonster && targetMine is MonsterMine targetMonster)
+            {
+                targetMonster.CurrentHp = sourceMonster.CurrentHp;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Factory for creating mine copy strategies
+    /// </summary>
+    private static class MineCopyStrategyFactory
+    {
+        public static IMineCopyStrategy CreateStrategy(MineType type)
+        {
+            return type switch
+            {
+                MineType.Monster => new MonsterMineCopyStrategy(),
+                MineType.Standard => new StandardMineCopyStrategy(),
+                _ => new StandardMineCopyStrategy() // Default to standard strategy
+            };
+        }
+    }
+
+    /// <summary>
     /// Creates a deep copy of a mine at a new position.
     /// </summary>
     /// <param name="_sourcePosition">The position of the source mine to copy</param>
@@ -323,58 +372,84 @@ public class MineManager : MonoBehaviour
     /// <returns>True if the copy was successful, false otherwise</returns>
     public bool CopyMine(Vector2Int _sourcePosition, Vector2Int _targetPosition)
     {
-        // Validate positions
-        if (!m_GridManager.IsValidPosition(_sourcePosition) || !m_GridManager.IsValidPosition(_targetPosition))
-        {
-            Debug.LogError($"MineManager: Invalid position for mine copy. Source: {_sourcePosition}, Target: {_targetPosition}");
-            return false;
-        }
+        if (!ValidateCopyPositions(_sourcePosition, _targetPosition)) return false;
 
-        // Check if source has a mine and target is empty
-        if (!m_Mines.TryGetValue(_sourcePosition, out IMine sourceMine))
-        {
-            Debug.LogError($"MineManager: No mine found at source position {_sourcePosition}");
-            return false;
-        }
+        // Get source mine and data
+        var sourceMine = m_Mines[_sourcePosition];
+        var sourceMineData = m_MineDataMap[_sourcePosition];
 
-        if (m_Mines.ContainsKey(_targetPosition))
-        {
-            Debug.LogError($"MineManager: Target position {_targetPosition} is already occupied");
-            return false;
-        }
-
-        // Get the source mine data
-        if (!m_MineDataMap.TryGetValue(_sourcePosition, out MineData sourceMineData))
-        {
-            Debug.LogError($"MineManager: No mine data found for position {_sourcePosition}");
-            return false;
-        }
-
-        // Create new mine at target position
+        // Create and place the new mine
         IMine newMine = CreateMine(sourceMineData, _targetPosition);
+        
+        // Copy mine-type specific properties
+        var copyStrategy = MineCopyStrategyFactory.CreateStrategy(sourceMineData.Type);
+        copyStrategy.CopyMineProperties(sourceMine, newMine);
+
+        // Add the new mine to collections
         m_Mines[_targetPosition] = newMine;
         m_MineDataMap[_targetPosition] = sourceMineData;
 
-        // Update the cell view at the target position
-        var cellObject = m_GridManager.GetCellObject(_targetPosition);
-        if (cellObject != null)
-        {
-            var cellView = cellObject.GetComponent<CellView>();
-            if (cellView != null)
-            {
-                cellView.SetValue(sourceMineData.Value, sourceMineData.ValueColor);
-                
-                // If the cell is already revealed, show the mine sprite immediately
-                if (cellView.IsRevealed)
-                {
-                    cellView.ShowMineSprite(sourceMineData.MineSprite, newMine, sourceMineData);
-                    cellView.UpdateVisuals(true);
-                }
-            }
-        }
+        // Update visuals
+        UpdateCellView(_targetPosition, sourceMineData, newMine);
 
-        // Update grid values after copying the mine
+        // Update grid values
         UpdateAllGridValues();
         return true;
+    }
+
+    /// <summary>
+    /// Validates positions for mine copying
+    /// </summary>
+    private bool ValidateCopyPositions(Vector2Int sourcePosition, Vector2Int targetPosition)
+    {
+        // Validate positions are within grid
+        if (!m_GridManager.IsValidPosition(sourcePosition) || !m_GridManager.IsValidPosition(targetPosition))
+        {
+            Debug.LogError($"MineManager: Invalid position for mine copy. Source: {sourcePosition}, Target: {targetPosition}");
+            return false;
+        }
+
+        // Check if source has a mine
+        if (!m_Mines.ContainsKey(sourcePosition))
+        {
+            Debug.LogError($"MineManager: No mine found at source position {sourcePosition}");
+            return false;
+        }
+
+        // Check if target is empty
+        if (m_Mines.ContainsKey(targetPosition))
+        {
+            Debug.LogError($"MineManager: Target position {targetPosition} is already occupied");
+            return false;
+        }
+
+        // Check if source has mine data
+        if (!m_MineDataMap.ContainsKey(sourcePosition))
+        {
+            Debug.LogError($"MineManager: No mine data found for position {sourcePosition}");
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Updates the cell view for a copied mine
+    /// </summary>
+    private void UpdateCellView(Vector2Int position, MineData mineData, IMine mine)
+    {
+        var cellObject = m_GridManager.GetCellObject(position);
+        if (cellObject == null) return;
+
+        var cellView = cellObject.GetComponent<CellView>();
+        if (cellView == null) return;
+
+        cellView.SetValue(mineData.Value, mineData.ValueColor);
+        
+        if (cellView.IsRevealed)
+        {
+            cellView.ShowMineSprite(mineData.MineSprite, mine, mineData);
+            cellView.UpdateVisuals(true);
+        }
     }
 } 
