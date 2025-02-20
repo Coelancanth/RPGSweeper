@@ -3,9 +3,21 @@ using System.Collections.Generic;
 
 namespace RPGMinesweeper
 {
+    public enum SpawnStrategyPriority
+    {
+        Lowest = 0,
+        Random = 100,
+        Center = 200,
+        Edge = 300,
+        Corner = 400,
+        Surrounded = 500,
+        Highest = 1000
+    }
+
     public interface IMineSpawnStrategy
     {
         Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines);
+        SpawnStrategyPriority Priority { get; }
     }
 
     // Deprecated: Use GridPositionType instead

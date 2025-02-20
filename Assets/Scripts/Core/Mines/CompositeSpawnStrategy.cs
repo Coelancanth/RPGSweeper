@@ -9,6 +9,21 @@ namespace RPGMinesweeper
         private readonly MineSpawnStrategyType m_Strategies;
         private readonly Dictionary<MineSpawnStrategyType, IMineSpawnStrategy> m_StrategyMap;
 
+        public SpawnStrategyPriority Priority
+        {
+            get
+            {
+                // Return the highest priority among active strategies
+                var activeStrategies = System.Enum.GetValues(typeof(MineSpawnStrategyType))
+                    .Cast<MineSpawnStrategyType>()
+                    .Where(s => s != MineSpawnStrategyType.None && s != MineSpawnStrategyType.All && (m_Strategies & s) != 0)
+                    .Select(s => m_StrategyMap[s].Priority)
+                    .DefaultIfEmpty(SpawnStrategyPriority.Random);
+
+                return activeStrategies.Max();
+            }
+        }
+
         public CompositeSpawnStrategy(MineSpawnStrategyType strategies, MineType targetMineType = MineType.Standard, MonsterType? targetMonsterType = null)
         {
             m_Strategies = strategies;

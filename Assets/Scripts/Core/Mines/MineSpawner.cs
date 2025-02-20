@@ -14,6 +14,7 @@ public interface IMineSpawner
 public class MineSpawner : IMineSpawner
 {
     private Dictionary<MineSpawnStrategyType, CompositeSpawnStrategy> m_SpawnStrategies;
+    private static readonly Vector2Int INVALID_POSITION = Vector2Int.one * -1;
 
     public MineSpawner()
     {
@@ -64,24 +65,114 @@ public class MineSpawner : IMineSpawner
     private void PlaceMinesForData(MineTypeSpawnData data, IMineFactory mineFactory, GridManager gridManager,
         Dictionary<Vector2Int, IMine> mines, Dictionary<Vector2Int, MineData> mineDataMap)
     {
-        for (int i = 0; i < data.SpawnCount; i++)
+        int remainingCount = data.SpawnCount;
+        int consecutiveFailures = 0;
+        const int maxConsecutiveFailures = 3;
+
+        while (remainingCount > 0 && consecutiveFailures < maxConsecutiveFailures)
         {
             Vector2Int position = GetSpawnPosition(data.MineData, gridManager, mines);
-            
-            IMine mine = mineFactory.CreateMine(data.MineData, position);
-            mines.Add(position, mine);
-            mineDataMap.Add(position, data.MineData);
 
-            // Set the raw value on the cell view with its color
-            var cellObject = gridManager.GetCellObject(position);
-            if (cellObject != null)
+            if (IsInvalidPosition(position))
             {
-                var cellView = cellObject.GetComponent<CellView>();
-                if (cellView != null)
-                {
-                    cellView.SetValue(data.MineData.Value, data.MineData.ValueColor);
-                }
+                consecutiveFailures++;
+                continue;
             }
+
+            if (mines.ContainsKey(position))
+            {
+                consecutiveFailures++;
+                continue;
+            }
+
+            try
+            {
+                IMine mine = mineFactory.CreateMine(data.MineData, position);
+                mines.Add(position, mine);
+                mineDataMap.Add(position, data.MineData);
+
+                // Set the raw value on the cell view with its color
+                var cellObject = gridManager.GetCellObject(position);
+                if (cellObject != null)
+                {
+                    var cellView = cellObject.GetComponent<CellView>();
+                    if (cellView != null)
+                    {
+                        cellView.SetValue(data.MineData.Value, data.MineData.ValueColor);
+                    }
+                }
+
+                remainingCount--;
+                consecutiveFailures = 0;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to create mine at position {position}: {e.Message}");
+                consecutiveFailures++;
+            }
+        }
+
+        if (remainingCount > 0)
+        {
+            Debug.LogWarning($"Failed to place {remainingCount} mines of type {data.MineData.Type}. Falling back to random placement.");
+            PlaceMinesWithFallback(data, remainingCount, mineFactory, gridManager, mines, mineDataMap);
+        }
+    }
+
+    private void PlaceMinesWithFallback(MineTypeSpawnData data, int count, IMineFactory mineFactory, GridManager gridManager,
+        Dictionary<Vector2Int, IMine> mines, Dictionary<Vector2Int, MineData> mineDataMap)
+    {
+        var randomStrategy = new CompositeSpawnStrategy(MineSpawnStrategyType.Random);
+        int remainingCount = count;
+        int consecutiveFailures = 0;
+        const int maxConsecutiveFailures = 10;
+
+        while (remainingCount > 0 && consecutiveFailures < maxConsecutiveFailures)
+        {
+            var position = randomStrategy.GetSpawnPosition(gridManager, mines);
+
+            if (IsInvalidPosition(position))
+            {
+                consecutiveFailures++;
+                continue;
+            }
+
+            if (mines.ContainsKey(position))
+            {
+                consecutiveFailures++;
+                continue;
+            }
+
+            try
+            {
+                IMine mine = mineFactory.CreateMine(data.MineData, position);
+                mines.Add(position, mine);
+                mineDataMap.Add(position, data.MineData);
+
+                // Set the raw value on the cell view with its color
+                var cellObject = gridManager.GetCellObject(position);
+                if (cellObject != null)
+                {
+                    var cellView = cellObject.GetComponent<CellView>();
+                    if (cellView != null)
+                    {
+                        cellView.SetValue(data.MineData.Value, data.MineData.ValueColor);
+                    }
+                }
+
+                remainingCount--;
+                consecutiveFailures = 0;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to create mine at position {position}: {e.Message}");
+                consecutiveFailures++;
+            }
+        }
+
+        if (remainingCount > 0)
+        {
+            Debug.LogError($"Failed to place {remainingCount} mines of type {data.MineData.Type} even with random fallback.");
         }
     }
 
@@ -108,5 +199,10 @@ public class MineSpawner : IMineSpawner
             m_SpawnStrategies[strategy] = spawnStrategy;
         }
         return spawnStrategy;
+    }
+
+    private bool IsInvalidPosition(Vector2Int position)
+    {
+        return position == INVALID_POSITION;
     }
 } 

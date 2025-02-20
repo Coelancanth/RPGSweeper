@@ -111,12 +111,24 @@ class MonsterMine {
 }
 class IMineSpawnStrategy {
 <<interface>>
++Priority: SpawnStrategyPriority
 +GetSpawnPosition(GridManager, Dictionary)
 }
 class CompositeSpawnStrategy {
 -m_Strategies: MineSpawnStrategyType
 -m_StrategyMap: Dictionary
++Priority: SpawnStrategyPriority
 +GetSpawnPosition()
+}
+class SpawnStrategyPriority {
+<<enumeration>>
+Lowest = 0
+Random = 100
+Center = 200
+Edge = 300
+Corner = 400
+Surrounded = 500
+Highest = 1000
 }
 class MineSpawnStrategyType {
 <<enumeration>>
@@ -149,9 +161,11 @@ IMineSpawnStrategy <|.. CompositeSpawnStrategy
 MineManager --> IMineSpawnStrategy
 MineData --> MineSpawnStrategyType
 CompositeSpawnStrategy --> MineSpawnStrategyType
+CompositeSpawnStrategy --> SpawnStrategyPriority
 note for MonsterMine "Two-phase removal:\n1. Combat to 0 HP\n2. Collection"
 note for MineManager "Supports runtime mine addition\nwith type-specific handling"
-note for CompositeSpawnStrategy "Handles multiple strategies\nwith flag composition"
+note for CompositeSpawnStrategy "Handles multiple strategies\nwith priority-based ordering"
+note for SpawnStrategyPriority "Controls spawn order\nwith numeric priorities"
 ```
 
 ### Player System

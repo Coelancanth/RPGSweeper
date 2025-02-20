@@ -6,15 +6,27 @@ namespace RPGMinesweeper
 {
     public class RandomMineSpawnStrategy : IMineSpawnStrategy
     {
+        public SpawnStrategyPriority Priority => SpawnStrategyPriority.Random;
+
         public Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
         {
             Vector2Int position;
+            int attempts = 0;
+            const int maxAttempts = 100; // Prevent infinite loops
+
             do
             {
                 position = new Vector2Int(
                     Random.Range(0, gridManager.Width),
                     Random.Range(0, gridManager.Height)
                 );
+                attempts++;
+
+                if (attempts >= maxAttempts)
+                {
+                    Debug.LogWarning("RandomMineSpawnStrategy: Max attempts reached, no valid position found.");
+                    return Vector2Int.one * -1; // Signal invalid position
+                }
             } while (existingMines.ContainsKey(position));
 
             return position;
@@ -23,6 +35,8 @@ namespace RPGMinesweeper
 
     public class EdgeMineSpawnStrategy : IMineSpawnStrategy
     {
+        public SpawnStrategyPriority Priority => SpawnStrategyPriority.Edge;
+
         public Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
         {
             List<Vector2Int> edgePositions = new List<Vector2Int>();
@@ -41,22 +55,22 @@ namespace RPGMinesweeper
                 edgePositions.Add(new Vector2Int(gridManager.Width - 1, y));
             }
             
-            // Filter out positions that already have mines
             edgePositions.RemoveAll(pos => existingMines.ContainsKey(pos));
             
-            // If no edge positions are available, fallback to random position
             if (edgePositions.Count == 0)
             {
-                return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
+                Debug.LogWarning("EdgeMineSpawnStrategy: No valid edge positions available.");
+                return Vector2Int.one * -1;
             }
             
-            // Return random edge position
             return edgePositions[Random.Range(0, edgePositions.Count)];
         }
     }
 
     public class CornerMineSpawnStrategy : IMineSpawnStrategy
     {
+        public SpawnStrategyPriority Priority => SpawnStrategyPriority.Corner;
+
         public Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
         {
             List<Vector2Int> cornerPositions = new List<Vector2Int>
@@ -67,25 +81,24 @@ namespace RPGMinesweeper
                 new Vector2Int(gridManager.Width - 1, gridManager.Height - 1)  // Top-right
             };
 
-            // Filter out positions that already have mines
             cornerPositions.RemoveAll(pos => existingMines.ContainsKey(pos));
 
-            // If no corner positions are available, fallback to random position
             if (cornerPositions.Count == 0)
             {
-                return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
+                Debug.LogWarning("CornerMineSpawnStrategy: No valid corner positions available.");
+                return Vector2Int.one * -1;
             }
 
-            // Return random corner position
             return cornerPositions[Random.Range(0, cornerPositions.Count)];
         }
     }
 
     public class CenterMineSpawnStrategy : IMineSpawnStrategy
     {
+        public SpawnStrategyPriority Priority => SpawnStrategyPriority.Center;
+
         public Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
         {
-            // Define the center region (middle 1/3 of the grid)
             int minX = gridManager.Width / 3;
             int maxX = (gridManager.Width * 2) / 3;
             int minY = gridManager.Height / 3;
@@ -105,13 +118,12 @@ namespace RPGMinesweeper
                 }
             }
 
-            // If no center positions are available, fallback to random position
             if (centerPositions.Count == 0)
             {
-                return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
+                Debug.LogWarning("CenterMineSpawnStrategy: No valid center positions available.");
+                return Vector2Int.one * -1;
             }
 
-            // Return random center position
             return centerPositions[Random.Range(0, centerPositions.Count)];
         }
     }
@@ -126,6 +138,8 @@ namespace RPGMinesweeper
             new Vector2Int(-1, 0),                         new Vector2Int(1, 0),
             new Vector2Int(-1, 1),  new Vector2Int(0, 1),  new Vector2Int(1, 1)
         };
+
+        public SpawnStrategyPriority Priority => SpawnStrategyPriority.Surrounded;
 
         public SurroundedMineSpawnStrategy(MineType targetMineType, MonsterType? targetMonsterType = null)
         {
@@ -142,9 +156,9 @@ namespace RPGMinesweeper
 
             if (targetPositions.Count == 0)
             {
-                Debug.Log($"No target mines found of type {m_TargetMineType}" + 
+                Debug.LogWarning($"SurroundedMineSpawnStrategy: No target mines found of type {m_TargetMineType}" + 
                     (m_TargetMonsterType.HasValue ? $" and monster type {m_TargetMonsterType.Value}" : ""));
-                return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
+                return Vector2Int.one * -1;
             }
 
             List<Vector2Int> validPositions = new List<Vector2Int>();
@@ -155,45 +169,41 @@ namespace RPGMinesweeper
                 {
                     var adjacentPos = targetPos + offset;
                     
-                    // Check if position is within grid bounds
-                    if (adjacentPos.x >= 0 && adjacentPos.x < gridManager.Width &&
-                        adjacentPos.y >= 0 && adjacentPos.y < gridManager.Height &&
-                        !existingMines.ContainsKey(adjacentPos))
+                    if (IsValidPosition(adjacentPos, gridManager, existingMines))
                     {
-                        Debug.Log($"Adding valid position: {adjacentPos}");
                         validPositions.Add(adjacentPos);
                     }
                 }
             }
 
-            // If no valid positions found, fallback to random
             if (validPositions.Count == 0)
             {
-                Debug.Log($"No valid adjacent positions found for target mines of type {m_TargetMineType}" +
-                    (m_TargetMonsterType.HasValue ? $" and monster type {m_TargetMonsterType.Value}" : ""));
-                return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
+                Debug.LogWarning($"SurroundedMineSpawnStrategy: No valid adjacent positions found for target mines.");
+                return Vector2Int.one * -1;
             }
 
             return validPositions[Random.Range(0, validPositions.Count)];
         }
 
+        private bool IsValidPosition(Vector2Int pos, GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
+        {
+            return pos.x >= 0 && pos.x < gridManager.Width &&
+                   pos.y >= 0 && pos.y < gridManager.Height &&
+                   !existingMines.ContainsKey(pos);
+        }
+
         private bool IsTargetMine(IMine mine)
         {
-            if (mine.Type != m_TargetMineType) return false;
-            
-            // If we're targeting a monster type, check if it matches
-            if (m_TargetMineType == MineType.Monster && m_TargetMonsterType.HasValue)
+            if (mine == null) return false;
+
+            bool isCorrectType = mine.Type == m_TargetMineType;
+            if (!isCorrectType) return false;
+
+            if (m_TargetMonsterType.HasValue && mine is MonsterMine monsterMine)
             {
-                if (mine is MonsterMine monsterMine)
-                {
-                    var matches = monsterMine.MonsterType == m_TargetMonsterType.Value;
-                    Debug.Log($"Checking monster mine: {monsterMine.MonsterType} against target: {m_TargetMonsterType.Value}, matches: {matches}");
-                    return matches;
-                }
-                Debug.LogWarning($"Mine is marked as Monster type but is not a MonsterMine instance");
-                return false;
+                return monsterMine.MonsterType == m_TargetMonsterType.Value;
             }
-            
+
             return true;
         }
     }
