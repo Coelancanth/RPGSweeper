@@ -48,25 +48,38 @@ public class MineSpawner : IMineSpawner
     public void PlaceMines(List<MineTypeSpawnData> mineSpawnData, IMineFactory mineFactory, GridManager gridManager, 
         Dictionary<Vector2Int, IMine> mines, Dictionary<Vector2Int, MineData> mineDataMap)
     {
-        foreach (var data in mineSpawnData.Where(data => data.IsEnabled))
+        // First pass: Place all non-surrounded mines
+        foreach (var data in mineSpawnData.Where(data => data.IsEnabled && data.MineData.SpawnStrategy != MineSpawnStrategyType.Surrounded))
         {
-            for (int i = 0; i < data.SpawnCount; i++)
-            {
-                Vector2Int position = GetSpawnPosition(data.MineData, gridManager, mines);
-                
-                IMine mine = mineFactory.CreateMine(data.MineData, position);
-                mines.Add(position, mine);
-                mineDataMap.Add(position, data.MineData);
+            PlaceMinesForData(data, mineFactory, gridManager, mines, mineDataMap);
+        }
 
-                // Set the raw value on the cell view with its color
-                var cellObject = gridManager.GetCellObject(position);
-                if (cellObject != null)
+        // Second pass: Place all surrounded mines
+        foreach (var data in mineSpawnData.Where(data => data.IsEnabled && data.MineData.SpawnStrategy == MineSpawnStrategyType.Surrounded))
+        {
+            PlaceMinesForData(data, mineFactory, gridManager, mines, mineDataMap);
+        }
+    }
+
+    private void PlaceMinesForData(MineTypeSpawnData data, IMineFactory mineFactory, GridManager gridManager,
+        Dictionary<Vector2Int, IMine> mines, Dictionary<Vector2Int, MineData> mineDataMap)
+    {
+        for (int i = 0; i < data.SpawnCount; i++)
+        {
+            Vector2Int position = GetSpawnPosition(data.MineData, gridManager, mines);
+            
+            IMine mine = mineFactory.CreateMine(data.MineData, position);
+            mines.Add(position, mine);
+            mineDataMap.Add(position, data.MineData);
+
+            // Set the raw value on the cell view with its color
+            var cellObject = gridManager.GetCellObject(position);
+            if (cellObject != null)
+            {
+                var cellView = cellObject.GetComponent<CellView>();
+                if (cellView != null)
                 {
-                    var cellView = cellObject.GetComponent<CellView>();
-                    if (cellView != null)
-                    {
-                        cellView.SetValue(data.MineData.Value, data.MineData.ValueColor);
-                    }
+                    cellView.SetValue(data.MineData.Value, data.MineData.ValueColor);
                 }
             }
         }

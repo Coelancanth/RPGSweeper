@@ -142,6 +142,8 @@ namespace RPGMinesweeper
 
             if (targetPositions.Count == 0)
             {
+                Debug.Log($"No target mines found of type {m_TargetMineType}" + 
+                    (m_TargetMonsterType.HasValue ? $" and monster type {m_TargetMonsterType.Value}" : ""));
                 return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
             }
 
@@ -158,6 +160,7 @@ namespace RPGMinesweeper
                         adjacentPos.y >= 0 && adjacentPos.y < gridManager.Height &&
                         !existingMines.ContainsKey(adjacentPos))
                     {
+                        Debug.Log($"Adding valid position: {adjacentPos}");
                         validPositions.Add(adjacentPos);
                     }
                 }
@@ -166,6 +169,8 @@ namespace RPGMinesweeper
             // If no valid positions found, fallback to random
             if (validPositions.Count == 0)
             {
+                Debug.Log($"No valid adjacent positions found for target mines of type {m_TargetMineType}" +
+                    (m_TargetMonsterType.HasValue ? $" and monster type {m_TargetMonsterType.Value}" : ""));
                 return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
             }
 
@@ -181,8 +186,11 @@ namespace RPGMinesweeper
             {
                 if (mine is MonsterMine monsterMine)
                 {
-                    return monsterMine.MonsterType == m_TargetMonsterType.Value;
+                    var matches = monsterMine.MonsterType == m_TargetMonsterType.Value;
+                    Debug.Log($"Checking monster mine: {monsterMine.MonsterType} against target: {m_TargetMonsterType.Value}, matches: {matches}");
+                    return matches;
                 }
+                Debug.LogWarning($"Mine is marked as Monster type but is not a MonsterMine instance");
                 return false;
             }
             
