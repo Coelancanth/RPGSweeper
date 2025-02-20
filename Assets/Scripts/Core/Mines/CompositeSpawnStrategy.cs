@@ -9,7 +9,7 @@ namespace RPGMinesweeper
         private readonly MineSpawnStrategyType m_Strategies;
         private readonly Dictionary<MineSpawnStrategyType, IMineSpawnStrategy> m_StrategyMap;
 
-        public CompositeSpawnStrategy(MineSpawnStrategyType strategies)
+        public CompositeSpawnStrategy(MineSpawnStrategyType strategies, MineType targetMineType = MineType.Standard, MonsterType? targetMonsterType = null)
         {
             m_Strategies = strategies;
             m_StrategyMap = new Dictionary<MineSpawnStrategyType, IMineSpawnStrategy>
@@ -17,7 +17,8 @@ namespace RPGMinesweeper
                 { MineSpawnStrategyType.Random, new RandomMineSpawnStrategy() },
                 { MineSpawnStrategyType.Edge, new EdgeMineSpawnStrategy() },
                 { MineSpawnStrategyType.Corner, new CornerMineSpawnStrategy() },
-                { MineSpawnStrategyType.Center, new CenterMineSpawnStrategy() }
+                { MineSpawnStrategyType.Center, new CenterMineSpawnStrategy() },
+                { MineSpawnStrategyType.Surrounded, new SurroundedMineSpawnStrategy(targetMineType, targetMonsterType) }
             };
         }
 

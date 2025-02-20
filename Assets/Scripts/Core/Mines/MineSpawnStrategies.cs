@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RPGMinesweeper
 {
@@ -112,6 +113,80 @@ namespace RPGMinesweeper
 
             // Return random center position
             return centerPositions[Random.Range(0, centerPositions.Count)];
+        }
+    }
+
+    public class SurroundedMineSpawnStrategy : IMineSpawnStrategy
+    {
+        private readonly MineType m_TargetMineType;
+        private readonly MonsterType? m_TargetMonsterType;
+        private static readonly Vector2Int[] s_AdjacentOffsets = new Vector2Int[]
+        {
+            new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
+            new Vector2Int(-1, 0),                         new Vector2Int(1, 0),
+            new Vector2Int(-1, 1),  new Vector2Int(0, 1),  new Vector2Int(1, 1)
+        };
+
+        public SurroundedMineSpawnStrategy(MineType targetMineType, MonsterType? targetMonsterType = null)
+        {
+            m_TargetMineType = targetMineType;
+            m_TargetMonsterType = targetMonsterType;
+        }
+
+        public Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
+        {
+            var targetPositions = existingMines
+                .Where(kvp => IsTargetMine(kvp.Value))
+                .Select(kvp => kvp.Key)
+                .ToList();
+
+            if (targetPositions.Count == 0)
+            {
+                return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
+            }
+
+            List<Vector2Int> validPositions = new List<Vector2Int>();
+
+            foreach (var targetPos in targetPositions)
+            {
+                foreach (var offset in s_AdjacentOffsets)
+                {
+                    var adjacentPos = targetPos + offset;
+                    
+                    // Check if position is within grid bounds
+                    if (adjacentPos.x >= 0 && adjacentPos.x < gridManager.Width &&
+                        adjacentPos.y >= 0 && adjacentPos.y < gridManager.Height &&
+                        !existingMines.ContainsKey(adjacentPos))
+                    {
+                        validPositions.Add(adjacentPos);
+                    }
+                }
+            }
+
+            // If no valid positions found, fallback to random
+            if (validPositions.Count == 0)
+            {
+                return new RandomMineSpawnStrategy().GetSpawnPosition(gridManager, existingMines);
+            }
+
+            return validPositions[Random.Range(0, validPositions.Count)];
+        }
+
+        private bool IsTargetMine(IMine mine)
+        {
+            if (mine.Type != m_TargetMineType) return false;
+            
+            // If we're targeting a monster type, check if it matches
+            if (m_TargetMineType == MineType.Monster && m_TargetMonsterType.HasValue)
+            {
+                if (mine is MonsterMine monsterMine)
+                {
+                    return monsterMine.MonsterType == m_TargetMonsterType.Value;
+                }
+                return false;
+            }
+            
+            return true;
         }
     }
 } 

@@ -158,6 +158,16 @@ public class MineData : SerializedScriptableObject
     [FoldoutGroup("Spawn Settings")]
     public MineSpawnStrategyType SpawnStrategy = MineSpawnStrategyType.Random;
 
+    [FoldoutGroup("Spawn Settings")]
+    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.Surrounded")]
+    [Tooltip("The type of mine this mine should be surrounded by")]
+    public MineType TargetMineType = MineType.Monster;
+
+    [FoldoutGroup("Spawn Settings")]
+    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.Surrounded && TargetMineType == MineType.Monster")]
+    [Tooltip("The specific type of monster to be surrounded by")]
+    public MonsterType TargetMonsterType = MonsterType.None;
+
     [BoxGroup("Visual Properties")]
     [HorizontalGroup("Visual Properties/Split")]
     [VerticalGroup("Visual Properties/Split/Left"), LabelWidth(100)]

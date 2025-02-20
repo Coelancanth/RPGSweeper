@@ -7,6 +7,7 @@ namespace RPGMinesweeper
         RatKing,
         MimicChest,
         Minotaur,
+        Wizard,
         Demon,
         Devil,
         Imp,

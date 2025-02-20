@@ -17,6 +17,7 @@ namespace RPGMinesweeper
         Edge = 1 << 1,
         Corner = 1 << 2,
         Center = 1 << 3,
-        All = Random | Edge | Corner | Center
+        Surrounded = 1 << 4,
+        All = Random | Edge | Corner | Center | Surrounded
     }
 } 

@@ -74,15 +74,24 @@ public class MineSpawner : IMineSpawner
 
     private Vector2Int GetSpawnPosition(MineData mineData, GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
     {
-        var strategy = GetOrCreateStrategy(mineData.SpawnStrategy);
+        var strategy = GetOrCreateStrategy(mineData.SpawnStrategy, mineData);
         return strategy.GetSpawnPosition(gridManager, existingMines);
     }
 
-    private CompositeSpawnStrategy GetOrCreateStrategy(MineSpawnStrategyType strategy)
+    private CompositeSpawnStrategy GetOrCreateStrategy(MineSpawnStrategyType strategy, MineData mineData)
     {
         if (!m_SpawnStrategies.TryGetValue(strategy, out var spawnStrategy))
         {
-            spawnStrategy = new CompositeSpawnStrategy(strategy);
+            MineType targetType = strategy == MineSpawnStrategyType.Surrounded 
+                ? mineData.TargetMineType  // Use the configured target type
+                : MineType.Standard;
+
+            MonsterType? targetMonsterType = (strategy == MineSpawnStrategyType.Surrounded && 
+                                            mineData.TargetMineType == MineType.Monster)
+                ? mineData.TargetMonsterType
+                : null;
+                
+            spawnStrategy = new CompositeSpawnStrategy(strategy, targetType, targetMonsterType);
             m_SpawnStrategies[strategy] = spawnStrategy;
         }
         return spawnStrategy;
