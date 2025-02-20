@@ -29,8 +29,9 @@ MonoBehaviour:
   MineSprite: {fileID: 3867296298848744610, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  m_PassiveEffects: []
-  m_ActiveEffects: []
+  m_PersistentEffects:
+  - Template: {fileID: 11400000, guid: 88c9dee50cde4014bad908951c7cd6c1, type: 2}
+  m_TriggerableEffects: []
   m_MonsterType: 9
   m_MaxHp: 2
   m_BaseDamage: 2
