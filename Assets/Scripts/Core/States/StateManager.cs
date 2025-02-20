@@ -84,27 +84,63 @@ namespace RPGMinesweeper.States
                 Debug.Log($"[StateManager] Processing turn end for {m_ActiveStates.Count} states");
             }
 
+            // Create a safe copy of the states to process
+            var statesToProcess = m_ActiveStates.ToList();
             var expiredStates = new List<(string Name, StateTarget Target, object TargetId)>();
             
-            foreach (var kvp in m_ActiveStates)
+            try
             {
-                if (kvp.Value is ITurnBasedState turnState)
+                foreach (var kvp in statesToProcess)
                 {
-                    turnState.OnTurnEnd();
-                    if (turnState.IsExpired)
+                    if (kvp.Value is ITurnBasedState turnState)
                     {
-                        expiredStates.Add(kvp.Key);
-                        if (m_DebugMode)
+                        try
                         {
-                            Debug.Log($"[StateManager] State {turnState.Name} at {turnState.TargetId} has expired");
+                            if (m_DebugMode)
+                            {
+                                Debug.Log($"[StateManager] Processing turn end for state {turnState.Name} at {turnState.TargetId}");
+                            }
+                            
+                            turnState.OnTurnEnd();
+                            
+                            if (turnState.IsExpired)
+                            {
+                                expiredStates.Add(kvp.Key);
+                                if (m_DebugMode)
+                                {
+                                    Debug.Log($"[StateManager] State {turnState.Name} at {turnState.TargetId} has expired");
+                                }
+                            }
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogError($"[StateManager] Error processing turn end for state {turnState.Name}: {e}");
+                            // Add to expired states to remove problematic state
+                            expiredStates.Add(kvp.Key);
                         }
                     }
                 }
             }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[StateManager] Error during turn end processing: {e}");
+            }
 
+            // Remove expired states
             foreach (var key in expiredStates)
             {
-                RemoveState(key);
+                try
+                {
+                    if (m_DebugMode)
+                    {
+                        Debug.Log($"[StateManager] Removing expired state {key.Name}");
+                    }
+                    RemoveState(key);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"[StateManager] Error removing expired state {key.Name}: {e}");
+                }
             }
         }
 

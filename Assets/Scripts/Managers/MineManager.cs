@@ -36,13 +36,12 @@ public class MineManager : MonoBehaviour
     #region Unity Lifecycle
     private void Awake()
     {
+        if (!ValidateComponents()) return;
         InitializeComponents();
     }
 
     private void Start()
     {
-        if (!ValidateComponents()) return;
-
         m_ConfigProvider.ValidateConfiguration(m_GridManager.Width, m_GridManager.Height);
         var config = m_ConfigProvider.GetConfiguration();
         m_MineSpawner.PlaceMines(config.SpawnData, m_MineFactory, m_GridManager, m_Mines, m_MineDataMap);
@@ -57,15 +56,6 @@ public class MineManager : MonoBehaviour
     #endregion
 
     #region Initialization
-    private void InitializeComponents()
-    {
-        m_MineFactory = new MineFactory();
-        m_MineSpawner = new MineSpawner();
-        m_VisualManager = new MineVisualManager(m_GridManager);
-        m_EventHandler = new MineEventHandler(this, m_VisualManager);
-        m_ConfigProvider = new MineConfigurationProvider(m_MineSpawnData);
-    }
-
     private bool ValidateComponents()
     {
         if (m_GridManager == null)
@@ -79,6 +69,17 @@ public class MineManager : MonoBehaviour
             }
         }
         return true;
+    }
+
+    private void InitializeComponents()
+    {
+        m_MineFactory = new MineFactory();
+        m_MineSpawner = new MineSpawner();
+        m_ConfigProvider = new MineConfigurationProvider(m_MineSpawnData);
+        
+        // Initialize visual manager after GridManager is validated
+        m_VisualManager = new MineVisualManager(m_GridManager);
+        m_EventHandler = new MineEventHandler(this, m_VisualManager);
     }
     #endregion
 

@@ -859,7 +859,268 @@ This approach is reasonable because:
 2. For monster mines, we handle the specific monster types separately through the FindMineDataByMonsterType method in MineManager
 3. The MineDataMap is primarily used for type-level operations, while specific variations (like different monster types) are handled through the full SpawnData list
 
-Woul
+Would you like me to make any other adjustments to the code?
+
+---
+
+_**User**_
+
+NullReferenceException: Object reference not set to an instance of an object
+RPGMinesweeper.Core.Mines.MineVisualManager.HandleMineRemoval (UnityEngine.Vector2Int position) (at Assets/Scripts/Core/Mines/Implementation/MineVisualManager.cs:45)
+RPGMinesweeper.Core.Mines.MineEventHandler.HandleMineRemoval (UnityEngine.Vector2Int position) (at Assets/Scripts/Core/Mines/Implementation/MineEventHandler.cs:50)
+GameEvents.RaiseMineRemovalAttempted (UnityEngine.Vector2Int position) (at Assets/Scripts/Core/Events/GameEvents.cs:43)
+CellView.OnInteract () (at Assets/Scripts/Views/CellView.cs:343)
+RPGMinesweeper.Input.InteractionHandler.HandleCellClicked (UnityEngine.Vector2Int position) (at Assets/Scripts/Core/Input/InteractionHandler.cs:53)
+RPGMinesweeper.Input.InputManager.HandleMouseClick () (at Assets/Scripts/Core/Input/InputManager.cs:85)
+RPGMinesweeper.Input.InputManager.Update () (at Assets/Scripts/Core/Input/InputManager.cs:48)
+
+
+
+---
+
+_**Assistant**_
+
+The NullReferenceException is occurring in the MineVisualManager's HandleMineRemoval method. Let's check the call chain and add proper null checks:
+
+---
+
+_****_
+
+```diff
+          public MineVisualManager(GridManager gridManager)
+          {
+-             m_GridManager = gridManager;
++             m_GridManager = gridManager ?? throw new System.ArgumentNullException(nameof(gridManager));
+          }
+  
+          public void UpdateCellView(Vector2Int position, MineData mineData, IMine mine)
+          {
++             if (mineData == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: Attempted to update cell view with null MineData at position {position}");
++                 return;
++             }
++ 
++             if (mine == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: Attempted to update cell view with null Mine at position {position}");
++                 return;
++             }
++ 
+              var cellObject = m_GridManager.GetCellObject(position);
+-             if (cellObject == null) return;
++             if (cellObject == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: No cell object found at position {position}");
++                 return;
++             }
+  
+              var cellView = cellObject.GetComponent<CellView>();
+-             if (cellView == null) return;
++             if (cellView == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: CellView component not found on cell object at position {position}");
++                 return;
++             }
+  
+              cellView.SetValue(mineData.Value, mineData.ValueColor);
+          public void ShowMineSprite(Vector2Int position, Sprite sprite, IMine mine, MineData mineData)
+          {
++             if (mine == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: Attempted to show sprite for null Mine at position {position}");
++                 return;
++             }
++ 
++             if (mineData == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: Attempted to show sprite with null MineData at position {position}");
++                 return;
++             }
++ 
+              var cellObject = m_GridManager.GetCellObject(position);
+-             if (cellObject == null) return;
++             if (cellObject == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: No cell object found at position {position}");
++                 return;
++             }
+  
+              var cellView = cellObject.GetComponent<CellView>();
+-             if (cellView == null) return;
++             if (cellView == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: CellView component not found on cell object at position {position}");
++                 return;
++             }
+  
+              cellView.ShowMineSprite(sprite, mine, mineData);
+          public void HandleMineRemoval(Vector2Int position)
+          {
++             if (!m_GridManager)
++             {
++                 Debug.LogError("MineVisualManager: GridManager is null");
++                 return;
++             }
++ 
+              var cellObject = m_GridManager.GetCellObject(position);
+-             if (cellObject == null) return;
++             if (cellObject == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: No cell object found at position {position}");
++                 return;
++             }
+  
+              var cellView = cellObject.GetComponent<CellView>();
+-             if (cellView == null) return;
++             if (cellView == null)
++             {
++                 Debug.LogWarning($"MineVisualManager: CellView component not found on cell object at position {position}");
++                 return;
++             }
+  
+              cellView.HandleMineRemoval();
+```
+
+---
+
+_****_
+
+
+
+I've made several improvements to the MineVisualManager:
+
+1. Added proper constructor validation using null-coalescing throw
+2. Added comprehensive null checks for all parameters and dependencies
+3. Added detailed error messages to help diagnose issues
+4. Added explicit check for GridManager in HandleMineRemoval
+5. Made error messages consistent across all methods
+6. Added position information to error messages for better debugging
+
+The changes will help:
+1. Catch issues earlier with better error messages
+2. Prevent NullReferenceExceptions
+3. Make debugging easier by providing more context in error messages
+4. Maintain a consistent state even when errors occur
+
+Let me know if you'd like me to make any other improvements or if you need me to check other parts of the code.
+
+---
+
+_**User**_
+
+ArgumentNullException: Value cannot be null.
+Parameter name: gridManager
+RPGMinesweeper.Core.Mines.MineVisualManager..ctor (RPGMinesweeper.Core.Mines.MineVisualManager this, GridManager gridManager) (at Assets/Scripts/Core/Mines/Implementation/MineVisualManager.cs:12)
+MineManager.InitializeComponents () (at Assets/Scripts/Managers/MineManager.cs:64)
+MineManager.Awake () (at Assets/Scripts/Managers/MineManager.cs:39)
+
+
+
+---
+
+_**Assistant**_
+
+Ah, I see the issue. In MineManager, we're creating the MineVisualManager before validating the GridManager. Let's fix the initialization order in MineManager:
+
+---
+
+_****_
+
+```diff
+      private void Awake()
+      {
++         if (!ValidateComponents()) return;
+          InitializeComponents();
+      }
+  
+      private void Start()
+      {
+-         if (!ValidateComponents()) return;
+- 
+          m_ConfigProvider.ValidateConfiguration(m_GridManager.Width, m_GridManager.Height);
+          var config = m_ConfigProvider.GetConfiguration();
+  
+      #region Initialization
+-     private void InitializeComponents()
+-     {
+-         m_MineFactory = new MineFactory();
+-         m_MineSpawner = new MineSpawner();
+-         m_VisualManager = new MineVisualManager(m_GridManager);
+-         m_EventHandler = new MineEventHandler(this, m_VisualManager);
+-         m_ConfigProvider = new MineConfigurationProvider(m_MineSpawnData);
+-     }
+- 
+      private bool ValidateComponents()
+      {
+          return true;
+      }
++ 
++     private void InitializeComponents()
++     {
++         m_MineFactory = new MineFactory();
++         m_MineSpawner = new MineSpawner();
++         m_ConfigProvider = new MineConfigurationProvider(m_MineSpawnData);
++         
++         // Initialize visual manager after GridManager is validated
++         m_VisualManager = new MineVisualManager(m_GridManager);
++         m_EventHandler = new MineEventHandler(this, m_VisualManager);
++     }
+      #endregion
+  
+```
+
+---
+
+_****_
+
+
+
+The changes made:
+
+1. Moved the ValidateComponents() call from Start() to Awake() before InitializeComponents()
+2. Reordered the initialization in InitializeComponents() to ensure dependencies are created in the correct order:
+   - First, components that don't depend on GridManager (MineFactory, MineSpawner, ConfigProvider)
+   - Then, components that require GridManager (VisualManager, EventHandler)
+3. Added a comment to clarify the initialization order
+
+This should resolve the ArgumentNullException because:
+1. We validate the GridManager first
+2. If validation fails, we return early and don't create the MineVisualManager
+3. When we do create the MineVisualManager, we're guaranteed to have a valid GridManager
+
+Let me know if you'd like me to make any other improvements to the code.
+
+---
+
+_**User**_
+
+InvalidOperationException: Collection was modified; enumeration operation may not execute.
+System.Collections.Generic.Dictionary`2+Enumerator[TKey,TValue].MoveNext () (at <ed969b0e627d471da4848289f9c322df>:0)
+RPGMinesweeper.States.StateManager.OnTurnEnd () (at Assets/Scripts/Core/States/StateManager.cs:89)
+RPGMinesweeper.States.StateManager.HandleRoundAdvanced () (at Assets/Scripts/Core/States/StateManager.cs:126)
+GameEvents.RaiseRoundAdvanced () (at Assets/Scripts/Core/Events/GameEvents.cs:53)
+RPGMinesweeper.TurnSystem.PlayerTurn.End () (at Assets/Scripts/Core/TurnSystem/PlayerTurn.cs:64)
+RPGMinesweeper.TurnSystem.TurnManager.EndCurrentTurn () (at Assets/Scripts/Core/TurnSystem/TurnManager.cs:138)
+RPGMinesweeper.TurnSystem.TurnManager.CompleteTurn () (at Assets/Scripts/Core/TurnSystem/TurnManager.cs:71)
+RPGMinesweeper.TurnSystem.PlayerTurn.Begin () (at Assets/Scripts/Core/TurnSystem/PlayerTurn.cs:44)
+RPGMinesweeper.TurnSystem.TurnManager.StartNextTurn () (at Assets/Scripts/Core/TurnSystem/TurnManager.cs:118)
+RPGMinesweeper.TurnSystem.TurnManager.ProcessTurns () (at Assets/Scripts/Core/TurnSystem/TurnManager.cs:103)
+RPGMinesweeper.TurnSystem.TurnManager.QueueTurn (RPGMinesweeper.TurnSystem.ITurn turn) (at Assets/Scripts/Core/TurnSystem/TurnManager.cs:60)
+RPGMinesweeper.TurnSystem.TurnManager.HandleCellRevealed (UnityEngine.Vector2Int position) (at Assets/Scripts/Core/TurnSystem/TurnManager.cs:150)
+GameEvents.RaiseCellRevealed (UnityEngine.Vector2Int position) (at Assets/Scripts/Core/Events/GameEvents.cs:18)
+CellView.OnInteract () (at Assets/Scripts/Views/CellView.cs:329)
+RPGMinesweeper.Input.InteractionHandler.HandleCellClicked (UnityEngine.Vector2Int position) (at Assets/Scripts/Core/Input/InteractionHandler.cs:53)
+RPGMinesweeper.Input.InputManager.HandleMouseClick () (at Assets/Scripts/Core/Input/InputManager.cs:85)
+RPGMinesweeper.Input.InputManager.Update () (at Assets/Scripts/Core/Input/InputManager.cs:48)
+
+
+
+---
+
+_**Assistant**_
+
+
 
 ---
 
