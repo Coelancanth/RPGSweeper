@@ -5941,7 +5941,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_201
+      name: Gargoyle
       rect:
         serializedVersion: 2
         x: 15
@@ -6689,7 +6689,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_235
+      name: Cobra
       rect:
         serializedVersion: 2
         x: 194
@@ -7657,7 +7657,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_279
+      name: Slime King
       rect:
         serializedVersion: 2
         x: 130
@@ -11965,15 +11965,18 @@ TextureImporter:
       Beetle: 7298159337887327752
       Beholder_1: 5498951995105962609
       Butterfly: -41994671697303874
+      Cobra: 7436145673107020981
       Dark Knight: -112664086432519695
       Demon: -4013594173393525475
       Dragon: -146341648734686729
+      Gargoyle: -6665358864815567359
       Goblin: 4988844349094668080
       Grim Reaper: -54597701416326860
       Lich: 4545372252316853085
       Minotau: 4501765340730201198
       Pixie: 698906889767068117
       Slime: -112002587083238773
+      Slime King: -1537382249039784006
       Spider: 6765693473526162189
       Unicorn: -6861145247520795328
       Vampire: -6139510577638611109
@@ -12090,7 +12093,6 @@ TextureImporter:
       tiny_dungeon_monsters_2: 6103289924200019161
       tiny_dungeon_monsters_20: -8279529487059431837
       tiny_dungeon_monsters_200: -4584792731062345546
-      tiny_dungeon_monsters_201: -6665358864815567359
       tiny_dungeon_monsters_203: 6095124172930012331
       tiny_dungeon_monsters_204: -44282966503823199
       tiny_dungeon_monsters_205: -6028247483662577172
@@ -12124,7 +12126,6 @@ TextureImporter:
       tiny_dungeon_monsters_232: 2802586129977787028
       tiny_dungeon_monsters_233: 8466806073167044802
       tiny_dungeon_monsters_234: 2563001278630328736
-      tiny_dungeon_monsters_235: 7436145673107020981
       tiny_dungeon_monsters_236: 4502229738079718599
       tiny_dungeon_monsters_237: 8114070597823524336
       tiny_dungeon_monsters_238: 223151325617953780
@@ -12168,7 +12169,6 @@ TextureImporter:
       tiny_dungeon_monsters_276: 990855802484479105
       tiny_dungeon_monsters_277: 709285412556518838
       tiny_dungeon_monsters_278: 278505036126882808
-      tiny_dungeon_monsters_279: -1537382249039784006
       tiny_dungeon_monsters_28: -4933118438441349850
       tiny_dungeon_monsters_281: -1584433413757288587
       tiny_dungeon_monsters_282: -7387807986007787017

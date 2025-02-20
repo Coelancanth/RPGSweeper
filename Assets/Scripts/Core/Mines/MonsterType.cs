@@ -22,5 +22,10 @@ namespace RPGMinesweeper
         FireElement,
         EarthElement,
         AirElement,
+        Gargoyle,
+        Troll,
+        Ogre,
+        DemonLord,
+        
     }
 } 

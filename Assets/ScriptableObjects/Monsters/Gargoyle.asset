@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5df1cce5e6b07834d97e337ef27886e3, type: 3}
-  m_Name: Rat
+  m_Name: Gargoyle
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -25,18 +25,17 @@ MonoBehaviour:
   Value: 1
   Shape: 2
   Radius: 1
-  SpawnStrategy: 16
+  SpawnStrategy: 64
   TargetMineType: 7
-  TargetMonsterType: 5
-  MineSprite: {fileID: 3799158994825339902, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  TargetMonsterType: 0
+  MineSprite: {fileID: -6665358864815567359, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PersistentEffects: []
-  m_TriggerableEffects:
-  - Template: {fileID: 11400000, guid: d79322b58d6a52645ba87f1df34a73f9, type: 2}
-  m_MonsterType: 1
-  m_MaxHp: 1
-  m_BaseDamage: 1
-  m_DamagePerHit: 1
+  m_TriggerableEffects: []
+  m_MonsterType: 20
+  m_MaxHp: 4
+  m_BaseDamage: 2
+  m_DamagePerHit: 2
   m_HasEnrageState: 0
   m_EnrageDamageMultiplier: 1

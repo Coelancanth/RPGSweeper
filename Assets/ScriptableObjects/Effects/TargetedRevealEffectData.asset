@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a83e070eac373e44aa51dae3dba6abc, type: 3}
   m_Name: TargetedRevealEffectData
   m_EditorClassIdentifier: 
-  m_Shape: 5
+  m_Shape: 3
   m_Radius: 1
   m_TargetLayers:
     serializedVersion: 2

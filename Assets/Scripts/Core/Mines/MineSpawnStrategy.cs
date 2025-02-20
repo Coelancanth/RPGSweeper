@@ -11,6 +11,7 @@ namespace RPGMinesweeper
         Edge = 300,
         Corner = 400,
         Surrounded = 500,
+        Symmetric = 600,
         Highest = 1000
     }
 
@@ -30,6 +31,14 @@ namespace RPGMinesweeper
         Corner = 1 << 2,
         Center = 1 << 3,
         Surrounded = 1 << 4,
-        All = Random | Edge | Corner | Center | Surrounded
+        SymmetricHorizontal = 1 << 5,
+        SymmetricVertical = 1 << 6,
+        All = Random | Edge | Corner | Center | Surrounded | SymmetricHorizontal | SymmetricVertical
+    }
+
+    public enum SymmetryDirection
+    {
+        Horizontal,
+        Vertical
     }
 } 

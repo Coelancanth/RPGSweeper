@@ -207,4 +207,88 @@ namespace RPGMinesweeper
             return true;
         }
     }
+
+    public class SymmetricMineSpawnStrategy : IMineSpawnStrategy
+    {
+        private readonly SymmetryDirection m_Direction;
+        private readonly RandomMineSpawnStrategy m_RandomStrategy;
+        private Vector2Int? m_LastSymmetricPosition = null;
+
+        public SpawnStrategyPriority Priority => SpawnStrategyPriority.Symmetric;
+
+        public SymmetricMineSpawnStrategy(SymmetryDirection direction)
+        {
+            m_Direction = direction;
+            m_RandomStrategy = new RandomMineSpawnStrategy();
+        }
+
+        public Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
+        {
+            // If we have a stored symmetric position, return and clear it
+            if (m_LastSymmetricPosition.HasValue)
+            {
+                var position = m_LastSymmetricPosition.Value;
+                m_LastSymmetricPosition = null;
+                return position;
+            }
+
+            int maxAttempts = 100;
+            int attempts = 0;
+
+            while (attempts < maxAttempts)
+            {
+                // Get a random position for the first mine
+                Vector2Int position = m_RandomStrategy.GetSpawnPosition(gridManager, existingMines);
+                if (position == Vector2Int.one * -1) return position;
+
+                // Calculate the symmetric position
+                Vector2Int symmetricPos = GetSymmetricPosition(position, gridManager);
+
+                // Check if both positions are valid
+                if (!existingMines.ContainsKey(symmetricPos) && 
+                    !existingMines.ContainsKey(position) && 
+                    IsValidPosition(symmetricPos, gridManager))
+                {
+                    // Store the symmetric position for next call
+                    m_LastSymmetricPosition = symmetricPos;
+                    return position;
+                }
+
+                attempts++;
+            }
+
+            Debug.LogWarning("SymmetricMineSpawnStrategy: Max attempts reached, no valid symmetric positions found.");
+            return Vector2Int.one * -1;
+        }
+
+        private Vector2Int GetSymmetricPosition(Vector2Int position, GridManager gridManager)
+        {
+            switch (m_Direction)
+            {
+                case SymmetryDirection.Horizontal:
+                    // Mirror across vertical center line
+                    return new Vector2Int(
+                        gridManager.Width - 1 - position.x,
+                        position.y
+                    );
+
+                case SymmetryDirection.Vertical:
+                    // Mirror across horizontal center line
+                    return new Vector2Int(
+                        position.x,
+                        gridManager.Height - 1 - position.y
+                    );
+
+                default:
+                    Debug.LogError($"Unsupported symmetry direction: {m_Direction}");
+                    return position;
+            }
+        }
+
+        private bool IsValidPosition(Vector2Int position, GridManager gridManager)
+        {
+            return position.x >= 0 && position.x < gridManager.Width &&
+                   position.y >= 0 && position.y < gridManager.Height;
+        }
+    }
 } 

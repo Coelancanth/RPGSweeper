@@ -69,6 +69,16 @@ public class MineSpawner : IMineSpawner
         int consecutiveFailures = 0;
         const int maxConsecutiveFailures = 3;
 
+        bool isSymmetricStrategy = data.MineData.SpawnStrategy == MineSpawnStrategyType.SymmetricHorizontal || 
+                                 data.MineData.SpawnStrategy == MineSpawnStrategyType.SymmetricVertical;
+
+        // For symmetric strategies, we need to ensure we spawn in pairs
+        if (isSymmetricStrategy && remainingCount % 2 != 0)
+        {
+            remainingCount++;
+            Debug.LogWarning($"Adjusted spawn count to be even for symmetric spawning: {remainingCount}");
+        }
+
         while (remainingCount > 0 && consecutiveFailures < maxConsecutiveFailures)
         {
             Vector2Int position = GetSpawnPosition(data.MineData, gridManager, mines);
@@ -87,23 +97,26 @@ public class MineSpawner : IMineSpawner
 
             try
             {
-                IMine mine = mineFactory.CreateMine(data.MineData, position);
-                mines.Add(position, mine);
-                mineDataMap.Add(position, data.MineData);
-
-                // Set the raw value on the cell view with its color
-                var cellObject = gridManager.GetCellObject(position);
-                if (cellObject != null)
-                {
-                    var cellView = cellObject.GetComponent<CellView>();
-                    if (cellView != null)
-                    {
-                        cellView.SetValue(data.MineData.Value, data.MineData.ValueColor);
-                    }
-                }
-
+                // Place the first mine
+                PlaceMineAtPosition(position, data, mineFactory, gridManager, mines, mineDataMap);
                 remainingCount--;
                 consecutiveFailures = 0;
+
+                // For symmetric strategies, immediately get and place the symmetric mine
+                if (isSymmetricStrategy && remainingCount > 0)
+                {
+                    Vector2Int symmetricPosition = GetSpawnPosition(data.MineData, gridManager, mines);
+                    if (!IsInvalidPosition(symmetricPosition) && !mines.ContainsKey(symmetricPosition))
+                    {
+                        PlaceMineAtPosition(symmetricPosition, data, mineFactory, gridManager, mines, mineDataMap);
+                        remainingCount--;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Failed to place symmetric mine at position {symmetricPosition}");
+                        consecutiveFailures++;
+                    }
+                }
             }
             catch (System.Exception e)
             {
@@ -116,6 +129,25 @@ public class MineSpawner : IMineSpawner
         {
             Debug.LogWarning($"Failed to place {remainingCount} mines of type {data.MineData.Type}. Falling back to random placement.");
             PlaceMinesWithFallback(data, remainingCount, mineFactory, gridManager, mines, mineDataMap);
+        }
+    }
+
+    private void PlaceMineAtPosition(Vector2Int position, MineTypeSpawnData data, IMineFactory mineFactory, 
+        GridManager gridManager, Dictionary<Vector2Int, IMine> mines, Dictionary<Vector2Int, MineData> mineDataMap)
+    {
+        IMine mine = mineFactory.CreateMine(data.MineData, position);
+        mines.Add(position, mine);
+        mineDataMap.Add(position, data.MineData);
+
+        // Set the raw value on the cell view with its color
+        var cellObject = gridManager.GetCellObject(position);
+        if (cellObject != null)
+        {
+            var cellView = cellObject.GetComponent<CellView>();
+            if (cellView != null)
+            {
+                cellView.SetValue(data.MineData.Value, data.MineData.ValueColor);
+            }
         }
     }
 
@@ -186,17 +218,30 @@ public class MineSpawner : IMineSpawner
     {
         if (!m_SpawnStrategies.TryGetValue(strategy, out var spawnStrategy))
         {
-            MineType targetType = strategy == MineSpawnStrategyType.Surrounded 
-                ? mineData.TargetMineType  // Use the configured target type
-                : MineType.Standard;
+            if (strategy == MineSpawnStrategyType.SymmetricHorizontal || strategy == MineSpawnStrategyType.SymmetricVertical)
+            {
+                var direction = strategy == MineSpawnStrategyType.SymmetricHorizontal 
+                    ? SymmetryDirection.Horizontal 
+                    : SymmetryDirection.Vertical;
+                    
+                // Create a new composite strategy with just the symmetric strategy
+                spawnStrategy = new CompositeSpawnStrategy(strategy);
+                m_SpawnStrategies[strategy] = spawnStrategy;
+            }
+            else
+            {
+                MineType targetType = strategy == MineSpawnStrategyType.Surrounded 
+                    ? mineData.TargetMineType  // Use the configured target type
+                    : MineType.Standard;
 
-            MonsterType? targetMonsterType = (strategy == MineSpawnStrategyType.Surrounded && 
-                                            mineData.TargetMineType == MineType.Monster)
-                ? mineData.TargetMonsterType
-                : null;
-                
-            spawnStrategy = new CompositeSpawnStrategy(strategy, targetType, targetMonsterType);
-            m_SpawnStrategies[strategy] = spawnStrategy;
+                MonsterType? targetMonsterType = (strategy == MineSpawnStrategyType.Surrounded && 
+                                                mineData.TargetMineType == MineType.Monster)
+                    ? mineData.TargetMonsterType
+                    : null;
+                    
+                spawnStrategy = new CompositeSpawnStrategy(strategy, targetType, targetMonsterType);
+                m_SpawnStrategies[strategy] = spawnStrategy;
+            }
         }
         return spawnStrategy;
     }

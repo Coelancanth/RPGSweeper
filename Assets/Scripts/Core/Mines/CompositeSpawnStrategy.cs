@@ -33,13 +33,22 @@ namespace RPGMinesweeper
                 { MineSpawnStrategyType.Edge, new EdgeMineSpawnStrategy() },
                 { MineSpawnStrategyType.Corner, new CornerMineSpawnStrategy() },
                 { MineSpawnStrategyType.Center, new CenterMineSpawnStrategy() },
-                { MineSpawnStrategyType.Surrounded, new SurroundedMineSpawnStrategy(targetMineType, targetMonsterType) }
+                { MineSpawnStrategyType.Surrounded, new SurroundedMineSpawnStrategy(targetMineType, targetMonsterType) },
+                { MineSpawnStrategyType.SymmetricHorizontal, new SymmetricMineSpawnStrategy(SymmetryDirection.Horizontal) },
+                { MineSpawnStrategyType.SymmetricVertical, new SymmetricMineSpawnStrategy(SymmetryDirection.Vertical) }
             };
         }
 
         public Vector2Int GetSpawnPosition(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines)
         {
-            // If it's a single strategy (not a combination), use it directly
+            // If it's a symmetric strategy, use it directly
+            if (m_Strategies == MineSpawnStrategyType.SymmetricHorizontal || 
+                m_Strategies == MineSpawnStrategyType.SymmetricVertical)
+            {
+                return m_StrategyMap[m_Strategies].GetSpawnPosition(gridManager, existingMines);
+            }
+
+            // If it's a single non-symmetric strategy, use it directly
             if (m_StrategyMap.ContainsKey(m_Strategies))
             {
                 return m_StrategyMap[m_Strategies].GetSpawnPosition(gridManager, existingMines);
