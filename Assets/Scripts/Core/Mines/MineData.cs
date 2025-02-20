@@ -168,6 +168,11 @@ public class MineData : SerializedScriptableObject
     [Tooltip("The specific type of monster to be surrounded by")]
     public MonsterType TargetMonsterType = MonsterType.None;
 
+    [FoldoutGroup("Spawn Settings")]
+    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.SymmetricHorizontal || SpawnStrategy == MineSpawnStrategyType.SymmetricVertical")]
+    [Tooltip("If enabled, symmetric pairs will be placed adjacent to each other")]
+    public bool PlaceSymmetricPairsAdjacent = false;
+
     [BoxGroup("Visual Properties")]
     [HorizontalGroup("Visual Properties/Split")]
     [VerticalGroup("Visual Properties/Split/Left"), LabelWidth(100)]

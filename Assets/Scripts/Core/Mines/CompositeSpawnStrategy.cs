@@ -24,7 +24,7 @@ namespace RPGMinesweeper
             }
         }
 
-        public CompositeSpawnStrategy(MineSpawnStrategyType strategies, MineType targetMineType = MineType.Standard, MonsterType? targetMonsterType = null)
+        public CompositeSpawnStrategy(MineSpawnStrategyType strategies, MineType targetMineType = MineType.Standard, MonsterType? targetMonsterType = null, bool placeSymmetricPairsAdjacent = false)
         {
             m_Strategies = strategies;
             m_StrategyMap = new Dictionary<MineSpawnStrategyType, IMineSpawnStrategy>
@@ -34,8 +34,8 @@ namespace RPGMinesweeper
                 { MineSpawnStrategyType.Corner, new CornerMineSpawnStrategy() },
                 { MineSpawnStrategyType.Center, new CenterMineSpawnStrategy() },
                 { MineSpawnStrategyType.Surrounded, new SurroundedMineSpawnStrategy(targetMineType, targetMonsterType) },
-                { MineSpawnStrategyType.SymmetricHorizontal, new SymmetricMineSpawnStrategy(SymmetryDirection.Horizontal) },
-                { MineSpawnStrategyType.SymmetricVertical, new SymmetricMineSpawnStrategy(SymmetryDirection.Vertical) }
+                { MineSpawnStrategyType.SymmetricHorizontal, new SymmetricMineSpawnStrategy(SymmetryDirection.Horizontal, placeSymmetricPairsAdjacent) },
+                { MineSpawnStrategyType.SymmetricVertical, new SymmetricMineSpawnStrategy(SymmetryDirection.Vertical, placeSymmetricPairsAdjacent) }
             };
         }
 

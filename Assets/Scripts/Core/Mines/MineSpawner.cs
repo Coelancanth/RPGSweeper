@@ -225,7 +225,7 @@ public class MineSpawner : IMineSpawner
                     : SymmetryDirection.Vertical;
                     
                 // Create a new composite strategy with just the symmetric strategy
-                spawnStrategy = new CompositeSpawnStrategy(strategy);
+                spawnStrategy = new CompositeSpawnStrategy(strategy, MineType.Standard, null, mineData.PlaceSymmetricPairsAdjacent);
                 m_SpawnStrategies[strategy] = spawnStrategy;
             }
             else
