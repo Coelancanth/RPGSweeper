@@ -5919,7 +5919,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_200
+      name: Gargoyle_Right
       rect:
         serializedVersion: 2
         x: 0
@@ -5941,7 +5941,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Gargoyle
+      name: Gargoyle_Down
       rect:
         serializedVersion: 2
         x: 15
@@ -5985,7 +5985,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_203
+      name: Gargoyle_Up
       rect:
         serializedVersion: 2
         x: 31
@@ -6051,7 +6051,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_206
+      name: Gargoyle_Left
       rect:
         serializedVersion: 2
         x: 48
@@ -11969,7 +11969,10 @@ TextureImporter:
       Dark Knight: -112664086432519695
       Demon: -4013594173393525475
       Dragon: -146341648734686729
-      Gargoyle: -6665358864815567359
+      Gargoyle_Down: -6665358864815567359
+      Gargoyle_Left: 3612434979167092351
+      Gargoyle_Right: -4584792731062345546
+      Gargoyle_Up: 6095124172930012331
       Goblin: 4988844349094668080
       Grim Reaper: -54597701416326860
       Lich: 4545372252316853085
@@ -12092,11 +12095,8 @@ TextureImporter:
       tiny_dungeon_monsters_199: 5521437077620465697
       tiny_dungeon_monsters_2: 6103289924200019161
       tiny_dungeon_monsters_20: -8279529487059431837
-      tiny_dungeon_monsters_200: -4584792731062345546
-      tiny_dungeon_monsters_203: 6095124172930012331
       tiny_dungeon_monsters_204: -44282966503823199
       tiny_dungeon_monsters_205: -6028247483662577172
-      tiny_dungeon_monsters_206: 3612434979167092351
       tiny_dungeon_monsters_207: -2272532066026616913
       tiny_dungeon_monsters_208: 3569941230542106950
       tiny_dungeon_monsters_209: -6420793549658154000

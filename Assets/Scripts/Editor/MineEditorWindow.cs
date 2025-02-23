@@ -148,7 +148,7 @@ public class MineEditorWindow : OdinMenuEditorWindow
         mine.Value = 1;
         mine.Shape = GridShape.Square;
         mine.Radius = 1;
-        mine.SpawnStrategy = SpawnStrategyType.Random;
+        //mine.SpawnStrategy = SpawnStrategyType.Random;
         
         // Set default colors
         var serializedObject = new SerializedObject(mine);

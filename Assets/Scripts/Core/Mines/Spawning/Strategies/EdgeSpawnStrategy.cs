@@ -61,7 +61,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             //if (pos.x == context.GridWidth - 1) return FacingDirection.Left;
             //if (pos.y == 0) return FacingDirection.Up;
             //return FacingDirection.Down;
-            return FacingDirection.Up;
+            return FacingDirection.None;
         }
     }
 }

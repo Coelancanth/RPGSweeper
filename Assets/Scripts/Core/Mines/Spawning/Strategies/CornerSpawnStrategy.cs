@@ -68,7 +68,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             //{
                 //return pos.y == 0 ? FacingDirection.Down : FacingDirection.Left;
             //}
-            return FacingDirection.Up;
+            return FacingDirection.None;
         }
     }
 }

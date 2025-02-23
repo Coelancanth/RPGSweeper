@@ -138,6 +138,8 @@ public class MineData : SerializedScriptableObject
             return Template?.CreateEffect();
         }
     }
+    
+    
 
     [TitleGroup("Basic Properties")]
     [HorizontalGroup("Basic Properties/Split")]
@@ -156,29 +158,70 @@ public class MineData : SerializedScriptableObject
     [VerticalGroup("Area of Effect/Split/Left")]
     public int Radius;
 
-    [FoldoutGroup("Spawn Settings")]
-    public SpawnStrategyType SpawnStrategy = SpawnStrategyType.Random;
-
-    [FoldoutGroup("Spawn Settings")]
-    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.Surrounded")]
-    [Tooltip("The type of mine this mine should be surrounded by")]
-    public MineType TargetMineType = MineType.Monster;
-
-    [FoldoutGroup("Spawn Settings")]
-    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.Surrounded && TargetMineType == MineType.Monster")]
-    [Tooltip("The specific type of monster to be surrounded by")]
-    public MonsterType TargetMonsterType = MonsterType.None;
-
-    [FoldoutGroup("Spawn Settings")]
-    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.SymmetricHorizontal || SpawnStrategy == MineSpawnStrategyType.SymmetricVertical")]
-    [Tooltip("If enabled, symmetric pairs will be placed adjacent to each other")]
-    public bool PlaceSymmetricPairsAdjacent = false;
-
     [BoxGroup("Visual Properties")]
     [HorizontalGroup("Visual Properties/Split")]
     [VerticalGroup("Visual Properties/Split/Left"), LabelWidth(100)]
     [PreviewField(55)]
     public Sprite MineSprite;
+
+    [FoldoutGroup("Visual Properties/Directional Sprites")]
+    [ShowIf("@Type != MineType.Empty")]
+    [BoxGroup("Visual Properties/Directional Sprites/Horizontal")]
+    [HorizontalGroup("Visual Properties/Directional Sprites/Horizontal/Split")]
+    [PreviewField(45)]
+    [Tooltip("Sprite to use for mines facing up")]
+    public Sprite FacingUpSprite;
+
+    [BoxGroup("Visual Properties/Directional Sprites/Horizontal")]
+    [HorizontalGroup("Visual Properties/Directional Sprites/Horizontal/Split")]
+    [PreviewField(45)]
+    [Tooltip("Sprite to use for mines facing down")]
+    public Sprite FacingDownSprite;
+
+    [BoxGroup("Visual Properties/Directional Sprites/Vertical")]
+    [HorizontalGroup("Visual Properties/Directional Sprites/Vertical/Split")]
+    [PreviewField(45)]
+    [Tooltip("Sprite to use for mines facing left")]
+    public Sprite FacingLeftSprite;
+
+    [BoxGroup("Visual Properties/Directional Sprites/Vertical")]
+    [HorizontalGroup("Visual Properties/Directional Sprites/Vertical/Split")]
+    [PreviewField(45)]
+    [Tooltip("Sprite to use for mines facing right")]
+    public Sprite FacingRightSprite;
+
+    [SerializeField]
+    private FacingDirection m_CurrentFacingDirection = FacingDirection.None;
+
+    // Not exposed to inspector but modifiable during gameplay
+    private FacingDirection m_RuntimeFacingDirection = FacingDirection.None;
+
+    public FacingDirection FacingDirection 
+    {
+        get => m_RuntimeFacingDirection;
+        set
+        {
+            m_RuntimeFacingDirection = value;
+            // You might want to trigger some events here if needed
+        }
+    }
+
+    public void InitializeRuntimeFacingDirection()
+    {
+        m_RuntimeFacingDirection = m_CurrentFacingDirection;
+    }
+
+    public Sprite GetDirectionalSprite()
+    {
+        return m_RuntimeFacingDirection switch
+        {
+            FacingDirection.Up => FacingUpSprite ?? MineSprite,
+            FacingDirection.Down => FacingDownSprite ?? MineSprite,
+            FacingDirection.Left => FacingLeftSprite ?? MineSprite,
+            FacingDirection.Right => FacingRightSprite ?? MineSprite,
+            _ => MineSprite
+        };
+    }
 
     [FoldoutGroup("Visual Properties/Colors")]
     [Tooltip("Color of the displayed mine value text")]

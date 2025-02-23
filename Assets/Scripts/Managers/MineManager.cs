@@ -1,29 +1,30 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using RPGMinesweeper;  // For MonsterType, CompositeSpawnStrategy, IMineSpawner, and MineSpawner
+using RPGMinesweeper;  // For MonsterType
 using RPGMinesweeper.Grid;  // For GridShape
 using RPGMinesweeper.Factory;  // For MineFactory
 using RPGMinesweeper.Core.Mines;
 using RPGMinesweeper.Core.Mines.Spawning;
-
-[System.Serializable]
-public class MineTypeSpawnData
-{   
-    public string Description;
-    public MineData MineData;
-    public int SpawnCount;
-    [Tooltip("Strategy to use when spawning this mine type")]
-    public SpawnStrategyType SpawnStrategy = SpawnStrategyType.Random;
-    [Tooltip("When disabled, this mine type will not be spawned")]
-    public bool IsEnabled = true;
-}
+using Sirenix.OdinInspector;
 
 public class MineManager : MonoBehaviour
 {
     #region Serialized Fields
     [Header("Mine Configuration")]
+    [ListDrawerSettings(
+        ShowIndexLabels = false,
+        ShowPaging = true,
+        ShowItemCount = false,
+        Expanded = true,
+        DraggableItems = true,
+        HideRemoveButton = false,
+        HideAddButton = false
+    )]
+    [PropertySpace(8)]
     [SerializeField] private List<MineTypeSpawnData> m_MineSpawnData;
+
+    [Required]
     [SerializeField] private GridManager m_GridManager;
     #endregion
 
@@ -49,6 +50,16 @@ public class MineManager : MonoBehaviour
         m_ConfigProvider.ValidateConfiguration(m_GridManager.Width, m_GridManager.Height);
         var config = m_ConfigProvider.GetConfiguration();
         m_MineSpawner.PlaceMines(config.SpawnData, m_MineFactory, m_GridManager, m_Mines, m_MineDataMap);
+        
+        // Update visuals for all placed mines
+        foreach (var kvp in m_Mines)
+        {
+            if (m_MineDataMap.TryGetValue(kvp.Key, out var mineData))
+            {
+                m_VisualManager.UpdateCellView(kvp.Key, mineData, kvp.Value);
+            }
+        }
+
         MineValuePropagator.PropagateValues(this, m_GridManager);
         m_EventHandler.SubscribeToEvents();
     }
@@ -82,7 +93,7 @@ public class MineManager : MonoBehaviour
         m_ConfigProvider = new MineConfigurationProvider(m_MineSpawnData);
         
         // Initialize visual manager after GridManager is validated
-        m_VisualManager = new MineVisualManager(m_GridManager);
+        m_VisualManager = new MineVisualManager(m_GridManager, m_MineSpawnData.ToArray());
         m_EventHandler = new MineEventHandler(this, m_VisualManager);
     }
     #endregion
@@ -176,4 +187,6 @@ public class MineManager : MonoBehaviour
             .FirstOrDefault(data => data.MonsterType == monsterType);
     }
     #endregion
+
+    public MineVisualManager GetVisualManager() => m_VisualManager as MineVisualManager;
 } 
