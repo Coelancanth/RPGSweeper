@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5df1cce5e6b07834d97e337ef27886e3, type: 3}
+  m_Name: Rat King
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  Type: 7
+  Value: 5
+  Shape: 2
+  Radius: 1
+  SpawnStrategy: 1
+  TargetMineType: 7
+  TargetMonsterType: 0
+  MineSprite: {fileID: -8373585295449095950, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
+  m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_PersistentEffects: []
+  m_TriggerableEffects: []
+  m_MonsterType: 2
+  m_MaxHp: 5
+  m_BaseDamage: 5
+  m_DamagePerHit: 1
+  m_HasEnrageState: 0
+  m_EnrageDamageMultiplier: 1
