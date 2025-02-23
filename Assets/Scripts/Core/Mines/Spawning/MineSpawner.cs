@@ -114,6 +114,15 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 {
                     strategy = new SurroundedSpawnStrategy(data.TargetMineType, data.TargetMonsterType);
                 }
+                else if (data.SpawnStrategy == SpawnStrategyType.Symmetric)
+                {
+                    int maxDistance = data.MaxDistanceToLine == 0 ? int.MaxValue : data.MaxDistanceToLine;
+                    strategy = new SymmetricSpawnStrategy(
+                        data.SymmetryDirection,
+                        data.SymmetryLinePosition,
+                        data.MinDistanceToLine,
+                        maxDistance);
+                }
                 else if (!_strategies.TryGetValue(data.SpawnStrategy, out strategy))
                 {
                     Debug.LogWarning($"No strategy found for {data.SpawnStrategy}, falling back to random strategy");

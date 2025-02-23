@@ -40,12 +40,6 @@ namespace RPGMinesweeper.Core.Mines
         [Tooltip("Strategy to use when spawning this mine type")]
         public SpawnStrategyType SpawnStrategy = SpawnStrategyType.Random;
 
-        [VerticalGroup("$GroupName/Spawn Settings/Split/Right")]
-        [ToggleLeft]
-        [LabelText("Enabled")]
-        [Tooltip("When disabled, this mine type will not be spawned")]
-        public bool IsEnabled = true;
-
         [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
         [ShowIf("@SpawnStrategy == SpawnStrategyType.Surrounded")]
         [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
@@ -60,6 +54,44 @@ namespace RPGMinesweeper.Core.Mines
         [EnumToggleButtons]
         [Tooltip("The specific type of monster to be surrounded by")]
         public MonsterType TargetMonsterType = MonsterType.None;
+
+        // Symmetric Strategy Settings
+        [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Symmetric")]
+        [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
+        [EnumToggleButtons]
+        [OnValueChanged("OnSymmetryDirectionChanged")]
+        [Tooltip("The direction of symmetry")]
+        public SymmetryDirection SymmetryDirection = SymmetryDirection.AroundVerticalLine;
+
+        [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Symmetric")]
+        [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
+        [Range(0, 1)]
+        [OnValueChanged("OnSymmetryLinePositionChanged")]
+        [InfoBox("$GetSymmetryLineInfo", InfoMessageType.None)]
+        [Tooltip("Position of the symmetry line (0-1 range)")]
+        public float SymmetryLinePosition = 0.5f;
+
+        [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Symmetric")]
+        [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
+        [MinValue(0)]
+        [Tooltip("Minimum distance from the symmetry line")]
+        public int MinDistanceToLine = 0;
+
+        [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Symmetric")]
+        [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
+        [MinValue(0)]
+        [Tooltip("Maximum distance from the symmetry line (0 for no limit)")]
+        public int MaxDistanceToLine = 0;
+
+        [VerticalGroup("$GroupName/Spawn Settings/Split/Right")]
+        [ToggleLeft]
+        [LabelText("Enabled")]
+        [Tooltip("When disabled, this mine type will not be spawned")]
+        public bool IsEnabled = true;
 
         private string GroupName => string.IsNullOrEmpty(Description) 
             ? GetMineTypeName() 
@@ -92,6 +124,14 @@ namespace RPGMinesweeper.Core.Mines
                 TargetMineType = MineType.Monster;
                 TargetMonsterType = MonsterType.None;
             }
+
+            if (SpawnStrategy != SpawnStrategyType.Symmetric)
+            {
+                SymmetryDirection = SymmetryDirection.AroundVerticalLine;
+                SymmetryLinePosition = 0.5f;
+                MinDistanceToLine = 0;
+                MaxDistanceToLine = 0;
+            }
         }
 
         private void OnTargetMineTypeChanged()
@@ -100,6 +140,42 @@ namespace RPGMinesweeper.Core.Mines
             {
                 TargetMonsterType = MonsterType.None;
             }
+        }
+
+        private void OnSymmetryDirectionChanged()
+        {
+            // Reset line position when changing direction
+            SymmetryLinePosition = 0.5f;
+        }
+
+        private string GetSymmetryLineInfo()
+        {
+            if (SpawnStrategy != SpawnStrategyType.Symmetric) return string.Empty;
+
+            var gridSize = GetCurrentGridSize();
+            if (gridSize == null) return "Grid size not available";
+
+            int position = SymmetryDirection == SymmetryDirection.AroundHorizontalLine
+                ? Mathf.RoundToInt(gridSize.Value.y * SymmetryLinePosition)
+                : Mathf.RoundToInt(gridSize.Value.x * SymmetryLinePosition);
+
+            string direction = SymmetryDirection == SymmetryDirection.AroundHorizontalLine ? "row" : "column";
+            return $"Line will be placed at {direction} {position}";
+        }
+
+        private Vector2Int? GetCurrentGridSize()
+        {
+            // Try to find the GridManager in the scene
+            var gridManager = UnityEngine.Object.FindObjectOfType<GridManager>();
+            if (gridManager == null) return null;
+
+            return new Vector2Int(gridManager.Width, gridManager.Height);
+        }
+
+        [OnInspectorGUI]
+        private void OnSymmetryLinePositionChanged()
+        {
+            // The InfoBox will automatically update when any value changes
         }
     }
 } 
