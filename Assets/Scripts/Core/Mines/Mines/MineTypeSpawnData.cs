@@ -131,7 +131,7 @@ namespace RPGMinesweeper.Core.Mines
 
         private string GroupName => string.IsNullOrEmpty(Description) 
             ? GetMineTypeName() 
-            : $"{GetMineTypeName()} ({Description})";
+            : $"{Description} [{GetMineTypeName()}]";
 
         private string GetMineTypeName()
         {
