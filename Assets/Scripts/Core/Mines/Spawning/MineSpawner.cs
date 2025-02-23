@@ -54,6 +54,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 { SpawnStrategyType.Edge, new EdgeSpawnStrategy() },
                 { SpawnStrategyType.Center, new CenterSpawnStrategy()},
                 { SpawnStrategyType.Corner, new CornerSpawnStrategy()},
+                { SpawnStrategyType.Surrounded, new SurroundedSpawnStrategy(MineType.Monster)}, // This will be replaced dynamically
                 // Other strategies will be implemented later:
                 // Corner, Center, Surrounded, Symmetric
             };
@@ -107,7 +108,13 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
             foreach (var data in spawnData.Where(d => d.IsEnabled))
             {
-                if (!_strategies.TryGetValue(data.SpawnStrategy, out var strategy))
+                IMineSpawnStrategy strategy;
+                
+                if (data.SpawnStrategy == SpawnStrategyType.Surrounded)
+                {
+                    strategy = new SurroundedSpawnStrategy(data.TargetMineType, data.TargetMonsterType);
+                }
+                else if (!_strategies.TryGetValue(data.SpawnStrategy, out strategy))
                 {
                     Debug.LogWarning($"No strategy found for {data.SpawnStrategy}, falling back to random strategy");
                     strategy = _strategies[SpawnStrategyType.Random];

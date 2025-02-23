@@ -156,24 +156,6 @@ public class MineData : SerializedScriptableObject
     [VerticalGroup("Area of Effect/Split/Left")]
     public int Radius;
 
-    [FoldoutGroup("Spawn Settings")]
-    public SpawnStrategyType SpawnStrategy = SpawnStrategyType.Random;
-
-    [FoldoutGroup("Spawn Settings")]
-    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.Surrounded")]
-    [Tooltip("The type of mine this mine should be surrounded by")]
-    public MineType TargetMineType = MineType.Monster;
-
-    [FoldoutGroup("Spawn Settings")]
-    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.Surrounded && TargetMineType == MineType.Monster")]
-    [Tooltip("The specific type of monster to be surrounded by")]
-    public MonsterType TargetMonsterType = MonsterType.None;
-
-    [FoldoutGroup("Spawn Settings")]
-    [ShowIf("@SpawnStrategy == MineSpawnStrategyType.SymmetricHorizontal || SpawnStrategy == MineSpawnStrategyType.SymmetricVertical")]
-    [Tooltip("If enabled, symmetric pairs will be placed adjacent to each other")]
-    public bool PlaceSymmetricPairsAdjacent = false;
-
     [BoxGroup("Visual Properties")]
     [HorizontalGroup("Visual Properties/Split")]
     [VerticalGroup("Visual Properties/Split/Left"), LabelWidth(100)]

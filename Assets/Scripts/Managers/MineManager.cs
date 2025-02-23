@@ -1,29 +1,30 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using RPGMinesweeper;  // For MonsterType, CompositeSpawnStrategy, IMineSpawner, and MineSpawner
+using RPGMinesweeper;  // For MonsterType
 using RPGMinesweeper.Grid;  // For GridShape
 using RPGMinesweeper.Factory;  // For MineFactory
 using RPGMinesweeper.Core.Mines;
 using RPGMinesweeper.Core.Mines.Spawning;
-
-[System.Serializable]
-public class MineTypeSpawnData
-{   
-    public string Description;
-    public MineData MineData;
-    public int SpawnCount;
-    [Tooltip("Strategy to use when spawning this mine type")]
-    public SpawnStrategyType SpawnStrategy = SpawnStrategyType.Random;
-    [Tooltip("When disabled, this mine type will not be spawned")]
-    public bool IsEnabled = true;
-}
+using Sirenix.OdinInspector;
 
 public class MineManager : MonoBehaviour
 {
     #region Serialized Fields
     [Header("Mine Configuration")]
+    [ListDrawerSettings(
+        ShowIndexLabels = false,
+        ShowPaging = true,
+        ShowItemCount = false,
+        Expanded = true,
+        DraggableItems = true,
+        HideRemoveButton = false,
+        HideAddButton = false
+    )]
+    [PropertySpace(8)]
     [SerializeField] private List<MineTypeSpawnData> m_MineSpawnData;
+
+    [Required]
     [SerializeField] private GridManager m_GridManager;
     #endregion
 
