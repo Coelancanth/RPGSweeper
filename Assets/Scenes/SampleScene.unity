@@ -411,23 +411,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MineSpawnData:
-  - MineData: {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
+  - Description: 
+    MineData: {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
     SpawnCount: 1
+    SpawnStrategy: 100
     IsEnabled: 0
-  - MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
+  - Description: 
+    MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
     SpawnCount: 1
+    SpawnStrategy: 100
     IsEnabled: 0
-  - MineData: {fileID: 11400000, guid: 08798aff13a7352489f5bcf68933bada, type: 2}
+  - Description: 
+    MineData: {fileID: 11400000, guid: 08798aff13a7352489f5bcf68933bada, type: 2}
     SpawnCount: 1
+    SpawnStrategy: 100
     IsEnabled: 0
-  - MineData: {fileID: 11400000, guid: 4b84624f2f3856847a990bd2e227903d, type: 2}
+  - Description: 
+    MineData: {fileID: 11400000, guid: 4b84624f2f3856847a990bd2e227903d, type: 2}
     SpawnCount: 11
+    SpawnStrategy: 100
     IsEnabled: 0
-  - MineData: {fileID: 11400000, guid: 0b84e5e4919a86b44a240ed0aacd6f55, type: 2}
+  - Description: 
+    MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
     SpawnCount: 1
-    IsEnabled: 0
-  - MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
+    SpawnStrategy: 200
+    IsEnabled: 1
+  - Description: 
+    MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
     SpawnCount: 4
+    SpawnStrategy: 400
     IsEnabled: 1
   m_GridManager: {fileID: 0}
 --- !u!4 &536950429
