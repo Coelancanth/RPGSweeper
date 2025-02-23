@@ -54,7 +54,8 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 { SpawnStrategyType.Edge, new EdgeSpawnStrategy() },
                 { SpawnStrategyType.Center, new CenterSpawnStrategy()},
                 { SpawnStrategyType.Corner, new CornerSpawnStrategy()},
-                { SpawnStrategyType.Surrounded, new SurroundedSpawnStrategy(MineType.Monster)}, // This will be replaced dynamically
+                { SpawnStrategyType.Surrounded, new SurroundedSpawnStrategy(MineType.Monster)},
+                { SpawnStrategyType.Relational, new AdjacentSpawnStrategy()},
                 // Other strategies will be implemented later:
                 // Corner, Center, Surrounded, Symmetric
             };
@@ -100,14 +101,14 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                     mines[spawnedMine.Position] = spawnedMine.Mine;
                     mineDataMap[spawnedMine.Position] = spawnedMine.MineData;
                     OnMineSpawned?.Invoke(spawnedMine.Position, spawnedMine.Mine, spawnedMine.MineData);
-                    Debug.Log($"Added mine at {spawnedMine.Position} with facing {spawnedMine.MineData.FacingDirection}");
+                    //Debug.Log($"Added mine at {spawnedMine.Position} with facing {spawnedMine.MineData.FacingDirection}");
                 }
             }
         }
 
         private void InitializeStrategies(List<MineTypeSpawnData> spawnData)
         {
-            Debug.Log("Initializing strategies");
+            //Debug.Log("Initializing strategies");
             _strategyQueue.Clear();
 
             foreach (var data in spawnData.Where(d => d.IsEnabled))
@@ -127,6 +128,16 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                         data.MinDistanceToLine,
                         maxDistance);
                 }
+                else if (data.SpawnStrategy == SpawnStrategyType.Relational)
+                {
+                    strategy = new AdjacentSpawnStrategy(
+                        maxDistance: data.MaxDistance,
+                        minDistance: 2,  // Default minimum distance between clusters
+                        allowDiagonal: data.AllowDiagonal,
+                        minClusterSize: data.MinClusterSize,
+                        maxClusterSize: data.MaxClusterSize,
+                        direction: data.AdjacencyDirection);
+                }
                 else if (!_strategies.TryGetValue(data.SpawnStrategy, out strategy))
                 {
                     Debug.LogWarning($"No strategy found for {data.SpawnStrategy}, falling back to random strategy");
@@ -137,8 +148,8 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 if (data.MineData is MonsterMineData monsterData)
                 {
                     // Create a specialized strategy for monster mines if needed
-                    Debug.Log($"Creating monster spawn strategy for {monsterData.MonsterType}");
-                    Debug.Log($"Strategy: {strategy}");
+                    //Debug.Log($"Creating monster spawn strategy for {monsterData.MonsterType}");
+                    //Debug.Log($"Strategy: {strategy}");
                     strategy = new MonsterSpawnStrategy(strategy, monsterData.MonsterType);
                 }
 

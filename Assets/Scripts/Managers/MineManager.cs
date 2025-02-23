@@ -187,4 +187,6 @@ public class MineManager : MonoBehaviour
             .FirstOrDefault(data => data.MonsterType == monsterType);
     }
     #endregion
+
+    public MineVisualManager GetVisualManager() => m_VisualManager as MineVisualManager;
 } 

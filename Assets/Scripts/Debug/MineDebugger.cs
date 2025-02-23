@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using RPGMinesweeper.TurnSystem;
 using RPGMinesweeper;
+using RPGMinesweeper.Core.Mines;
 public class MineDebugger : MonoBehaviour
 {
     #region Inspector Fields
@@ -23,6 +24,7 @@ public class MineDebugger : MonoBehaviour
     private Dictionary<Vector2Int, int> m_CachedValues = new Dictionary<Vector2Int, int>();
     private Dictionary<Vector2Int, Color> m_CachedColors = new Dictionary<Vector2Int, Color>();
     private int m_RoundCount = 0;
+    private IMineVisualManager m_VisualManager;
     #endregion
 
     #region Unity Lifecycle
@@ -59,6 +61,15 @@ public class MineDebugger : MonoBehaviour
                 enabled = false;
                 return;
             }
+        }
+
+        // Get the visual manager from MineManager
+        m_VisualManager = m_MineManager.GetVisualManager();
+        if (m_VisualManager == null)
+        {
+            Debug.LogError("MineDebugger: Could not get MineVisualManager from MineManager!");
+            enabled = false;
+            return;
         }
 
         // Cache all cell views
@@ -198,7 +209,7 @@ public class MineDebugger : MonoBehaviour
 
     private void RevealAllCells()
     {
-        if (m_GridManager == null || m_MineManager == null)
+        if (m_GridManager == null || m_MineManager == null || m_VisualManager == null)
         {
             Debug.LogError("Required references not set in MineDebugger!");
             return;
@@ -208,15 +219,10 @@ public class MineDebugger : MonoBehaviour
         {
             if (cellView != null)
             {
-                // Get mine data if there is a mine at this position
                 var position = cellView.GridPosition;
-                var mineData = m_MineManager.GetMineDataAt(position);
-                var mine = m_MineManager.GetMines().TryGetValue(position, out IMine value) ? value : null;
-
-                // Update visuals directly without triggering events
-                if (mine != null && mineData != null)
+                if (m_MineManager.TryGetMine(position, out IMine mine, out MineData mineData))
                 {
-                    cellView.ShowMineSprite(mineData.MineSprite, mine, mineData);
+                    m_VisualManager.ShowMineSprite(position, mineData.MineSprite, mine, mineData);
                 }
                 cellView.UpdateVisuals(true);
             }

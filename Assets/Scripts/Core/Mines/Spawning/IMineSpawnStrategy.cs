@@ -14,6 +14,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
         Surrounded = 500,
         Symmetric = 600,
         Relational = 700,
+        Adjacent = 800,
         Highest = 1000
     }
 

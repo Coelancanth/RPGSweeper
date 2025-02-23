@@ -15,7 +15,7 @@ namespace RPGMinesweeper.Core.Mines
 
         private Sprite GetDirectionalSprite(MineData mineData)
         {
-            Debug.Log($"Getting directional sprite for {mineData.name}");
+            //Debug.Log($"Getting directional sprite for {mineData.name}");
             if (mineData == null) return null;
 
             // First try to get the sprite from spawn data if available
@@ -68,10 +68,10 @@ namespace RPGMinesweeper.Core.Mines
             }
 
             cellView.SetValue(mineData.Value, mineData.ValueColor);
-            Debug.Log($"CellView is revealed: {cellView.IsRevealed}");
+            //Debug.Log($"CellView is revealed: {cellView.IsRevealed}");
             if (cellView.IsRevealed)
             {
-                Debug.Log($"Getting directional sprite for {mineData.name}");
+                //Debug.Log($"Getting directional sprite for {mineData.name}");
                 var sprite = GetDirectionalSprite(mineData);
                 cellView.ShowMineSprite(sprite ?? mineData.MineSprite, mine, mineData);
                 cellView.UpdateVisuals(true);
@@ -80,7 +80,7 @@ namespace RPGMinesweeper.Core.Mines
 
         public void ShowMineSprite(Vector2Int position, Sprite sprite, IMine mine, MineData mineData)
         {
-            Debug.Log($"Showing mine sprite for {mineData.name}");
+            //Debug.Log($"Showing mine sprite for {mineData.name}");
             if (mine == null)
             {
                 Debug.LogWarning($"MineVisualManager: Attempted to show sprite for null Mine at position {position}");

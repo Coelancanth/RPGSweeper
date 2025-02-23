@@ -11,6 +11,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
         public Vector2Int Position { get; private set; }
         public IMine Mine { get; private set; }
         public MineData MineData { get; private set; }
+        public string DebugInfo { get; set; }
 
         public static SpawnedMine Create(
             Vector2Int position, 
@@ -30,7 +31,8 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             {
                 Position = position,
                 Mine = mine,
-                MineData = mineDataInstance
+                MineData = mineDataInstance,
+                DebugInfo = string.Empty
             };
         }
     }
