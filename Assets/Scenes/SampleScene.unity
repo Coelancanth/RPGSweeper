@@ -415,44 +415,77 @@ MonoBehaviour:
     Description: 
     SpawnCount: 1
     SpawnStrategy: 300
-    IsEnabled: 0
     TargetMineType: 7
     TargetMonsterType: 0
+    SymmetryDirection: 1
+    FacingUp: {fileID: 0}
+    FacingDown: {fileID: 0}
+    FacingLeft: {fileID: 0}
+    FacingRight: {fileID: 0}
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    IsEnabled: 0
   - MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
     Description: 
-    SpawnCount: 1
+    SpawnCount: 4
     SpawnStrategy: 100
-    IsEnabled: 0
     TargetMineType: 7
     TargetMonsterType: 0
+    SymmetryDirection: 1
+    FacingUp: {fileID: 0}
+    FacingDown: {fileID: 0}
+    FacingLeft: {fileID: 0}
+    FacingRight: {fileID: 0}
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    IsEnabled: 0
   - MineData: {fileID: 11400000, guid: 08798aff13a7352489f5bcf68933bada, type: 2}
     Description: 
     SpawnCount: 1
     SpawnStrategy: 100
-    IsEnabled: 0
     TargetMineType: 7
     TargetMonsterType: 0
+    SymmetryDirection: 1
+    FacingUp: {fileID: 0}
+    FacingDown: {fileID: 0}
+    FacingLeft: {fileID: 0}
+    FacingRight: {fileID: 0}
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    IsEnabled: 0
   - MineData: {fileID: 11400000, guid: 4b84624f2f3856847a990bd2e227903d, type: 2}
     Description: 
     SpawnCount: 1
-    SpawnStrategy: 300
-    IsEnabled: 1
+    SpawnStrategy: 200
     TargetMineType: 7
     TargetMonsterType: 0
-  - MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
-    Description: 
-    SpawnCount: 5
-    SpawnStrategy: 500
-    IsEnabled: 1
-    TargetMineType: 7
-    TargetMonsterType: 1
-  - MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
-    Description: 
-    SpawnCount: 4
-    SpawnStrategy: 400
+    SymmetryDirection: 1
+    FacingUp: {fileID: 0}
+    FacingDown: {fileID: 0}
+    FacingLeft: {fileID: 0}
+    FacingRight: {fileID: 0}
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
     IsEnabled: 0
+  - MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
+    Description: 
+    SpawnCount: 2
+    SpawnStrategy: 600
     TargetMineType: 7
     TargetMonsterType: 0
+    SymmetryDirection: 0
+    FacingUp: {fileID: 7298159337887327752, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+    FacingDown: {fileID: 5498951995105962609, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+    FacingLeft: {fileID: 0}
+    FacingRight: {fileID: 0}
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 1
+    MaxDistanceToLine: 5
+    IsEnabled: 1
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429
 Transform:

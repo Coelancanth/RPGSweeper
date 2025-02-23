@@ -93,10 +93,14 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                     continue;
                 }
 
-                foreach (var mine in result.Mines)
+                foreach (var spawnedMine in result.Mines)
                 {
-                    context.AddMine(mine);
-                    OnMineSpawned?.Invoke(mine.Position, mine.Mine, mine.MineData);
+                    context.AddMine(spawnedMine);
+                    // Add to the provided dictionaries
+                    mines[spawnedMine.Position] = spawnedMine.Mine;
+                    mineDataMap[spawnedMine.Position] = spawnedMine.MineData;
+                    OnMineSpawned?.Invoke(spawnedMine.Position, spawnedMine.Mine, spawnedMine.MineData);
+                    Debug.Log($"Added mine at {spawnedMine.Position} with facing {spawnedMine.MineData.FacingDirection}");
                 }
             }
         }

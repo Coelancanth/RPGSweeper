@@ -7,5 +7,6 @@ public enum MineType
     MultiTrigger,
     AreaReveal,
     ItemSpawner,
-    Monster
+    Monster,
+    Empty
 } 

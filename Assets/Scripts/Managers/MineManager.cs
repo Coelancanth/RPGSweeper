@@ -50,6 +50,16 @@ public class MineManager : MonoBehaviour
         m_ConfigProvider.ValidateConfiguration(m_GridManager.Width, m_GridManager.Height);
         var config = m_ConfigProvider.GetConfiguration();
         m_MineSpawner.PlaceMines(config.SpawnData, m_MineFactory, m_GridManager, m_Mines, m_MineDataMap);
+        
+        // Update visuals for all placed mines
+        foreach (var kvp in m_Mines)
+        {
+            if (m_MineDataMap.TryGetValue(kvp.Key, out var mineData))
+            {
+                m_VisualManager.UpdateCellView(kvp.Key, mineData, kvp.Value);
+            }
+        }
+
         MineValuePropagator.PropagateValues(this, m_GridManager);
         m_EventHandler.SubscribeToEvents();
     }
@@ -83,7 +93,7 @@ public class MineManager : MonoBehaviour
         m_ConfigProvider = new MineConfigurationProvider(m_MineSpawnData);
         
         // Initialize visual manager after GridManager is validated
-        m_VisualManager = new MineVisualManager(m_GridManager);
+        m_VisualManager = new MineVisualManager(m_GridManager, m_MineSpawnData.ToArray());
         m_EventHandler = new MineEventHandler(this, m_VisualManager);
     }
     #endregion

@@ -83,6 +83,8 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
                     mines.Add(CreateMine(context, pos, spawnData, facing1));
                     mines.Add(CreateMine(context, symmetricPos, spawnData, facing2));
+                    //Debug.Log($"Placed mines at {pos} with facing {facing1} and {symmetricPos} with facing {facing2}");
+                    
 
                     availablePositions.RemoveAll(p => 
                         p == pos || p == symmetricPos || 
@@ -110,6 +112,17 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             }
 
             return SpawnResult.Successful(mines);
+        }
+
+        private SpawnedMine CreateMine(SpawnContext context, Vector2Int position, MineTypeSpawnData spawnData, FacingDirection facing)
+        {
+            var mine = context.MineFactory.CreateMine(spawnData.MineData, position);
+            return SpawnedMine.Create(
+                position,
+                mine,
+                spawnData.MineData,
+                facing
+            );
         }
 
         private Vector2Int GetSymmetricPosition(Vector2Int pos, SpawnContext context)

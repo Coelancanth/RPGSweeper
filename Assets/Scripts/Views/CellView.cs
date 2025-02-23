@@ -256,6 +256,8 @@ public class CellView : MonoBehaviour, IInteractable
         m_DisplayStrategy = CreateDisplayStrategy(mine);
         m_DisplayStrategy?.SetupDisplay(gameObject, m_ValueText);
 
+        // Let UpdateVisuals control the enabled state
+        m_MineRenderer.enabled = false;
         UpdateVisuals();
     }
 

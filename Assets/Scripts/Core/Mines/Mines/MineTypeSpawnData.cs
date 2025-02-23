@@ -16,7 +16,7 @@ namespace RPGMinesweeper.Core.Mines
         [ShowInInspector, ReadOnly]
         public Sprite Preview => MineData?.MineSprite;
 
-        [VerticalGroup("$GroupName/Header/Right")]
+        [VerticalGroup("$GroupName/Header/Left")]
         [LabelText("$GetMineTypeName")]
         [Required]
         public MineData MineData;
@@ -65,6 +65,36 @@ namespace RPGMinesweeper.Core.Mines
         public SymmetryDirection SymmetryDirection = SymmetryDirection.AroundVerticalLine;
 
         [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
+        [ShowIf("IsSymmetricHorizontal")]
+        [BoxGroup("$GroupName/Spawn Settings/Split/Left/DirectionalSprites")]
+        [HorizontalGroup("$GroupName/Spawn Settings/Split/Left/DirectionalSprites/Horizontal")]
+        [PreviewField(45)]
+        [Tooltip("Sprite to use for mines facing up")]
+        public Sprite FacingUp;
+
+        [ShowIf("IsSymmetricHorizontal")]
+        [BoxGroup("$GroupName/Spawn Settings/Split/Left/DirectionalSprites")]
+        [HorizontalGroup("$GroupName/Spawn Settings/Split/Left/DirectionalSprites/Horizontal")]
+        [PreviewField(45)]
+        [Tooltip("Sprite to use for mines facing down")]
+        public Sprite FacingDown;
+
+        [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
+        [ShowIf("IsSymmetricVertical")]
+        [BoxGroup("$GroupName/Spawn Settings/Split/Left/DirectionalSprites")]
+        [HorizontalGroup("$GroupName/Spawn Settings/Split/Left/DirectionalSprites/Vertical")]
+        [PreviewField(45)]
+        [Tooltip("Sprite to use for mines facing left")]
+        public Sprite FacingLeft;
+
+        [ShowIf("IsSymmetricVertical")]
+        [BoxGroup("$GroupName/Spawn Settings/Split/Left/DirectionalSprites")]
+        [HorizontalGroup("$GroupName/Spawn Settings/Split/Left/DirectionalSprites/Vertical")]
+        [PreviewField(45)]
+        [Tooltip("Sprite to use for mines facing right")]
+        public Sprite FacingRight;
+
+        [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
         [ShowIf("@SpawnStrategy == SpawnStrategyType.Symmetric")]
         [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
         [Range(0, 1)]
@@ -87,7 +117,7 @@ namespace RPGMinesweeper.Core.Mines
         [Tooltip("Maximum distance from the symmetry line (0 for no limit)")]
         public int MaxDistanceToLine = 0;
 
-        [VerticalGroup("$GroupName/Spawn Settings/Split/Right")]
+        [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
         [ToggleLeft]
         [LabelText("Enabled")]
         [Tooltip("When disabled, this mine type will not be spawned")]
@@ -146,6 +176,18 @@ namespace RPGMinesweeper.Core.Mines
         {
             // Reset line position when changing direction
             SymmetryLinePosition = 0.5f;
+            
+            // Reset sprites when changing direction
+            if (SymmetryDirection == SymmetryDirection.AroundHorizontalLine)
+            {
+                FacingLeft = null;
+                FacingRight = null;
+            }
+            else
+            {
+                FacingUp = null;
+                FacingDown = null;
+            }
         }
 
         private string GetSymmetryLineInfo()
@@ -176,6 +218,30 @@ namespace RPGMinesweeper.Core.Mines
         private void OnSymmetryLinePositionChanged()
         {
             // The InfoBox will automatically update when any value changes
+        }
+
+        public Sprite GetDirectionalSprite(FacingDirection direction)
+        {
+            return direction switch
+            {
+                FacingDirection.Up => FacingUp ?? MineData?.MineSprite,
+                FacingDirection.Down => FacingDown ?? MineData?.MineSprite,
+                FacingDirection.Left => FacingLeft ?? MineData?.MineSprite,
+                FacingDirection.Right => FacingRight ?? MineData?.MineSprite,
+                _ => MineData?.MineSprite
+            };
+        }
+
+        private bool IsSymmetricHorizontal()
+        {
+            return SpawnStrategy == SpawnStrategyType.Symmetric && 
+                   SymmetryDirection == SymmetryDirection.AroundHorizontalLine;
+        }
+
+        private bool IsSymmetricVertical()
+        {
+            return SpawnStrategy == SpawnStrategyType.Symmetric && 
+                   SymmetryDirection == SymmetryDirection.AroundVerticalLine;
         }
     }
 } 
