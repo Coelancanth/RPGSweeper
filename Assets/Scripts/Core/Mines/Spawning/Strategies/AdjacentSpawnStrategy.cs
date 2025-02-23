@@ -92,44 +92,60 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             int clusterSize)
         {
             var clusterMines = new List<SpawnedMine>();
+            var usedPositions = new HashSet<Vector2Int>();
             
             // Pick random starting position
             var startPos = availablePositions[Random.Range(0, availablePositions.Count)];
-            var firstMine = CreateMine(context, startPos, spawnData, FacingDirection.Right); // Temporary facing
+            var firstMine = CreateMine(context, startPos, spawnData, FacingDirection.Right);
             clusterMines.Add(firstMine);
+            usedPositions.Add(startPos);
 
-            var currentPositions = new List<Vector2Int> { startPos };
             var remainingSize = clusterSize - 1;
+            var lastAddedPos = startPos;
 
-            while (remainingSize > 0 && currentPositions.Count > 0)
+            while (remainingSize > 0)
             {
-                var basePos = currentPositions[Random.Range(0, currentPositions.Count)];
-                var adjacentPos = GetValidAdjacentPosition(basePos, availablePositions, context);
-
-                if (adjacentPos.HasValue)
+                var adjacentPos = GetValidAdjacentPosition(lastAddedPos, availablePositions, context);
+                
+                if (!adjacentPos.HasValue)
                 {
-                    // Determine facing directions for the pair
-                    var (facing1, facing2) = GetFacingDirections(basePos, adjacentPos.Value);
-
-                    // Update facing for existing mine if it's the base position
-                    var existingMineIndex = clusterMines.FindIndex(m => m.Position == basePos);
-                    if (existingMineIndex >= 0)
+                    // If we can't place adjacent to the last added position, try other existing positions
+                    bool foundValidPosition = false;
+                    foreach (var existingPos in usedPositions)
                     {
-                        clusterMines[existingMineIndex] = CreateMine(context, basePos, spawnData, facing1);
+                        adjacentPos = GetValidAdjacentPosition(existingPos, availablePositions, context);
+                        if (adjacentPos.HasValue)
+                        {
+                            lastAddedPos = existingPos;
+                            foundValidPosition = true;
+                            break;
+                        }
                     }
-
-                    // Add new mine
-                    clusterMines.Add(CreateMine(context, adjacentPos.Value, spawnData, facing2));
-                    currentPositions.Add(adjacentPos.Value);
-                    remainingSize--;
-
-                    // Remove used position
-                    availablePositions.Remove(adjacentPos.Value);
+                    
+                    if (!foundValidPosition)
+                        break; // No valid positions found, end cluster
                 }
-                else
+
+                var newPos = adjacentPos.Value;
+                
+                // Determine facing directions for the pair
+                var (facing1, facing2) = GetFacingDirections(lastAddedPos, newPos);
+
+                // Update facing for existing mine at lastAddedPos
+                var existingMineIndex = clusterMines.FindIndex(m => m.Position == lastAddedPos);
+                if (existingMineIndex >= 0)
                 {
-                    currentPositions.Remove(basePos);
+                    clusterMines[existingMineIndex] = CreateMine(context, lastAddedPos, spawnData, facing1);
                 }
+
+                // Add new mine
+                var newMine = CreateMine(context, newPos, spawnData, facing2);
+                clusterMines.Add(newMine);
+                usedPositions.Add(newPos);
+                availablePositions.Remove(newPos);
+                
+                lastAddedPos = newPos;
+                remainingSize--;
             }
 
             return clusterMines;
