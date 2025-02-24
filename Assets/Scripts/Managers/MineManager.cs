@@ -159,18 +159,20 @@ public class MineManager : MonoBehaviour
         m_VisualManager.UpdateCellView(toPosition, sourceMineData, newMine);
 
         // Get the player reference once
-        var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-        if (player != null)
+        //var player = GameObject.FindFirstObjectByType<PlayerComponent>();
+        //if (player != null)
         {
             // Apply only persistent effects from the mine data
-            foreach (var effect in sourceMineData.CreatePersistentEffects())
-            {
-                if (effect is IPersistentEffect persistentEffect)
-                {
-                    persistentEffect.Apply(player.gameObject, toPosition);
-                }
-            }
+            //foreach (var effect in sourceMineData.CreatePersistentEffects())
+            //{
+                //if (effect is IPersistentEffect persistentEffect)
+                //{
+                    //persistentEffect.Apply(player.gameObject, toPosition);
+                //}
+            //}
         }
+        //RemoveMineAt(fromPosition);
+        GameEvents.RaiseEffectsRemoved(fromPosition);
 
         // Remove the original mine by raising the event (this will handle cleanup properly)
         GameEvents.RaiseMineRemovalAttempted(fromPosition);

@@ -187,6 +187,26 @@ public class MonsterMine : IDamagingMine
         m_ActivePersistentEffects.Clear();
     }
 
+    public void OnRemoveEffects()
+    {
+
+        var player = GameObject.FindFirstObjectByType<PlayerComponent>();
+        if (player != null)
+        {
+            foreach (var effect in m_Data.CreateTriggerableEffects())
+            {
+                effect.Apply(player.gameObject, m_Position);
+            }
+        }
+
+        // Clean up persistent effects
+        foreach (var effect in m_ActivePersistentEffects)
+        {
+            effect.Remove(player?.gameObject);
+        }
+        m_ActivePersistentEffects.Clear();
+    }
+
     public void Update(float deltaTime)
     {
         m_ElapsedTime += deltaTime;

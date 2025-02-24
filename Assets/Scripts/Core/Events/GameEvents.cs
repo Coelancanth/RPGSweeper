@@ -10,6 +10,7 @@ public static class GameEvents
     public static event Action<int> OnExperienceGained;
     public static event Action<Vector2Int, MineType, MonsterType?> OnMineAddAttempted;
     public static event Action<Vector2Int> OnMineRemovalAttempted;
+    public static event Action<Vector2Int> OnEffectsRemoved;
     public static event Action<int> OnShieldChanged;
     public static event Action OnRoundAdvanced;
 
@@ -41,6 +42,11 @@ public static class GameEvents
     public static void RaiseMineRemovalAttempted(Vector2Int position)
     {
         OnMineRemovalAttempted?.Invoke(position);
+    }
+
+    public static void RaiseEffectsRemoved(Vector2Int position)
+    {
+        OnEffectsRemoved?.Invoke(position);
     }
 
     public static void RaiseShieldChanged(int newShieldAmount)

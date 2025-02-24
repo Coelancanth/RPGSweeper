@@ -18,6 +18,7 @@ namespace RPGMinesweeper.Core.Mines
             GameEvents.OnCellRevealed += HandleCellRevealed;
             GameEvents.OnMineRemovalAttempted += HandleMineRemoval;
             GameEvents.OnMineAddAttempted += HandleMineAdd;
+            GameEvents.OnEffectsRemoved += HandleEffectsRemoved;
         }
 
         public void UnsubscribeFromEvents()
@@ -25,6 +26,7 @@ namespace RPGMinesweeper.Core.Mines
             GameEvents.OnCellRevealed -= HandleCellRevealed;
             GameEvents.OnMineRemovalAttempted -= HandleMineRemoval;
             GameEvents.OnMineAddAttempted -= HandleMineAdd;
+            GameEvents.OnEffectsRemoved -= HandleEffectsRemoved;
         }
 
         public void HandleCellRevealed(Vector2Int position)
@@ -43,6 +45,7 @@ namespace RPGMinesweeper.Core.Mines
 
         public void HandleMineRemoval(Vector2Int position)
         {
+            Debug.Log($"[MineEventHandler] HandleMineRemoval: {position}");
             if (m_MineManager.TryGetMine(position, out IMine mine, out _))
             {
                 mine.OnDestroy();
@@ -55,6 +58,17 @@ namespace RPGMinesweeper.Core.Mines
         public void HandleMineAdd(Vector2Int position, MineType type, MonsterType? monsterType)
         {
             m_MineManager.AddMine(position, type, monsterType);
+        }
+
+        public void HandleEffectsRemoved(Vector2Int position)
+        {
+            if (m_MineManager.TryGetMine(position, out IMine mine, out _))
+            {
+                if (mine is MonsterMine monsterMine)
+                {
+                    monsterMine.OnRemoveEffects();
+                }
+            }
         }
     }
 } 
