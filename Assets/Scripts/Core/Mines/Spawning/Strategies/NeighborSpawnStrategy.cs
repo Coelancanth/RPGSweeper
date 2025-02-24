@@ -27,6 +27,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
         private readonly bool m_AllowDiagonal;
         private readonly int m_MinClusterSize;
         private readonly int m_MaxClusterSize;
+        private readonly NeighborRelationship m_Relationship;
 
         public override SpawnStrategyType Priority => SpawnStrategyType.Neighbor;
 
@@ -36,6 +37,23 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             m_AllowDiagonal = spawnData.AllowDiagonal;
             m_MinClusterSize = spawnData.MinClusterSize;
             m_MaxClusterSize = spawnData.MaxClusterSize;
+
+            // Create relationship from spawn data
+            var validNeighborTypes = spawnData.NeighborTypes
+                .Select(nt => nt.NeighborMineData)
+                .ToList();
+
+            var facingDirections = spawnData.NeighborTypes
+                .ToDictionary(
+                    nt => nt.NeighborMineData,
+                    nt => nt.FacingDirection
+                );
+
+            m_Relationship = new NeighborRelationship(
+                spawnData.MineData,
+                validNeighborTypes,
+                facingDirections
+            );
         }
 
         public override bool CanExecute(SpawnContext context, MineTypeSpawnData spawnData)
@@ -45,14 +63,14 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 return false;
             }
 
-            if (spawnData.NeighborTypes == null || !spawnData.NeighborTypes.Any())
+            if (m_Relationship == null || !m_Relationship.ValidNeighborTypes.Any())
             {
                 return false;
             }
 
             var availablePositions = context.GetAvailablePositions().ToList();
             // Each primary mine needs enough space for its neighbors
-            var totalNeighborsPerPrimary = spawnData.NeighborTypes.Sum(nt => nt.SpawnCount);
+            var totalNeighborsPerPrimary = m_Relationship.ValidNeighborTypes.Count;
             var spaceNeededPerPrimary = 1 + totalNeighborsPerPrimary;
             return availablePositions.Count >= spaceNeededPerPrimary * spawnData.SpawnCount;
         }
@@ -101,15 +119,19 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             
             // Place primary mine
             var startPos = availablePositions[Random.Range(0, availablePositions.Count)];
-            var primaryMine = CreateMine(context, startPos, spawnData.MineData, FacingDirection.Right);
+            Debug.Log($"Placing primary mine of type {m_Relationship.PrimaryMineType.name} at position {startPos}");
+            var primaryMine = CreateMine(context, startPos, m_Relationship.PrimaryMineType, FacingDirection.Right);
             clusterMines.Add(primaryMine);
             availablePositions.Remove(startPos);
 
-            // Track remaining counts for each neighbor type
-            var remainingNeighborCounts = spawnData.NeighborTypes.ToDictionary(
-                nt => nt,
-                nt => nt.SpawnCount
-            );
+            // Track remaining neighbor types to place
+            var remainingNeighborTypes = new List<MineData>(m_Relationship.ValidNeighborTypes);
+            Debug.Log($"Setting up neighbors for primary mine {m_Relationship.PrimaryMineType.name}:");
+            foreach (var neighborType in m_Relationship.ValidNeighborTypes)
+            {
+                var facing = m_Relationship.FacingDirections[neighborType];
+                Debug.Log($"  - Will spawn {neighborType.name} facing {facing}");
+            }
 
             // Get all positions within range of primary mine
             var positionsInRange = GetPositionsInRange(startPos, m_MaxDistance, context)
@@ -117,23 +139,17 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 .ToList();
 
             // Place neighbor mines within range of primary mine
-            while (positionsInRange.Count > 0 && remainingNeighborCounts.Any(kvp => kvp.Value > 0))
+            while (positionsInRange.Count > 0 && remainingNeighborTypes.Any())
             {
                 var pos = positionsInRange[Random.Range(0, positionsInRange.Count)];
                 
-                // Select random neighbor type that still has remaining count
-                var availableNeighborTypes = remainingNeighborCounts
-                    .Where(kvp => kvp.Value > 0)
-                    .Select(kvp => kvp.Key)
-                    .ToList();
+                // Select random neighbor type from remaining types
+                var neighborMineData = remainingNeighborTypes[Random.Range(0, remainingNeighborTypes.Count)];
+                remainingNeighborTypes.Remove(neighborMineData);
 
-                if (availableNeighborTypes.Count == 0)
-                    break;
+                Debug.Log($"Selected neighbor type: {neighborMineData.name} at position {pos}, facing {m_Relationship.FacingDirections[neighborMineData]}");
 
-                var neighborSetting = availableNeighborTypes[Random.Range(0, availableNeighborTypes.Count)];
-                remainingNeighborCounts[neighborSetting]--;
-
-                var newMine = CreateMine(context, pos, neighborSetting.NeighborMineType, neighborSetting.FacingDirection);
+                var newMine = CreateMine(context, pos, neighborMineData, m_Relationship.FacingDirections[neighborMineData]);
                 clusterMines.Add(newMine);
                 availablePositions.Remove(pos);
                 positionsInRange.Remove(pos);

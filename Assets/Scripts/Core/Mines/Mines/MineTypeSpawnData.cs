@@ -144,7 +144,7 @@ namespace RPGMinesweeper.Core.Mines
             [HorizontalGroup("Row")]
             [VerticalGroup("Row/Left")]
             [LabelWidth(100)]
-            public MineData NeighborMineType;
+            public MineData NeighborMineData;
 
             [HorizontalGroup("Row")]
             [VerticalGroup("Row/Right")]

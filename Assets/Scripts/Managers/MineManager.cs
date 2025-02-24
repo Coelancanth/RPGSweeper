@@ -138,6 +138,38 @@ public class MineManager : MonoBehaviour
         UpdateAllGridValues();
     }
 
+    public void TeleportMine(Vector2Int fromPosition, Vector2Int toPosition)
+    {
+        if (!ValidateTeleportPositions(fromPosition, toPosition)) return;
+
+        if (!m_Mines.TryGetValue(fromPosition, out var sourceMine) || 
+            !m_MineDataMap.TryGetValue(fromPosition, out var sourceMineData))
+        {
+            Debug.LogWarning($"MineManager: No mine found at position {fromPosition} to teleport");
+            return;
+        }
+
+        // Create a new mine at the target position with the same data
+        IMine newMine = m_MineFactory.CreateMine(sourceMineData, toPosition);
+        m_Mines[toPosition] = newMine;
+        m_MineDataMap[toPosition] = sourceMineData;
+
+        // Update the visual for the new mine
+        m_VisualManager.UpdateCellView(toPosition, sourceMineData, newMine);
+
+        // Trigger the new mine to initialize its effects (including teleport effect)
+        var player = GameObject.FindFirstObjectByType<PlayerComponent>();
+        if (player != null)
+        {
+            newMine.OnTrigger(player);
+        }
+
+        // Remove the original mine by raising the event (this will handle cleanup properly)
+        GameEvents.RaiseMineRemovalAttempted(fromPosition);
+
+        UpdateAllGridValues();
+    }
+
     public void UpdateAllGridValues()
     {
         MineValuePropagator.PropagateValues(this, m_GridManager);
@@ -160,6 +192,29 @@ public class MineManager : MonoBehaviour
         if (m_Mines.ContainsKey(position))
         {
             Debug.LogError($"MineManager: Position {position} is already occupied");
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool ValidateTeleportPositions(Vector2Int fromPosition, Vector2Int toPosition)
+    {
+        if (!m_GridManager.IsValidPosition(fromPosition))
+        {
+            Debug.LogError($"MineManager: Invalid source position for teleport: {fromPosition}");
+            return false;
+        }
+
+        if (!m_GridManager.IsValidPosition(toPosition))
+        {
+            Debug.LogError($"MineManager: Invalid target position for teleport: {toPosition}");
+            return false;
+        }
+
+        if (m_Mines.ContainsKey(toPosition))
+        {
+            Debug.LogError($"MineManager: Target position {toPosition} is already occupied");
             return false;
         }
 

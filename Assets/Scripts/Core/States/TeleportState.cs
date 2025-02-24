@@ -103,7 +103,7 @@ namespace RPGMinesweeper.States
             validPositions.RemoveAll(pos => mineManager.HasMineAt(pos));
 
             // Store positions to teleport to avoid modifying collection during iteration
-            var teleportOperations = new List<(Vector2Int source, Vector2Int target, int? currentHp)>();
+            var teleportOperations = new List<(Vector2Int source, Vector2Int target)>();
 
             // For each affected position that has a mine
             foreach (var sourcePos in m_AffectedPositions)
@@ -113,56 +113,20 @@ namespace RPGMinesweeper.States
                 // If there are no more valid positions, stop teleporting
                 if (validPositions.Count == 0) break;
 
-                // Store current HP if it's a monster
-                int? currentHp = null;
-                var sourceMine = mineManager.GetMines()[sourcePos];
-                if (sourceMine is MonsterMine monsterMine)
-                {
-                    currentHp = monsterMine.CurrentHp;
-                }
-
                 // Pick a random valid position
                 int randomIndex = Random.Range(0, validPositions.Count);
                 Vector2Int targetPos = validPositions[randomIndex];
 
                 // Store the operation
-                teleportOperations.Add((sourcePos, targetPos, currentHp));
+                teleportOperations.Add((sourcePos, targetPos));
                 // Remove the target position from valid positions
                 validPositions.RemoveAt(randomIndex);
             }
 
             // Execute teleport operations
-            foreach (var (sourcePos, targetPos, currentHp) in teleportOperations)
+            foreach (var (sourcePos, targetPos) in teleportOperations)
             {
-                // Store mine data before removing
-                var mineData = mineManager.GetMineDataAt(sourcePos);
-                if (mineData == null) continue;
-
-                // First remove the original mine
-                GameEvents.RaiseMineRemovalAttempted(sourcePos);
-
-                // Then add the new mine
-                if (mineData.Type == MineType.Monster)
-                {
-                    var monsterData = mineData as MonsterMineData;
-                    if (monsterData != null)
-                    {
-                        GameEvents.RaiseMineAddAttempted(targetPos, MineType.Monster, monsterData.MonsterType);
-
-                        // Set the HP of the new monster to match the original
-                        if (currentHp.HasValue && mineManager.GetMines().TryGetValue(targetPos, out var newMine))
-                        {
-                            if (newMine is MonsterMine newMonsterMine)
-                            {
-                                newMonsterMine.CurrentHp = currentHp.Value;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    GameEvents.RaiseMineAddAttempted(targetPos, mineData.Type, null);
-                }
+                mineManager.TeleportMine(sourcePos, targetPos);
 
                 if (m_DebugMode)
                 {

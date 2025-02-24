@@ -69,7 +69,7 @@ namespace RPGMinesweeper.Effects
 
         private void ApplyTeleportState(GameObject target, Vector2Int sourcePosition)
         {
-            //Debug.Log($"[TeleportEffect] Applying teleport state at {sourcePosition} with radius {m_Radius}, duration {m_Duration} turns");
+            Debug.Log($"[TeleportEffect] Applying teleport state at {sourcePosition} with radius {m_Radius}, duration {m_Duration} turns");
             var state = new TeleportState(m_Duration, m_Radius, sourcePosition, m_Shape);
             m_StateManager.AddState(state);
             
