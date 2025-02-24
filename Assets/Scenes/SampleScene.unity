@@ -421,6 +421,12 @@ MonoBehaviour:
     SymmetryLinePosition: 0.5
     MinDistanceToLine: 0
     MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
     IsEnabled: 0
   - MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
     Description: 
@@ -432,6 +438,12 @@ MonoBehaviour:
     SymmetryLinePosition: 0.5
     MinDistanceToLine: 0
     MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
     IsEnabled: 0
   - MineData: {fileID: 11400000, guid: 08798aff13a7352489f5bcf68933bada, type: 2}
     Description: 
@@ -443,7 +455,13 @@ MonoBehaviour:
     SymmetryLinePosition: 0.5
     MinDistanceToLine: 0
     MaxDistanceToLine: 0
-    IsEnabled: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
+    IsEnabled: 1
   - MineData: {fileID: 11400000, guid: 4b84624f2f3856847a990bd2e227903d, type: 2}
     Description: 
     SpawnCount: 1
@@ -454,17 +472,31 @@ MonoBehaviour:
     SymmetryLinePosition: 0.5
     MinDistanceToLine: 0
     MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
     IsEnabled: 0
   - MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
     Description: 
     SpawnCount: 12
-    SpawnStrategy: 600
+    SpawnStrategy: 700
     TargetMineType: 7
     TargetMonsterType: 0
     SymmetryDirection: 1
     SymmetryLinePosition: 0.5
-    MinDistanceToLine: 1
-    MaxDistanceToLine: 5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 2
+    NeighborTypes:
+    - NeighborMineType: {fileID: 11400000, guid: 08798aff13a7352489f5bcf68933bada, type: 2}
+      FacingDirection: 4
     IsEnabled: 1
   m_GridManager: {fileID: 1433877669}
 --- !u!4 &536950429

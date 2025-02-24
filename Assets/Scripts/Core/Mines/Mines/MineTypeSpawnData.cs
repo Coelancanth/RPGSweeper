@@ -89,45 +89,68 @@ namespace RPGMinesweeper.Core.Mines
 
         // Adjacent Strategy Settings
         [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
-        [ShowIf("@SpawnStrategy == SpawnStrategyType.Relational")]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Adjacent")]
         [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
         [EnumToggleButtons]
         [Tooltip("The primary direction for adjacent mines")]
         public AdjacentDirection AdjacencyDirection = AdjacentDirection.Vertical;
 
         [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
-        [ShowIf("@SpawnStrategy == SpawnStrategyType.Relational")]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Adjacent || SpawnStrategy == SpawnStrategyType.Neighbor")]
         [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
         [MinValue(1)]
         [Tooltip("Maximum distance between adjacent mines")]
         public int MaxDistance = 1;
 
         [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
-        [ShowIf("@SpawnStrategy == SpawnStrategyType.Relational")]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Adjacent || SpawnStrategy == SpawnStrategyType.Neighbor")]
         [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
         [ToggleLeft]
         [Tooltip("Allow diagonal adjacency between mines")]
         public bool AllowDiagonal = true;
 
         [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
-        [ShowIf("@SpawnStrategy == SpawnStrategyType.Relational")]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Adjacent || SpawnStrategy == SpawnStrategyType.Neighbor")]
         [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
         [MinValue(1)]
         [Tooltip("Minimum number of mines in a cluster")]
         public int MinClusterSize = 2;
 
         [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
-        [ShowIf("@SpawnStrategy == SpawnStrategyType.Relational")]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Adjacent || SpawnStrategy == SpawnStrategyType.Neighbor")]
         [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
         [MinValue(1)]
         [Tooltip("Maximum number of mines in a cluster")]
         public int MaxClusterSize = 4;
+
+        // Neighbor Strategy Settings
+        [FoldoutGroup("$GroupName/Spawn Settings", expanded: true)]
+        [ShowIf("@SpawnStrategy == SpawnStrategyType.Neighbor")]
+        [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
+        [TableList(ShowIndexLabels = true)]
+        [Tooltip("Define valid neighbor types and their facing directions")]
+        public List<NeighborTypeSettings> NeighborTypes = new List<NeighborTypeSettings>();
 
         [VerticalGroup("$GroupName/Spawn Settings/Split/Left")]
         [ToggleLeft]
         [LabelText("Enabled")]
         [Tooltip("When disabled, this mine type will not be spawned")]
         public bool IsEnabled = true;
+
+        [System.Serializable]
+        public class NeighborTypeSettings
+        {
+            [Required]
+            [HorizontalGroup("Row")]
+            [VerticalGroup("Row/Left")]
+            [LabelWidth(100)]
+            public MineData NeighborMineType;
+
+            [HorizontalGroup("Row")]
+            [VerticalGroup("Row/Right")]
+            [LabelWidth(100)]
+            public FacingDirection FacingDirection = FacingDirection.Right;
+        }
 
         private string GroupName => string.IsNullOrEmpty(Description) 
             ? GetMineTypeName() 
@@ -151,7 +174,8 @@ namespace RPGMinesweeper.Core.Mines
             yield return new ValueDropdownItem<SpawnStrategyType>("Corner", SpawnStrategyType.Corner);
             yield return new ValueDropdownItem<SpawnStrategyType>("Surrounded", SpawnStrategyType.Surrounded);
             yield return new ValueDropdownItem<SpawnStrategyType>("Symmetric", SpawnStrategyType.Symmetric);
-            yield return new ValueDropdownItem<SpawnStrategyType>("Adjacent", SpawnStrategyType.Relational);
+            yield return new ValueDropdownItem<SpawnStrategyType>("Adjacent", SpawnStrategyType.Adjacent);
+            yield return new ValueDropdownItem<SpawnStrategyType>("Neighbor", SpawnStrategyType.Neighbor);
         }
 
         private void OnSpawnStrategyChanged()
@@ -170,13 +194,18 @@ namespace RPGMinesweeper.Core.Mines
                 MaxDistanceToLine = 0;
             }
 
-            if (SpawnStrategy != SpawnStrategyType.Relational)
+            if (SpawnStrategy != SpawnStrategyType.Adjacent)
             {
                 MaxDistance = 1;
                 AllowDiagonal = true;
                 MinClusterSize = 2;
                 MaxClusterSize = 4;
                 AdjacencyDirection = AdjacentDirection.Vertical;
+            }
+
+            if (SpawnStrategy != SpawnStrategyType.Neighbor)
+            {
+                NeighborTypes.Clear();
             }
         }
 

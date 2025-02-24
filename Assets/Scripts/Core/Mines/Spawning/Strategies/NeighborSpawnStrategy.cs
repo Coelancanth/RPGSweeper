@@ -4,36 +4,48 @@ using System.Linq;
 
 namespace RPGMinesweeper.Core.Mines.Spawning
 {
-    public class AdjacentSpawnStrategy : MineSpawnStrategyBase
+    public class NeighborRelationship
+    {
+        public MineData PrimaryMineType { get; }
+        public List<MineData> ValidNeighborTypes { get; }
+        public Dictionary<MineData, FacingDirection> FacingDirections { get; }
+
+        public NeighborRelationship(
+            MineData primaryMineType,
+            List<MineData> validNeighborTypes,
+            Dictionary<MineData, FacingDirection> facingDirections)
+        {
+            PrimaryMineType = primaryMineType;
+            ValidNeighborTypes = validNeighborTypes;
+            FacingDirections = facingDirections;
+        }
+    }
+
+    public class NeighborSpawnStrategy : MineSpawnStrategyBase
     {
         private readonly int m_MaxDistance;
-        private readonly int m_MinDistance;
         private readonly bool m_AllowDiagonal;
         private readonly int m_MinClusterSize;
         private readonly int m_MaxClusterSize;
-        private readonly AdjacentDirection m_Direction;
 
-        public override SpawnStrategyType Priority => SpawnStrategyType.Adjacent;
+        public override SpawnStrategyType Priority => SpawnStrategyType.Neighbor;
 
-        public AdjacentSpawnStrategy(
-            int minDistance = 2,
-            int maxDistance = int.MaxValue,
-            bool allowDiagonal = false,
-            int minClusterSize = 2,
-            int maxClusterSize = 4,
-            AdjacentDirection direction = AdjacentDirection.Any)
+        public NeighborSpawnStrategy(MineTypeSpawnData spawnData)
         {
-            m_MinDistance = Mathf.Max(1, minDistance);
-            m_MaxDistance = maxDistance;
-            m_AllowDiagonal = allowDiagonal;
-            m_MinClusterSize = Mathf.Max(2, minClusterSize);
-            m_MaxClusterSize = Mathf.Max(minClusterSize, maxClusterSize);
-            m_Direction = direction;
+            m_MaxDistance = spawnData.MaxDistance;
+            m_AllowDiagonal = spawnData.AllowDiagonal;
+            m_MinClusterSize = spawnData.MinClusterSize;
+            m_MaxClusterSize = spawnData.MaxClusterSize;
         }
 
         public override bool CanExecute(SpawnContext context, MineTypeSpawnData spawnData)
         {
             if (!base.CanExecute(context, spawnData))
+            {
+                return false;
+            }
+
+            if (spawnData.NeighborTypes == null || spawnData.NeighborTypes.Count == 0)
             {
                 return false;
             }
@@ -55,7 +67,6 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
             while (remainingCount > 0 && availablePositions.Count >= m_MinClusterSize)
             {
-                // Start a new cluster
                 var clusterSize = Mathf.Min(
                     Random.Range(m_MinClusterSize, m_MaxClusterSize + 1),
                     remainingCount
@@ -67,22 +78,21 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                     mines.AddRange(clusterMines);
                     remainingCount -= clusterMines.Count;
 
-                    // Remove used positions and their neighbors within minDistance
                     foreach (var mine in clusterMines)
                     {
                         availablePositions.RemoveAll(p => 
-                            GetDistance(p, mine.Position) <= m_MinDistance);
+                            GetDistance(p, mine.Position) <= m_MaxDistance);
                     }
                 }
                 else
                 {
-                    break; // Unable to place more clusters
+                    break;
                 }
             }
 
             return mines.Count > 0 
                 ? SpawnResult.Successful(mines) 
-                : SpawnResult.Failed("Could not place any adjacent mines");
+                : SpawnResult.Failed("Could not place any neighbor mines");
         }
 
         private List<SpawnedMine> PlaceCluster(
@@ -94,11 +104,12 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             var clusterMines = new List<SpawnedMine>();
             var usedPositions = new HashSet<Vector2Int>();
             
-            // Pick random starting position
+            // Place primary mine
             var startPos = availablePositions[Random.Range(0, availablePositions.Count)];
-            var firstMine = CreateMine(context, startPos, spawnData, FacingDirection.Right);
-            clusterMines.Add(firstMine);
+            var primaryMine = CreateMine(context, startPos, spawnData.MineData, FacingDirection.Right);
+            clusterMines.Add(primaryMine);
             usedPositions.Add(startPos);
+            availablePositions.Remove(startPos);
 
             var remainingSize = clusterSize - 1;
             var lastAddedPos = startPos;
@@ -109,7 +120,6 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 
                 if (!adjacentPos.HasValue)
                 {
-                    // If we can't place adjacent to the last added position, try other existing positions
                     bool foundValidPosition = false;
                     foreach (var existingPos in usedPositions)
                     {
@@ -123,23 +133,14 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                     }
                     
                     if (!foundValidPosition)
-                        break; // No valid positions found, end cluster
+                        break;
                 }
 
                 var newPos = adjacentPos.Value;
                 
-                // Determine facing directions for the pair
-                var (facing1, facing2) = GetFacingDirections(lastAddedPos, newPos);
-
-                // Update facing for existing mine at lastAddedPos
-                var existingMineIndex = clusterMines.FindIndex(m => m.Position == lastAddedPos);
-                if (existingMineIndex >= 0)
-                {
-                    clusterMines[existingMineIndex] = CreateMine(context, lastAddedPos, spawnData, facing1);
-                }
-
-                // Add new mine
-                var newMine = CreateMine(context, newPos, spawnData, facing2);
+                // Select random neighbor type
+                var neighborSetting = spawnData.NeighborTypes[Random.Range(0, spawnData.NeighborTypes.Count)];
+                var newMine = CreateMine(context, newPos, neighborSetting.NeighborMineType, neighborSetting.FacingDirection);
                 clusterMines.Add(newMine);
                 usedPositions.Add(newPos);
                 availablePositions.Remove(newPos);
@@ -173,65 +174,39 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
         private List<Vector2Int> GetPossibleOffsets()
         {
-            var offsets = new List<Vector2Int>();
-
-            switch (m_Direction)
+            var offsets = new List<Vector2Int>
             {
-                case AdjacentDirection.Horizontal:
-                    offsets.Add(Vector2Int.right);
-                    offsets.Add(Vector2Int.left);
-                    break;
-                case AdjacentDirection.Vertical:
-                    offsets.Add(Vector2Int.up);
-                    offsets.Add(Vector2Int.down);
-                    break;
-                case AdjacentDirection.Any:
-                    offsets.Add(Vector2Int.right);
-                    offsets.Add(Vector2Int.left);
-                    offsets.Add(Vector2Int.up);
-                    offsets.Add(Vector2Int.down);
-                    if (m_AllowDiagonal)
-                    {
-                        offsets.Add(new Vector2Int(1, 1));
-                        offsets.Add(new Vector2Int(-1, 1));
-                        offsets.Add(new Vector2Int(1, -1));
-                        offsets.Add(new Vector2Int(-1, -1));
-                    }
-                    break;
+                Vector2Int.right,
+                Vector2Int.left,
+                Vector2Int.up,
+                Vector2Int.down
+            };
+
+            if (m_AllowDiagonal)
+            {
+                offsets.AddRange(new[]
+                {
+                    new Vector2Int(1, 1),
+                    new Vector2Int(-1, 1),
+                    new Vector2Int(1, -1),
+                    new Vector2Int(-1, -1)
+                });
             }
 
             return offsets;
         }
 
-        private (FacingDirection, FacingDirection) GetFacingDirections(Vector2Int pos1, Vector2Int pos2)
-        {
-            var diff = pos2 - pos1;
-            
-            if (diff.x > 0) return (FacingDirection.Right, FacingDirection.Left);
-            if (diff.x < 0) return (FacingDirection.Left, FacingDirection.Right);
-            if (diff.y > 0) return (FacingDirection.Up, FacingDirection.Down);
-            if (diff.y < 0) return (FacingDirection.Down, FacingDirection.Up);
-
-            // For diagonal cases, prioritize horizontal facing
-            if (diff.x > 0 && diff.y > 0) return (FacingDirection.Right, FacingDirection.Left);
-            if (diff.x < 0 && diff.y > 0) return (FacingDirection.Left, FacingDirection.Right);
-            if (diff.x > 0 && diff.y < 0) return (FacingDirection.Right, FacingDirection.Left);
-            if (diff.x < 0 && diff.y < 0) return (FacingDirection.Left, FacingDirection.Right);
-
-            return (FacingDirection.Right, FacingDirection.Left); // Default
-        }
-
         private SpawnedMine CreateMine(
             SpawnContext context,
             Vector2Int position,
-            MineTypeSpawnData spawnData,
+            MineData mineData,
             FacingDirection facing)
         {
-            var mine = context.MineFactory.CreateMine(spawnData.MineData, position);
+            var mine = context.MineFactory.CreateMine(mineData, position);
             return SpawnedMine.Create(
                 position,
                 mine,
-                spawnData.MineData,
+                mineData,
                 facing
             );
         }
@@ -250,4 +225,4 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 : Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);           // Manhattan distance
         }
     }
-}
+} 

@@ -55,7 +55,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 { SpawnStrategyType.Center, new CenterSpawnStrategy()},
                 { SpawnStrategyType.Corner, new CornerSpawnStrategy()},
                 { SpawnStrategyType.Surrounded, new SurroundedSpawnStrategy(MineType.Monster)},
-                { SpawnStrategyType.Relational, new AdjacentSpawnStrategy()},
+                { SpawnStrategyType.Adjacent, new AdjacentSpawnStrategy()},
                 // Other strategies will be implemented later:
                 // Corner, Center, Surrounded, Symmetric
             };
@@ -128,7 +128,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                         data.MinDistanceToLine,
                         maxDistance);
                 }
-                else if (data.SpawnStrategy == SpawnStrategyType.Relational)
+                else if (data.SpawnStrategy == SpawnStrategyType.Adjacent)
                 {
                     strategy = new AdjacentSpawnStrategy(
                         maxDistance: data.MaxDistance,
@@ -137,6 +137,10 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                         minClusterSize: data.MinClusterSize,
                         maxClusterSize: data.MaxClusterSize,
                         direction: data.AdjacencyDirection);
+                }
+                else if (data.SpawnStrategy == SpawnStrategyType.Neighbor)
+                {
+                    strategy = new NeighborSpawnStrategy(data);
                 }
                 else if (!_strategies.TryGetValue(data.SpawnStrategy, out strategy))
                 {
