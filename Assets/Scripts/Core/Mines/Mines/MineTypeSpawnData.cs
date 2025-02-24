@@ -150,6 +150,13 @@ namespace RPGMinesweeper.Core.Mines
             [VerticalGroup("Row/Right")]
             [LabelWidth(100)]
             public FacingDirection FacingDirection = FacingDirection.Right;
+
+            [HorizontalGroup("Row")]
+            [VerticalGroup("Row/Right")]
+            [LabelWidth(100)]
+            [MinValue(1)]
+            [Tooltip("Number of this neighbor type to spawn around each primary mine")]
+            public int SpawnCount = 1;
         }
 
         private string GroupName => string.IsNullOrEmpty(Description) 

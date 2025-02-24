@@ -45,13 +45,16 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 return false;
             }
 
-            if (spawnData.NeighborTypes == null || spawnData.NeighborTypes.Count == 0)
+            if (spawnData.NeighborTypes == null || !spawnData.NeighborTypes.Any())
             {
                 return false;
             }
 
             var availablePositions = context.GetAvailablePositions().ToList();
-            return availablePositions.Count >= m_MinClusterSize;
+            // Each primary mine needs enough space for its neighbors
+            var totalNeighborsPerPrimary = spawnData.NeighborTypes.Sum(nt => nt.SpawnCount);
+            var spaceNeededPerPrimary = 1 + totalNeighborsPerPrimary;
+            return availablePositions.Count >= spaceNeededPerPrimary * spawnData.SpawnCount;
         }
 
         public override SpawnResult Execute(SpawnContext context, MineTypeSpawnData spawnData)
@@ -63,26 +66,20 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
             var mines = new List<SpawnedMine>();
             var availablePositions = context.GetAvailablePositions().ToList();
-            var remainingCount = spawnData.SpawnCount;
+            var remainingPrimaryMines = spawnData.SpawnCount;
 
-            while (remainingCount > 0 && availablePositions.Count >= m_MinClusterSize)
+            while (remainingPrimaryMines > 0 && availablePositions.Count > 0)
             {
-                var clusterSize = Mathf.Min(
-                    Random.Range(m_MinClusterSize, m_MaxClusterSize + 1),
-                    remainingCount
-                );
-
-                var clusterMines = PlaceCluster(context, spawnData, availablePositions, clusterSize);
+                var clusterMines = PlaceCluster(context, spawnData, availablePositions);
                 if (clusterMines.Count > 0)
                 {
                     mines.AddRange(clusterMines);
-                    remainingCount -= clusterMines.Count;
+                    remainingPrimaryMines--;
 
-                    foreach (var mine in clusterMines)
-                    {
-                        availablePositions.RemoveAll(p => 
-                            GetDistance(p, mine.Position) <= m_MaxDistance);
-                    }
+                    // Only remove positions around the primary mine
+                    var primaryMine = clusterMines[0];
+                    availablePositions.RemoveAll(p => 
+                        GetDistance(p, primaryMine.Position) <= m_MaxDistance);
                 }
                 else
                 {
@@ -98,102 +95,84 @@ namespace RPGMinesweeper.Core.Mines.Spawning
         private List<SpawnedMine> PlaceCluster(
             SpawnContext context,
             MineTypeSpawnData spawnData,
-            List<Vector2Int> availablePositions,
-            int clusterSize)
+            List<Vector2Int> availablePositions)
         {
             var clusterMines = new List<SpawnedMine>();
-            var usedPositions = new HashSet<Vector2Int>();
             
             // Place primary mine
             var startPos = availablePositions[Random.Range(0, availablePositions.Count)];
             var primaryMine = CreateMine(context, startPos, spawnData.MineData, FacingDirection.Right);
             clusterMines.Add(primaryMine);
-            usedPositions.Add(startPos);
             availablePositions.Remove(startPos);
 
-            var remainingSize = clusterSize - 1;
-            var lastAddedPos = startPos;
+            // Track remaining counts for each neighbor type
+            var remainingNeighborCounts = spawnData.NeighborTypes.ToDictionary(
+                nt => nt,
+                nt => nt.SpawnCount
+            );
 
-            while (remainingSize > 0)
+            // Get all positions within range of primary mine
+            var positionsInRange = GetPositionsInRange(startPos, m_MaxDistance, context)
+                .Where(p => availablePositions.Contains(p))
+                .ToList();
+
+            // Place neighbor mines within range of primary mine
+            while (positionsInRange.Count > 0 && remainingNeighborCounts.Any(kvp => kvp.Value > 0))
             {
-                var adjacentPos = GetValidAdjacentPosition(lastAddedPos, availablePositions, context);
+                var pos = positionsInRange[Random.Range(0, positionsInRange.Count)];
                 
-                if (!adjacentPos.HasValue)
-                {
-                    bool foundValidPosition = false;
-                    foreach (var existingPos in usedPositions)
-                    {
-                        adjacentPos = GetValidAdjacentPosition(existingPos, availablePositions, context);
-                        if (adjacentPos.HasValue)
-                        {
-                            lastAddedPos = existingPos;
-                            foundValidPosition = true;
-                            break;
-                        }
-                    }
-                    
-                    if (!foundValidPosition)
-                        break;
-                }
+                // Select random neighbor type that still has remaining count
+                var availableNeighborTypes = remainingNeighborCounts
+                    .Where(kvp => kvp.Value > 0)
+                    .Select(kvp => kvp.Key)
+                    .ToList();
 
-                var newPos = adjacentPos.Value;
-                
-                // Select random neighbor type
-                var neighborSetting = spawnData.NeighborTypes[Random.Range(0, spawnData.NeighborTypes.Count)];
-                var newMine = CreateMine(context, newPos, neighborSetting.NeighborMineType, neighborSetting.FacingDirection);
+                if (availableNeighborTypes.Count == 0)
+                    break;
+
+                var neighborSetting = availableNeighborTypes[Random.Range(0, availableNeighborTypes.Count)];
+                remainingNeighborCounts[neighborSetting]--;
+
+                var newMine = CreateMine(context, pos, neighborSetting.NeighborMineType, neighborSetting.FacingDirection);
                 clusterMines.Add(newMine);
-                usedPositions.Add(newPos);
-                availablePositions.Remove(newPos);
-                
-                lastAddedPos = newPos;
-                remainingSize--;
+                availablePositions.Remove(pos);
+                positionsInRange.Remove(pos);
             }
 
             return clusterMines;
         }
 
-        private Vector2Int? GetValidAdjacentPosition(
-            Vector2Int basePos,
-            List<Vector2Int> availablePositions,
-            SpawnContext context)
+        private List<Vector2Int> GetPositionsInRange(Vector2Int center, int range, SpawnContext context)
         {
-            var possibleOffsets = GetPossibleOffsets();
-            var shuffledOffsets = possibleOffsets.OrderBy(_ => Random.value).ToList();
-
-            foreach (var offset in shuffledOffsets)
+            var positions = new List<Vector2Int>();
+            
+            for (int x = -range; x <= range; x++)
             {
-                var newPos = basePos + offset;
-                if (IsValidPosition(newPos, context) && availablePositions.Contains(newPos))
+                for (int y = -range; y <= range; y++)
                 {
-                    return newPos;
+                    var pos = new Vector2Int(center.x + x, center.y + y);
+                    if (pos != center && IsValidPosition(pos, context) && GetDistance(center, pos) <= range)
+                    {
+                        positions.Add(pos);
+                    }
                 }
             }
-
-            return null;
+            
+            return positions;
         }
 
-        private List<Vector2Int> GetPossibleOffsets()
+        private bool IsValidPosition(Vector2Int pos, SpawnContext context)
         {
-            var offsets = new List<Vector2Int>
-            {
-                Vector2Int.right,
-                Vector2Int.left,
-                Vector2Int.up,
-                Vector2Int.down
-            };
+            return pos.x >= 0 && pos.x < context.GridWidth &&
+                   pos.y >= 0 && pos.y < context.GridHeight &&
+                   !context.ExistingMines.ContainsKey(pos);
+        }
 
-            if (m_AllowDiagonal)
-            {
-                offsets.AddRange(new[]
-                {
-                    new Vector2Int(1, 1),
-                    new Vector2Int(-1, 1),
-                    new Vector2Int(1, -1),
-                    new Vector2Int(-1, -1)
-                });
-            }
-
-            return offsets;
+        private float GetDistance(Vector2Int a, Vector2Int b)
+        {
+            return m_AllowDiagonal
+                ? Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y))  // Chebyshev distance
+                : Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);           // Manhattan distance
         }
 
         private SpawnedMine CreateMine(
@@ -209,20 +188,6 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 mineData,
                 facing
             );
-        }
-
-        private bool IsValidPosition(Vector2Int pos, SpawnContext context)
-        {
-            return pos.x >= 0 && pos.x < context.GridWidth &&
-                   pos.y >= 0 && pos.y < context.GridHeight &&
-                   !context.ExistingMines.ContainsKey(pos);
-        }
-
-        private float GetDistance(Vector2Int a, Vector2Int b)
-        {
-            return m_AllowDiagonal
-                ? Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y))  // Chebyshev distance
-                : Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);           // Manhattan distance
         }
     }
 } 
