@@ -152,25 +152,17 @@ public class MineManager : MonoBehaviour
 
         // Create a new mine at the target position with the same data
         IMine newMine = m_MineFactory.CreateMine(sourceMineData, toPosition);
+        
+        // Copy properties from source mine to new mine using appropriate strategy
+        var copyStrategy = MineCopyStrategyFactory.CreateStrategy(sourceMineData.Type);
+        copyStrategy.CopyMineProperties(sourceMine, newMine);
+        
         m_Mines[toPosition] = newMine;
         m_MineDataMap[toPosition] = sourceMineData;
 
         // Update the visual for the new mine
         m_VisualManager.UpdateCellView(toPosition, sourceMineData, newMine);
 
-        // Get the player reference once
-        //var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-        //if (player != null)
-        {
-            // Apply only persistent effects from the mine data
-            //foreach (var effect in sourceMineData.CreatePersistentEffects())
-            //{
-                //if (effect is IPersistentEffect persistentEffect)
-                //{
-                    //persistentEffect.Apply(player.gameObject, toPosition);
-                //}
-            //}
-        }
         //RemoveMineAt(fromPosition);
         GameEvents.RaiseEffectsRemoved(fromPosition);
 
