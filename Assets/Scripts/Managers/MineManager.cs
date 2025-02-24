@@ -6,6 +6,7 @@ using RPGMinesweeper.Grid;  // For GridShape
 using RPGMinesweeper.Factory;  // For MineFactory
 using RPGMinesweeper.Core.Mines;
 using RPGMinesweeper.Core.Mines.Spawning;
+using RPGMinesweeper.Effects;  // For IPersistentEffect
 using Sirenix.OdinInspector;
 
 public class MineManager : MonoBehaviour
@@ -157,11 +158,18 @@ public class MineManager : MonoBehaviour
         // Update the visual for the new mine
         m_VisualManager.UpdateCellView(toPosition, sourceMineData, newMine);
 
-        // Trigger the new mine to initialize its effects (including teleport effect)
+        // Get the player reference once
         var player = GameObject.FindFirstObjectByType<PlayerComponent>();
         if (player != null)
         {
-            newMine.OnTrigger(player);
+            // Apply only persistent effects from the mine data
+            foreach (var effect in sourceMineData.CreatePersistentEffects())
+            {
+                if (effect is IPersistentEffect persistentEffect)
+                {
+                    persistentEffect.Apply(player.gameObject, toPosition);
+                }
+            }
         }
 
         // Remove the original mine by raising the event (this will handle cleanup properly)
