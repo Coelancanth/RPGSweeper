@@ -92,12 +92,14 @@ public class GridManager : MonoBehaviour
     {
         GameEvents.OnCellRevealed += HandleCellRevealed;
         GameEvents.OnEffectApplied += HandleEffectApplied;
+        GameEvents.OnCellMarked += HandleCellMarked;
     }
 
     private void UnsubscribeFromEvents()
     {
         GameEvents.OnCellRevealed -= HandleCellRevealed;
         GameEvents.OnEffectApplied -= HandleEffectApplied;
+        GameEvents.OnCellMarked -= HandleCellMarked;
     }
 
     private void HandleCellRevealed(Vector2Int position)
@@ -127,6 +129,18 @@ public class GridManager : MonoBehaviour
         {
             CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
             cellView.ApplyEffect();
+        }
+    }
+
+    private void HandleCellMarked(Vector2Int position, CellMarkType markType)
+    {
+        if (m_Grid.IsValidPosition(position))
+        {
+            CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
+            if (cellView != null && !cellView.IsRevealed)
+            {
+                cellView.SetMarkType(markType);
+            }
         }
     }
 } 

@@ -14,4 +14,22 @@ namespace RPGMinesweeper
             Debug.Log(typeof(DisguisedMonsterMineDisplayStrategy));
         }
     }
-} 
+}
+
+public enum GameState
+{
+    None,
+    Ready,
+    Playing,
+    Win,
+    GameOver
+}
+
+public enum CellMarkType
+{
+    None,
+    Flag,
+    Question, 
+    Numbers,
+    CustomInput
+}

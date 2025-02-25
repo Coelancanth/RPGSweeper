@@ -310,15 +310,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ingame_font_0
+      name: font_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 7
-        width: 8
-        height: 9
+        x: 2
+        y: 16
+        width: 4
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -332,1541 +332,243 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ingame_font_1
+      name: font_2
       rect:
         serializedVersion: 2
-        x: 1
-        y: 15
-        width: 6
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b2a8d42f2b6e3f790800000000000000
-      internalID: -7497395298398008789
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_2
-      rect:
-        serializedVersion: 2
-        x: 7
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6e59c2e314171b830800000000000000
-      internalID: 4085170862031672806
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_3
-      rect:
-        serializedVersion: 2
-        x: 8
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 175989f7033036540800000000000000
-      internalID: 4999843518145402225
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_4
-      rect:
-        serializedVersion: 2
-        x: 15
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3e5d66abd05217c80800000000000000
-      internalID: -8326833495139232285
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_5
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cd5a392714616ccb0800000000000000
-      internalID: -4844159878839425572
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_6
-      rect:
-        serializedVersion: 2
-        x: 23
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c2ca3f8f9476e0bb0800000000000000
-      internalID: -4967919771536085972
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_7
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 15
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 168fa402507aa0e50800000000000000
-      internalID: 6776412229790791777
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_8
-      rect:
-        serializedVersion: 2
-        x: 31
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 753cf232f1903c960800000000000000
-      internalID: 7620945023779980119
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_9
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: efa0de713f06e1990800000000000000
-      internalID: -7413381339410527490
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_10
-      rect:
-        serializedVersion: 2
-        x: 39
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6d350d5ea040239c0800000000000000
-      internalID: -3949089478398684202
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_11
-      rect:
-        serializedVersion: 2
-        x: 40
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b2cf01377614faf90800000000000000
-      internalID: -6940256588186715093
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_12
-      rect:
-        serializedVersion: 2
-        x: 47
-        y: 0
-        width: 9
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 92a1897ead44e05f0800000000000000
-      internalID: -788617177764193751
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_13
-      rect:
-        serializedVersion: 2
-        x: 48
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 60d25749db4672850800000000000000
-      internalID: 6352156564831677702
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_14
-      rect:
-        serializedVersion: 2
-        x: 55
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8dfd2feb0db126e00800000000000000
-      internalID: 1036421447619370968
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_15
-      rect:
-        serializedVersion: 2
-        x: 56
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d22d23f0730d21b70800000000000000
-      internalID: 8868379551142695469
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_16
-      rect:
-        serializedVersion: 2
-        x: 63
-        y: 7
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b70f00f74966cabd0800000000000000
-      internalID: -2617604495437139845
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_17
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2ae9ab1ae92617d30800000000000000
-      internalID: 4427428342139625122
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_18
-      rect:
-        serializedVersion: 2
-        x: 71
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1287f99e252d6d310800000000000000
-      internalID: 1429561185285404705
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_19
-      rect:
-        serializedVersion: 2
-        x: 72
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: eee5ea7ca9ffbfdf0800000000000000
-      internalID: -145241522719269138
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_20
-      rect:
-        serializedVersion: 2
-        x: 79
-        y: 7
-        width: 9
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e9afdac11c2e44730800000000000000
-      internalID: 3982557289540090526
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_21
-      rect:
-        serializedVersion: 2
-        x: 81
-        y: 17
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 110cb1a6581804940800000000000000
-      internalID: 5278361173289058321
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_22
-      rect:
-        serializedVersion: 2
-        x: 87
-        y: 15
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1665744c2787c4180800000000000000
-      internalID: -9129789910272223647
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_23
-      rect:
-        serializedVersion: 2
-        x: 87
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 62a072aed2690d5b0800000000000000
-      internalID: -5345607633742656986
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_24
-      rect:
-        serializedVersion: 2
-        x: 95
-        y: 7
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ab5bceab5da574400800000000000000
-      internalID: 308314973508777402
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_25
-      rect:
-        serializedVersion: 2
-        x: 103
-        y: 15
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 66798995c525b4410800000000000000
-      internalID: 1462353060605499238
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_26
-      rect:
-        serializedVersion: 2
-        x: 111
-        y: 15
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e3aa9ebb868c9e400800000000000000
-      internalID: 354034397880101438
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_27
-      rect:
-        serializedVersion: 2
-        x: 111
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 190fbb67061495c00800000000000000
-      internalID: 889814283947077777
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_28
-      rect:
-        serializedVersion: 2
-        x: 119
+        x: 9
         y: 16
-        width: 10
+        width: 5
         height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0e12ed6405256a480800000000000000
-      internalID: -8888326309829271072
+      spriteID: 2ef7eb063f1b24640b99ef7249c04825
+      internalID: 1382905365
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ingame_font_29
+      name: font_3
       rect:
         serializedVersion: 2
-        x: 119
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 481c1fc68040a94a0800000000000000
-      internalID: -6585947070841896572
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_30
-      rect:
-        serializedVersion: 2
-        x: 127
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 371aae660d3a1e340800000000000000
-      internalID: 4891370785776247155
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_31
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 15
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: eaf17b86faf94a510800000000000000
-      internalID: 1559546946701959086
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_32
-      rect:
-        serializedVersion: 2
-        x: 135
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ba25bcc0c8f4dd1f0800000000000000
-      internalID: -1018570477787196757
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_33
-      rect:
-        serializedVersion: 2
-        x: 136
-        y: 15
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: de9729cf94765f6c0800000000000000
-      internalID: -4110265517437978131
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_34
-      rect:
-        serializedVersion: 2
-        x: 143
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 421374759e56e70b0800000000000000
-      internalID: -5729029623102623452
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_35
-      rect:
-        serializedVersion: 2
-        x: 151
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 39fae9066327a0b30800000000000000
-      internalID: 4254338375879667603
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_36
-      rect:
-        serializedVersion: 2
-        x: 152
+        x: 17
         y: 16
-        width: 15
+        width: 5
         height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 667db4511e215e470800000000000000
-      internalID: 8423159436000614246
+      spriteID: 8b49e7409a8c745408e29884337f1723
+      internalID: 1727825322
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ingame_font_37
+      name: font_4
       rect:
         serializedVersion: 2
-        x: 159
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 08b4ea4770b5d0d40800000000000000
-      internalID: 5552194003198167936
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_38
-      rect:
-        serializedVersion: 2
-        x: 167
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fbc9f442718322310800000000000000
-      internalID: 1378726107973393599
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_39
-      rect:
-        serializedVersion: 2
-        x: 168
-        y: 15
+        x: 25
+        y: 16
         width: 6
-        height: 9
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0aa760002afb4af70800000000000000
-      internalID: 9197687041503427232
+      spriteID: bda1331e3a3af1348ac9bd9910c4ad2d
+      internalID: 912983381
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ingame_font_40
+      name: font_5
       rect:
         serializedVersion: 2
-        x: 175
-        y: 7
-        width: 18
-        height: 9
+        x: 33
+        y: 16
+        width: 5
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ccc7736ebbaa1d680800000000000000
-      internalID: -8732010478496678708
+      spriteID: b4ec85269b7b0924e876ac3cd64d757d
+      internalID: -1107016355
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ingame_font_41
+      name: font_6
       rect:
         serializedVersion: 2
-        x: 178
-        y: 15
-        width: 6
-        height: 9
+        x: 41
+        y: 16
+        width: 5
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4a8a513141a1e4000800000000000000
-      internalID: 21983721705285796
+      spriteID: a8bf04419ac5b7a48b5a30e8465dea23
+      internalID: 1115135055
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ingame_font_42
+      name: font_7
       rect:
         serializedVersion: 2
-        x: 186
-        y: 7
-        width: 15
-        height: 16
+        x: 49
+        y: 16
+        width: 5
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e81de2d6c9bd2b290800000000000000
-      internalID: -7875991333424410226
+      spriteID: 026860688a2a45743bfdfb46da7ee0aa
+      internalID: 875348530
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ingame_font_43
+      name: font_8
       rect:
         serializedVersion: 2
-        x: 200
-        y: 7
-        width: 24
-        height: 17
+        x: 57
+        y: 16
+        width: 5
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9d1efe74ed6cf3b00800000000000000
-      internalID: 810585115941921241
+      spriteID: fe5679f3e83f21949bbde3dfb089c700
+      internalID: 1371835323
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ingame_font_44
-      rect:
-        serializedVersion: 2
-        x: 200
-        y: 7
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9db0a02dcc711c7b0800000000000000
-      internalID: -5205853525798941735
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_45
-      rect:
-        serializedVersion: 2
-        x: 224
-        y: 15
-        width: 14
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4c38195df7723eac0800000000000000
-      internalID: -3827171828337376316
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_46
-      rect:
-        serializedVersion: 2
-        x: 241
-        y: 15
-        width: 15
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0f79168e2cea33430800000000000000
-      internalID: 3761542265930094576
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_47
-      rect:
-        serializedVersion: 2
-        x: 255
-        y: 15
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4932772f54c8d90a0800000000000000
-      internalID: -6873183224248982636
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_48
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 8
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 15eae931babc1faf0800000000000000
-      internalID: -364286159211286959
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_49
-      rect:
-        serializedVersion: 2
-        x: 7
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5ead686b9aef90b30800000000000000
-      internalID: 4254211327893363429
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_50
-      rect:
-        serializedVersion: 2
-        x: 15
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7998db1657e378160800000000000000
-      internalID: 7027654417406855575
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_51
-      rect:
-        serializedVersion: 2
-        x: 23
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6695fcac136a93dc0800000000000000
-      internalID: -3658710489475622554
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_52
-      rect:
-        serializedVersion: 2
-        x: 31
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 841fb48d0d12eba20800000000000000
-      internalID: 3079936376033767752
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_53
-      rect:
-        serializedVersion: 2
-        x: 39
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0268847581064dcf0800000000000000
-      internalID: -228452023429200352
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_54
-      rect:
-        serializedVersion: 2
-        x: 55
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b5236e6d3eec53dc0800000000000000
-      internalID: -3659791644210351525
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_55
+      name: font_9
       rect:
         serializedVersion: 2
         x: 65
-        y: 0
+        y: 16
+        width: 5
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f412b396d0e5dbf4d9f0a16bbebd2a98
+      internalID: -404724540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: font_0
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 16
+        width: 5
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 809a14559183f7443b940b3dba21c3cf
+      internalID: -1607833699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: font_!
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 16
+        width: 4
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbe3e7dfe4a85064a9bd4175e5482cd6
+      internalID: 938637753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: font_question
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 16
         width: 6
-        height: 8
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dbd65f72efd409830800000000000000
-      internalID: 4075843416757726653
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_56
-      rect:
-        serializedVersion: 2
-        x: 71
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 84815524bdb023910800000000000000
-      internalID: 1815526636122347592
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_57
-      rect:
-        serializedVersion: 2
-        x: 79
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fb8525787621d9c60800000000000000
-      internalID: 7826431963301042367
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_58
-      rect:
-        serializedVersion: 2
-        x: 87
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 35a8acac5f5aff280800000000000000
-      internalID: -9007298254629860781
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_59
-      rect:
-        serializedVersion: 2
-        x: 95
-        y: 0
-        width: 17
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5f625ac90aa5ef340800000000000000
-      internalID: 4899453090495014645
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_60
-      rect:
-        serializedVersion: 2
-        x: 111
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: eba211f001c7848f0800000000000000
-      internalID: -556058145566152002
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_61
-      rect:
-        serializedVersion: 2
-        x: 119
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4de855daee97a92b0800000000000000
-      internalID: -5577011122527695148
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_62
-      rect:
-        serializedVersion: 2
-        x: 127
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1188f83b0cd5cf550800000000000000
-      internalID: 6195930269582592017
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_63
-      rect:
-        serializedVersion: 2
-        x: 135
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f773ce03cf2630520800000000000000
-      internalID: 2667084239625533311
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_64
-      rect:
-        serializedVersion: 2
-        x: 143
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d5d38bfa81fe1fcc0800000000000000
-      internalID: -3678896531278643875
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_65
-      rect:
-        serializedVersion: 2
-        x: 151
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7dcdcfcdf6ba765c0800000000000000
-      internalID: -4222217628699271977
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_66
-      rect:
-        serializedVersion: 2
-        x: 159
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ed78a2830cbf01390800000000000000
-      internalID: -7849497347512170530
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_67
-      rect:
-        serializedVersion: 2
-        x: 167
-        y: 0
-        width: 17
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6496d83a940987910800000000000000
-      internalID: 1835375494104443206
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_68
-      rect:
-        serializedVersion: 2
-        x: 183
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f9ebb8757017001c0800000000000000
-      internalID: -4539504148041974113
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_69
-      rect:
-        serializedVersion: 2
-        x: 191
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1b99241127437afd0800000000000000
-      internalID: -2330836617620448847
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ingame_font_70
-      rect:
-        serializedVersion: 2
-        x: 199
-        y: 0
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5b6e65dc05562bc90800000000000000
-      internalID: -7155545460221483339
+      spriteID: 09dfe423f07195247b8af9533f75f719
+      internalID: 1084158055
       vertices: []
       indices: 
       edges: []
@@ -1875,7 +577,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1e97bad1f39a70244b3680d2801d630f
     internalID: 0
     vertices: []
     indices: 
@@ -1885,77 +587,18 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ingame_font_0: -3158488738691203973
-      ingame_font_1: -7497395298398008789
-      ingame_font_10: -3949089478398684202
-      ingame_font_11: -6940256588186715093
-      ingame_font_12: -788617177764193751
-      ingame_font_13: 6352156564831677702
-      ingame_font_14: 1036421447619370968
-      ingame_font_15: 8868379551142695469
-      ingame_font_16: -2617604495437139845
-      ingame_font_17: 4427428342139625122
-      ingame_font_18: 1429561185285404705
-      ingame_font_19: -145241522719269138
-      ingame_font_2: 4085170862031672806
-      ingame_font_20: 3982557289540090526
-      ingame_font_21: 5278361173289058321
-      ingame_font_22: -9129789910272223647
-      ingame_font_23: -5345607633742656986
-      ingame_font_24: 308314973508777402
-      ingame_font_25: 1462353060605499238
-      ingame_font_26: 354034397880101438
-      ingame_font_27: 889814283947077777
-      ingame_font_28: -8888326309829271072
-      ingame_font_29: -6585947070841896572
-      ingame_font_3: 4999843518145402225
-      ingame_font_30: 4891370785776247155
-      ingame_font_31: 1559546946701959086
-      ingame_font_32: -1018570477787196757
-      ingame_font_33: -4110265517437978131
-      ingame_font_34: -5729029623102623452
-      ingame_font_35: 4254338375879667603
-      ingame_font_36: 8423159436000614246
-      ingame_font_37: 5552194003198167936
-      ingame_font_38: 1378726107973393599
-      ingame_font_39: 9197687041503427232
-      ingame_font_4: -8326833495139232285
-      ingame_font_40: -8732010478496678708
-      ingame_font_41: 21983721705285796
-      ingame_font_42: -7875991333424410226
-      ingame_font_43: 810585115941921241
-      ingame_font_44: -5205853525798941735
-      ingame_font_45: -3827171828337376316
-      ingame_font_46: 3761542265930094576
-      ingame_font_47: -6873183224248982636
-      ingame_font_48: -364286159211286959
-      ingame_font_49: 4254211327893363429
-      ingame_font_5: -4844159878839425572
-      ingame_font_50: 7027654417406855575
-      ingame_font_51: -3658710489475622554
-      ingame_font_52: 3079936376033767752
-      ingame_font_53: -228452023429200352
-      ingame_font_54: -3659791644210351525
-      ingame_font_55: 4075843416757726653
-      ingame_font_56: 1815526636122347592
-      ingame_font_57: 7826431963301042367
-      ingame_font_58: -9007298254629860781
-      ingame_font_59: 4899453090495014645
-      ingame_font_6: -4967919771536085972
-      ingame_font_60: -556058145566152002
-      ingame_font_61: -5577011122527695148
-      ingame_font_62: 6195930269582592017
-      ingame_font_63: 2667084239625533311
-      ingame_font_64: -3678896531278643875
-      ingame_font_65: -4222217628699271977
-      ingame_font_66: -7849497347512170530
-      ingame_font_67: 1835375494104443206
-      ingame_font_68: -4539504148041974113
-      ingame_font_69: -2330836617620448847
-      ingame_font_7: 6776412229790791777
-      ingame_font_70: -7155545460221483339
-      ingame_font_8: 7620945023779980119
-      ingame_font_9: -7413381339410527490
+      font_!: 938637753
+      font_0: -1607833699
+      font_1: -3158488738691203973
+      font_2: 1382905365
+      font_3: 1727825322
+      font_4: 912983381
+      font_5: -1107016355
+      font_6: 1115135055
+      font_7: 875348530
+      font_8: 1371835323
+      font_9: -404724540
+      font_question: 1084158055
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -339,7 +339,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 6750033715232265413, guid: 0eb1f649ca1660a4f920faf5616d3010, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -347,7 +347,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &6435001397156161710
@@ -448,24 +448,21 @@ MonoBehaviour:
   m_BackgroundRenderer: {fileID: 8372319603878141583}
   m_MineRenderer: {fileID: 4139162294995366169}
   m_ValueText: {fileID: 3454038228071885173}
-  m_MarkRenderer: {fileID: 0}
+  m_MarkRenderer: {fileID: 1023077140283907326}
   m_HiddenSprite: {fileID: -2113823571944582385, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_RevealedEmptySprite: {fileID: 4200410133095201863, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_RevealedMineSprite: {fileID: -2113823571944582385, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_DefeatedMonsterSprite: {fileID: 7931753803547739155, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
-  m_FlagSprite: {fileID: 0}
-  m_Question1Sprite: {fileID: 0}
-  m_Question2Sprite: {fileID: 0}
+  m_FlagMarkSprite: {fileID: 938637753, guid: 73d02a58be401d74ea758cdea8f70876, type: 3}
+  m_QuestionMarkSprite: {fileID: 1084158055, guid: 73d02a58be401d74ea758cdea8f70876, type: 3}
   m_CellSize: 1
   m_MineScale: 0.5
-  m_MarkScale: 0.7
   m_MineOffset: {x: 0, y: 0.2, z: -0.1}
-  m_MarkOffset: {x: 0, y: 0, z: -0.05}
   m_DisplayConfig: {fileID: 11400000, guid: 69711f585e609154a98fd90aa923691f, type: 2}
   m_BackgroundSortingOrder: 0
   m_MineSortingOrder: 1
-  m_MarkSortingOrder: 2
   m_ValueSortingOrder: 2
+  m_MarkSortingOrder: 2
   m_DebugMode: 0
 --- !u!1 &8646477785073328158
 GameObject:

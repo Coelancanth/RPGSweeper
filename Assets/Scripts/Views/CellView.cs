@@ -13,12 +13,14 @@ public interface ICellState
     int CurrentValue { get; }
     IMine CurrentMine { get; }
     MineData CurrentMineData { get; }
+    CellMarkType MarkType { get; }
     
     void SetRevealed(bool revealed);
     void SetFrozen(bool frozen);
     void SetValue(int value, Color color);
     void SetMine(IMine mine, MineData mineData);
     void RemoveMine();
+    void SetMarkType(CellMarkType markType);
 }
 
 // Interface for cell visual management
@@ -41,6 +43,7 @@ public class CellState : ICellState
     private Color m_CurrentValueColor = Color.white;
     private IMine m_CurrentMine;
     private MineData m_CurrentMineData;
+    private CellMarkType m_MarkType = CellMarkType.None;
     
     public event System.Action OnStateChanged;
     
@@ -52,6 +55,7 @@ public class CellState : ICellState
     public Color CurrentValueColor => m_CurrentValueColor;
     public IMine CurrentMine => m_CurrentMine;
     public MineData CurrentMineData => m_CurrentMineData;
+    public CellMarkType MarkType => m_MarkType;
     
     public CellState(Vector2Int position)
     {
@@ -63,6 +67,13 @@ public class CellState : ICellState
         if (m_IsRevealed != revealed)
         {
             m_IsRevealed = revealed;
+            
+            // Clear any marks when revealing a cell
+            if (revealed && m_MarkType != CellMarkType.None)
+            {
+                m_MarkType = CellMarkType.None;
+            }
+            
             OnStateChanged?.Invoke();
         }
     }
@@ -101,6 +112,15 @@ public class CellState : ICellState
             OnStateChanged?.Invoke();
         }
     }
+    
+    public void SetMarkType(CellMarkType markType)
+    {
+        if (m_MarkType != markType && !m_IsRevealed)
+        {
+            m_MarkType = markType;
+            OnStateChanged?.Invoke();
+        }
+    }
 }
 
 // Strategy factory for creating mine display strategies
@@ -133,12 +153,15 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
     [SerializeField] private SpriteRenderer m_BackgroundRenderer;
     [SerializeField] private SpriteRenderer m_MineRenderer;
     [SerializeField] private TextMeshPro m_ValueText;
+    [SerializeField] private SpriteRenderer m_MarkRenderer;
     
     [Header("Sprites")]
     [SerializeField] private Sprite m_HiddenSprite;
     [SerializeField] private Sprite m_RevealedEmptySprite;
     [SerializeField] private Sprite m_RevealedMineSprite;
     [SerializeField] private Sprite m_DefeatedMonsterSprite;
+    [SerializeField] private Sprite m_FlagMarkSprite;
+    [SerializeField] private Sprite m_QuestionMarkSprite;
 
     [Header("Visual Settings")]
     [SerializeField] private float m_CellSize = 1f;
@@ -148,6 +171,7 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
     [SerializeField] private int m_BackgroundSortingOrder = 0;
     [SerializeField] private int m_MineSortingOrder = 1;
     [SerializeField] private int m_ValueSortingOrder = 2;
+    [SerializeField] private int m_MarkSortingOrder = 3;
     
     [Header("Debug")]
     [SerializeField] private bool m_DebugMode = false;
@@ -243,24 +267,37 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
 
     private void SetupRenderers()
     {
+        // Setup background renderer
         if (m_BackgroundRenderer != null)
         {
-            m_BackgroundRenderer.enabled = true;
+            m_BackgroundRenderer.sprite = m_HiddenSprite;
             m_BackgroundRenderer.sortingOrder = m_BackgroundSortingOrder;
             SetSpriteScale(m_BackgroundRenderer, m_CellSize);
         }
-
+        
+        // Setup mine renderer
         if (m_MineRenderer != null)
         {
             m_MineRenderer.enabled = false;
             m_MineRenderer.sortingOrder = m_MineSortingOrder;
             m_MineRenderer.transform.localPosition = m_MineOffset;
+            float targetMineSize = m_CellSize * m_MineScale;
+            SetSpriteScale(m_MineRenderer, targetMineSize);
         }
-
+        
+        // Setup value text
         if (m_ValueText != null)
         {
             m_ValueText.enabled = false;
             m_ValueText.sortingOrder = m_ValueSortingOrder;
+        }
+        
+        // Setup mark renderer
+        if (m_MarkRenderer != null)
+        {
+            m_MarkRenderer.enabled = false;
+            m_MarkRenderer.sortingOrder = m_MarkSortingOrder;
+            SetSpriteScale(m_MarkRenderer, m_CellSize * 0.7f);
         }
     }
 
@@ -312,6 +349,26 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                 {
                     m_MineRenderer.enabled = false;
                 }
+                
+                // Handle mark sprites
+                if (m_MarkRenderer != null)
+                {
+                    switch (m_CellState.MarkType)
+                    {
+                        case CellMarkType.Flag:
+                            m_MarkRenderer.enabled = true;
+                            m_MarkRenderer.sprite = m_FlagMarkSprite;
+                            break;
+                        case CellMarkType.Question:
+                            m_MarkRenderer.enabled = true;
+                            m_MarkRenderer.sprite = m_QuestionMarkSprite;
+                            break;
+                        case CellMarkType.None:
+                        default:
+                            m_MarkRenderer.enabled = false;
+                            break;
+                    }
+                }
             }
             else if (m_CellState.HasMine)
             {
@@ -330,6 +387,12 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                 if (m_MineRenderer != null && m_CurrentMineSprite != null)
                 {
                     m_MineRenderer.enabled = true;
+                }
+                
+                // Hide mark if revealed
+                if (m_MarkRenderer != null)
+                {
+                    m_MarkRenderer.enabled = false;
                 }
             }
             else // Empty cell
@@ -357,6 +420,12 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                     {
                         m_ValueText.enabled = false;
                     }
+                }
+                
+                // Hide mark if revealed
+                if (m_MarkRenderer != null)
+                {
+                    m_MarkRenderer.enabled = false;
                 }
             }
         }
@@ -551,5 +620,26 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
         }
 
         HandleDisplayConfigChanged();
+    }
+
+    public void SetMarkType(CellMarkType markType)
+    {
+        if (m_CellState is CellState cellState)
+        {
+            // If the same mark type is already set, remove it
+            if (cellState.MarkType == markType)
+            {
+                cellState.SetMarkType(CellMarkType.None);
+            }
+            else
+            {
+                cellState.SetMarkType(markType);
+            }
+            
+            if (m_DebugMode)
+            {
+                Debug.Log($"[CellView] Set mark type to {markType} at position {cellState.Position}");
+            }
+        }
     }
 } 

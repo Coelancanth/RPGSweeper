@@ -13,6 +13,7 @@ public static class GameEvents
     public static event Action<Vector2Int> OnEffectsRemoved;
     public static event Action<int> OnShieldChanged;
     public static event Action OnRoundAdvanced;
+    public static event Action<Vector2Int, CellMarkType> OnCellMarked;
 
     public static void RaiseCellRevealed(Vector2Int position)
     {
@@ -57,5 +58,10 @@ public static class GameEvents
     public static void RaiseRoundAdvanced()
     {
         OnRoundAdvanced?.Invoke();
+    }
+    
+    public static void RaiseCellMarked(Vector2Int position, CellMarkType markType)
+    {
+        OnCellMarked?.Invoke(position, markType);
     }
 } 

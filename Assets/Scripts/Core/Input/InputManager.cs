@@ -7,6 +7,7 @@ namespace RPGMinesweeper.Input
     {
         #region Events
         public static event Action<Vector2Int> OnCellClicked;
+        public static event Action<Vector2Int> OnCellRightClicked;
         #endregion
 
         #region Private Fields
@@ -35,7 +36,7 @@ namespace RPGMinesweeper.Input
         {
             if (!m_IsInputEnabled)
             {
-                if (m_DebugMode && UnityEngine.Input.GetMouseButtonDown(0))
+                if (m_DebugMode && (UnityEngine.Input.GetMouseButtonDown(0) || UnityEngine.Input.GetMouseButtonDown(1)))
                 {
                     Debug.Log("[InputManager] Input is currently disabled");
                 }
@@ -44,8 +45,13 @@ namespace RPGMinesweeper.Input
 
             if (UnityEngine.Input.GetMouseButtonDown(0)) // Left click
             {
-                if (m_DebugMode) Debug.Log("[InputManager] Mouse button clicked");
-                HandleMouseClick();
+                if (m_DebugMode) Debug.Log("[InputManager] Left mouse button clicked");
+                HandleMouseClick(false);
+            }
+            else if (UnityEngine.Input.GetMouseButtonDown(1)) // Right click
+            {
+                if (m_DebugMode) Debug.Log("[InputManager] Right mouse button clicked");
+                HandleMouseClick(true);
             }
         }
         #endregion
@@ -59,7 +65,7 @@ namespace RPGMinesweeper.Input
         #endregion
 
         #region Private Methods
-        private void HandleMouseClick()
+        private void HandleMouseClick(bool isRightClick)
         {
             if (m_MainCamera == null)
             {
@@ -81,8 +87,16 @@ namespace RPGMinesweeper.Input
                     if (m_DebugMode) Debug.Log($"[InputManager] Found CellView at position {cellView.GridPosition}");
                     if (!cellView.IsFrozen)
                     {
-                        if (m_DebugMode) Debug.Log($"[InputManager] Invoking OnCellClicked for position {cellView.GridPosition}");
-                        OnCellClicked?.Invoke(cellView.GridPosition);
+                        if (isRightClick)
+                        {
+                            if (m_DebugMode) Debug.Log($"[InputManager] Invoking OnCellRightClicked for position {cellView.GridPosition}");
+                            OnCellRightClicked?.Invoke(cellView.GridPosition);
+                        }
+                        else
+                        {
+                            if (m_DebugMode) Debug.Log($"[InputManager] Invoking OnCellClicked for position {cellView.GridPosition}");
+                            OnCellClicked?.Invoke(cellView.GridPosition);
+                        }
                     }
                     else if (m_DebugMode)
                     {
