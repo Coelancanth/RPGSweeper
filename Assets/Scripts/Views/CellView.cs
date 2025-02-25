@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using RPGMinesweeper.Input;
+using RPGMinesweeper;
 
 public class CellView : MonoBehaviour, IInteractable
 {
@@ -263,7 +264,11 @@ public class CellView : MonoBehaviour, IInteractable
 
     private IMineDisplayStrategy CreateDisplayStrategy(IMine mine)
     {
-        if (mine is MonsterMine)
+        if (mine is DisguisedMonsterMine)
+        {
+            return new DisguisedMonsterMineDisplayStrategy();
+        }
+        else if (mine is MonsterMine)
         {
             return new MonsterMineDisplayStrategy();
         }
@@ -334,9 +339,48 @@ public class CellView : MonoBehaviour, IInteractable
         {
             if (m_DebugMode)
             {
-                Debug.Log($"[CellView] Interacting with revealed mine at {m_Position}, IsCollectable: {(m_CurrentMine as MonsterMine)?.IsCollectable}");
+                Debug.Log($"[CellView] Interacting with revealed mine at {m_Position}, Mine type: {m_CurrentMine?.GetType().Name}");
             }
-            // For monster mines, process interaction on every click
+            
+            // Special handling for disguised monster mines
+            var disguisedMonsterMine = m_CurrentMine as DisguisedMonsterMine;
+            if (disguisedMonsterMine != null)
+            {
+                if (disguisedMonsterMine.IsDisguised)
+                {
+                    // Let the mine reveal itself and update visuals
+                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
+                    if (player != null)
+                    {
+                        disguisedMonsterMine.OnTrigger(player);
+                    }
+                    
+                    // Force update mine display after revealing
+                    if (m_DisplayStrategy != null)
+                    {
+                        m_DisplayStrategy.UpdateDisplay(m_CurrentMine, m_CurrentMineData, true);
+                        UpdateVisuals(true);
+                    }
+                    
+                    return;
+                }
+                else if (disguisedMonsterMine.IsCollectable)
+                {
+                    GameEvents.RaiseMineRemovalAttempted(m_Position);
+                    return;
+                }
+                else
+                {
+                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
+                    if (player != null)
+                    {
+                        disguisedMonsterMine.OnTrigger(player);
+                    }
+                    return;
+                }
+            }
+            
+            // For regular monster mines, process interaction on every click
             var monsterMine = m_CurrentMine as MonsterMine;
             if (monsterMine != null)
             {

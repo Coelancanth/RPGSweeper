@@ -32,9 +32,9 @@ MonoBehaviour:
   FacingRightSprite: {fileID: 4317999874980683056, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_CurrentFacingDirection: 4
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
-  m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_MineValueColor: {r: 0.776, g: 0.651, b: 0.349, a: 1}
   m_PersistentEffects:
-  - Template: {fileID: 11400000, guid: a9bcae81f168ae34b8051f12de5d5b68, type: 2}
+  - Template: {fileID: 11400000, guid: 12fe64ec475dc6a43a3497a593e8cd8d, type: 2}
   m_TriggerableEffects: []
   m_MonsterType: 16
   m_MaxHp: 120

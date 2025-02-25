@@ -1,5 +1,9 @@
 using UnityEngine;
 using RPGMinesweeper;
+using System;
+
+// Add references to the new classes
+using RPGMinesweeper.Core.Mines;
 
 namespace RPGMinesweeper.Factory
 {
@@ -16,6 +20,7 @@ namespace RPGMinesweeper.Factory
             {
                 MineType.Standard => new StandardMine(mineData, position),
                 MineType.Monster => CreateMonsterMine(mineData, position),
+                MineType.DisguisedMonster => CreateDisguisedMonsterMine(mineData, position),
                 _ => HandleUnknownMineType(mineData, position)
             };
         }
@@ -28,6 +33,17 @@ namespace RPGMinesweeper.Factory
             }
             
             Debug.LogError($"MineManager: MineData for Monster type must be MonsterMineData!");
+            return new StandardMine(mineData, position);
+        }
+        
+        private IMine CreateDisguisedMonsterMine(MineData mineData, Vector2Int position)
+        {
+            if (mineData is DisguisedMonsterMineData disguisedData)
+            {
+                return new DisguisedMonsterMine(disguisedData, position);
+            }
+            
+            Debug.LogError($"MineManager: MineData for DisguisedMonster type must be DisguisedMonsterMineData!");
             return new StandardMine(mineData, position);
         }
 

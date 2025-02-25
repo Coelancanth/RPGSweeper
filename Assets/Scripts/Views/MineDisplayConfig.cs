@@ -27,6 +27,10 @@ public class MineDisplayConfig : ScriptableObject
     [Header("Sprite Position")]
     [Tooltip("Position offset for mine sprite")]
     [SerializeField] private Vector3 m_MineOffset = new Vector3(0f, 0.2f, -0.1f);
+    
+    [Header("Default Sprites")]
+    [Tooltip("Default sprite to use for disguised mines when their own sprite is missing")]
+    [SerializeField] private Sprite m_DefaultDisguiseSprite;
 
     [Header("Text Colors")]
     [Tooltip("Default color for empty cell values (surrounding mine count)")]
@@ -127,6 +131,20 @@ public class MineDisplayConfig : ScriptableObject
             if (m_MineOffset != value)
             {
                 m_MineOffset = value;
+                OnConfigChanged?.Invoke();
+            }
+        }
+    }
+    
+    // Property for Default Disguise Sprite
+    public Sprite DefaultDisguiseSprite
+    {
+        get => m_DefaultDisguiseSprite;
+        set
+        {
+            if (m_DefaultDisguiseSprite != value)
+            {
+                m_DefaultDisguiseSprite = value;
                 OnConfigChanged?.Invoke();
             }
         }

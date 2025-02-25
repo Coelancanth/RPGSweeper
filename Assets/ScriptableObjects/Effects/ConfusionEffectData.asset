@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b1d932e8ebc7643b822c0b7c81c039, type: 3}
   m_Name: ConfusionEffectData
   m_EditorClassIdentifier: 
-  m_Shape: 1
-  m_Radius: 3
+  m_Shape: 2
+  m_Radius: 1
   m_TargetLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -1,4 +1,5 @@
 using UnityEngine;
+using RPGMinesweeper;
 
 public interface IMineCopyStrategy
 {
@@ -24,6 +25,21 @@ public class MonsterMineCopyStrategy : IMineCopyStrategy
     }
 }
 
+public class DisguisedMonsterMineCopyStrategy : IMineCopyStrategy
+{
+    public void CopyMineProperties(IMine sourceMine, IMine targetMine)
+    {
+        // First copy monster properties
+        new MonsterMineCopyStrategy().CopyMineProperties(sourceMine, targetMine);
+        
+        // Then copy disguise-specific properties
+        if (sourceMine is DisguisedMonsterMine sourceDisguised && targetMine is DisguisedMonsterMine targetDisguised)
+        {
+            // If needed in future, copy disguised-specific properties here
+        }
+    }
+}
+
 public static class MineCopyStrategyFactory
 {
     public static IMineCopyStrategy CreateStrategy(MineType type)
@@ -31,6 +47,7 @@ public static class MineCopyStrategyFactory
         return type switch
         {
             MineType.Monster => new MonsterMineCopyStrategy(),
+            MineType.DisguisedMonster => new DisguisedMonsterMineCopyStrategy(),
             MineType.Standard => new StandardMineCopyStrategy(),
             _ => new StandardMineCopyStrategy()
         };

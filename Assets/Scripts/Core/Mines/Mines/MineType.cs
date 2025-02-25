@@ -8,5 +8,6 @@ public enum MineType
     AreaReveal,
     ItemSpawner,
     Monster,
+    DisguisedMonster,
     Empty
 } 

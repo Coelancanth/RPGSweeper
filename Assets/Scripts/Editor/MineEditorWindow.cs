@@ -32,10 +32,15 @@ public class MineEditorWindow : OdinMenuEditorWindow
         // Searches "Assets/ScriptableObjects/Monsters" folder for all MonsterMineData assets
         tree.AddAllAssetsAtPath("Monster Mines", "Assets/ScriptableObjects/Monsters", typeof(MonsterMineData), true)
             .ForEach(AddDragHandles);
+            
+        // Searches "Assets/ScriptableObjects/DisguisedMonsters" folder for all DisguisedMonsterMineData assets    
+        tree.AddAllAssetsAtPath("Disguised Monster Mines", "Assets/ScriptableObjects/DisguisedMonsters", typeof(DisguisedMonsterMineData), true)
+            .ForEach(AddDragHandles);
 
         // Add icons to mines if they have sprites (shown in the tree view)
         tree.EnumerateTree().AddIcons<MineData>(x => x.MineSprite);
         tree.EnumerateTree().AddIcons<MonsterMineData>(x => x.MineSprite);
+        tree.EnumerateTree().AddIcons<DisguisedMonsterMineData>(x => x.DisguiseSprite);
 
         return tree;
     }
@@ -65,6 +70,11 @@ public class MineEditorWindow : OdinMenuEditorWindow
             if (SirenixEditorGUI.ToolbarButton(new GUIContent("Create Monster Mine")))
             {
                 CreateNewAsset<MonsterMineData>("Assets/ScriptableObjects/Monsters");
+            }
+            
+            if (SirenixEditorGUI.ToolbarButton(new GUIContent("Create Disguised Monster Mine")))
+            {
+                CreateNewAsset<DisguisedMonsterMineData>("Assets/ScriptableObjects/DisguisedMonsters");
             }
 
             // Add delete button, enabled only when an item is selected
@@ -107,6 +117,10 @@ public class MineEditorWindow : OdinMenuEditorWindow
         else if (asset is MonsterMineData monsterMineData)
         {
             InitializeMonsterMine(monsterMineData);
+        }
+        else if (asset is DisguisedMonsterMineData disguisedMonsterMineData)
+        {
+            InitializeDisguisedMonsterMine(disguisedMonsterMineData);
         }
 
         // Show save file dialog
@@ -186,6 +200,52 @@ public class MineEditorWindow : OdinMenuEditorWindow
         if (enrageMultiplierProp != null) enrageMultiplierProp.floatValue = 1.5f;
         
         serializedObject.ApplyModifiedProperties();
+    }
+
+    private void InitializeDisguisedMonsterMine(DisguisedMonsterMineData mine)
+    {
+        // First initialize monster mine properties
+        InitializeMonsterMine(mine);
+        
+        mine.name = "New Disguised Monster Mine";
+        mine.Type = MineType.DisguisedMonster;  // Set correct type
+        
+        // Initialize disguise-specific properties
+        var serializedObject = new SerializedObject(mine);
+        
+        // Set default disguise properties
+        var disguisedValueProp = serializedObject.FindProperty("m_DisguisedValue");
+        var isDisguisedProp = serializedObject.FindProperty("m_IsDisguised");
+        var disguisedValueColorProp = serializedObject.FindProperty("m_DisguisedValueColor");
+        var monsterTypeProp = serializedObject.FindProperty("m_MonsterType");
+        
+        if (disguisedValueProp != null) disguisedValueProp.intValue = 5;
+        if (isDisguisedProp != null) isDisguisedProp.boolValue = true;
+        if (disguisedValueColorProp != null) disguisedValueColorProp.colorValue = Color.yellow;
+        
+        // Default to MimicChest type if available
+        if (monsterTypeProp != null)
+        {
+            var mimicChestIndex = FindEnumValueIndex(monsterTypeProp, "MimicChest");
+            monsterTypeProp.enumValueIndex = mimicChestIndex >= 0 ? mimicChestIndex : 0;
+        }
+        
+        serializedObject.ApplyModifiedProperties();
+    }
+    
+    private int FindEnumValueIndex(SerializedProperty enumProperty, string valueName)
+    {
+        if (enumProperty == null || !enumProperty.isArray) return -1;
+        
+        for (int i = 0; i < enumProperty.enumDisplayNames.Length; i++)
+        {
+            if (enumProperty.enumDisplayNames[i] == valueName)
+            {
+                return i;
+            }
+        }
+        
+        return -1;
     }
 
     private void DeleteSelectedAsset()

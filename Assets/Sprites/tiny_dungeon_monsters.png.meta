@@ -1541,7 +1541,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_1
+      name: Tomb
       rect:
         serializedVersion: 2
         x: 34
@@ -4577,7 +4577,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_139
+      name: Skeleton Wizard
       rect:
         serializedVersion: 2
         x: 131
@@ -6931,7 +6931,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: monster_rat_king
+      name: Rat King
       rect:
         serializedVersion: 2
         x: 65
@@ -9461,7 +9461,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_361
+      name: Chest
       rect:
         serializedVersion: 2
         x: 65
@@ -9637,7 +9637,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tiny_dungeon_monsters_369
+      name: Mimic Chest
       rect:
         serializedVersion: 2
         x: 65
@@ -11965,6 +11965,7 @@ TextureImporter:
       Beetle: 7298159337887327752
       Beholder_1: 5498951995105962609
       Butterfly: -41994671697303874
+      Chest: 1356743846768177305
       Cobra: 7436145673107020981
       Dark Knight: -112664086432519695
       Demon: -4013594173393525475
@@ -11976,20 +11977,22 @@ TextureImporter:
       Goblin: 4988844349094668080
       Grim Reaper: -54597701416326860
       Lich: 4545372252316853085
+      Mimic Chest: 3322503085002356860
       Minotau: 4501765340730201198
       Pixie: 698906889767068117
+      Rat King: -8373585295449095950
+      Skeleton Wizard: 5994972405110170644
       Slime: -112002587083238773
       Slime King: -1537382249039784006
       Spider: 6765693473526162189
+      Tomb: -8286482489239241851
       Unicorn: -6861145247520795328
       Vampire: -6139510577638611109
       Water Element: 4317999874980683056
       Wizard: 1938627199184849696
       monster_bat: 3867296298848744610
       monster_rat: 3799158994825339902
-      monster_rat_king: -8373585295449095950
       tiny_dungeon_monsters_0: -1009498778137133701
-      tiny_dungeon_monsters_1: -8286482489239241851
       tiny_dungeon_monsters_10: -5662057244992473434
       tiny_dungeon_monsters_100: -8749745827889188432
       tiny_dungeon_monsters_101: 4772738527602797981
@@ -12031,7 +12034,6 @@ TextureImporter:
       tiny_dungeon_monsters_136: -577389878509544544
       tiny_dungeon_monsters_137: -3829018816064061712
       tiny_dungeon_monsters_138: -7319473135648999590
-      tiny_dungeon_monsters_139: 5994972405110170644
       tiny_dungeon_monsters_14: -4849004607127626144
       tiny_dungeon_monsters_140: -1372475474040913954
       tiny_dungeon_monsters_141: 2240302117572885357
@@ -12256,7 +12258,6 @@ TextureImporter:
       tiny_dungeon_monsters_359: 6449502678047594603
       tiny_dungeon_monsters_36: -7091455723458751827
       tiny_dungeon_monsters_360: 7983439216367157318
-      tiny_dungeon_monsters_361: 1356743846768177305
       tiny_dungeon_monsters_362: -6308754476540739837
       tiny_dungeon_monsters_363: -5600087436672755779
       tiny_dungeon_monsters_364: -8674278423875206564
@@ -12264,7 +12265,6 @@ TextureImporter:
       tiny_dungeon_monsters_366: -1959217551161984271
       tiny_dungeon_monsters_367: 8495699992500028225
       tiny_dungeon_monsters_368: 1839604497872479674
-      tiny_dungeon_monsters_369: 3322503085002356860
       tiny_dungeon_monsters_37: -8485903451899423115
       tiny_dungeon_monsters_370: -8039105503988512598
       tiny_dungeon_monsters_371: 5731031398924169202
