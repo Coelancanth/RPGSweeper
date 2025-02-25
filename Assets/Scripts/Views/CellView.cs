@@ -3,7 +3,131 @@ using TMPro;
 using RPGMinesweeper.Input;
 using RPGMinesweeper;
 
-public class CellView : MonoBehaviour, IInteractable
+// Interface for cell state management
+public interface ICellState
+{
+    Vector2Int Position { get; }
+    bool IsRevealed { get; }
+    bool IsFrozen { get; }
+    bool HasMine { get; }
+    int CurrentValue { get; }
+    IMine CurrentMine { get; }
+    MineData CurrentMineData { get; }
+    
+    void SetRevealed(bool revealed);
+    void SetFrozen(bool frozen);
+    void SetValue(int value, Color color);
+    void SetMine(IMine mine, MineData mineData);
+    void RemoveMine();
+}
+
+// Interface for cell visual management
+public interface ICellVisual
+{
+    void UpdateVisuals();
+    void ShowDebugHighlight(Color highlightColor);
+    void HideDebugHighlight();
+    void ApplyFrozenVisual(bool frozen);
+}
+
+// Class responsible for managing cell state
+public class CellState : ICellState
+{
+    private Vector2Int m_Position;
+    private bool m_IsRevealed;
+    private bool m_IsFrozen;
+    private bool m_HasMine;
+    private int m_CurrentValue;
+    private Color m_CurrentValueColor = Color.white;
+    private IMine m_CurrentMine;
+    private MineData m_CurrentMineData;
+    
+    public event System.Action OnStateChanged;
+    
+    public Vector2Int Position => m_Position;
+    public bool IsRevealed => m_IsRevealed;
+    public bool IsFrozen => m_IsFrozen;
+    public bool HasMine => m_HasMine;
+    public int CurrentValue => m_CurrentValue;
+    public Color CurrentValueColor => m_CurrentValueColor;
+    public IMine CurrentMine => m_CurrentMine;
+    public MineData CurrentMineData => m_CurrentMineData;
+    
+    public CellState(Vector2Int position)
+    {
+        m_Position = position;
+    }
+    
+    public void SetRevealed(bool revealed)
+    {
+        if (m_IsRevealed != revealed)
+        {
+            m_IsRevealed = revealed;
+            OnStateChanged?.Invoke();
+        }
+    }
+    
+    public void SetFrozen(bool frozen)
+    {
+        if (m_IsFrozen != frozen)
+        {
+            m_IsFrozen = frozen;
+            OnStateChanged?.Invoke();
+        }
+    }
+    
+    public void SetValue(int value, Color color)
+    {
+        m_CurrentValue = value;
+        m_CurrentValueColor = color;
+        OnStateChanged?.Invoke();
+    }
+    
+    public void SetMine(IMine mine, MineData mineData)
+    {
+        m_HasMine = true;
+        m_CurrentMine = mine;
+        m_CurrentMineData = mineData;
+        OnStateChanged?.Invoke();
+    }
+    
+    public void RemoveMine()
+    {
+        if (m_HasMine)
+        {
+            m_HasMine = false;
+            m_CurrentMine = null;
+            m_CurrentMineData = null;
+            OnStateChanged?.Invoke();
+        }
+    }
+}
+
+// Strategy factory for creating mine display strategies
+public interface IMineDisplayStrategyFactory
+{
+    IMineDisplayStrategy CreateStrategy(IMine mine);
+}
+
+// Default implementation of mine display strategy factory
+public class DefaultMineDisplayStrategyFactory : IMineDisplayStrategyFactory
+{
+    public IMineDisplayStrategy CreateStrategy(IMine mine)
+    {
+        if (mine is DisguisedMonsterMine)
+        {
+            return new DisguisedMonsterMineDisplayStrategy();
+        }
+        else if (mine is MonsterMine)
+        {
+            return new MonsterMineDisplayStrategy();
+        }
+        return new StandardMineDisplayStrategy();
+    }
+}
+
+// Main CellView class focused on visualization and interaction
+public class CellView : MonoBehaviour, IInteractable, ICellVisual
 {
     [Header("References")]
     [SerializeField] private SpriteRenderer m_BackgroundRenderer;
@@ -28,35 +152,34 @@ public class CellView : MonoBehaviour, IInteractable
     [Header("Debug")]
     [SerializeField] private bool m_DebugMode = false;
 
-    private Vector2Int m_Position;
-    private bool m_IsRevealed;
-    private bool m_IsFrozen;
-    private Sprite m_CurrentMineSprite;
-    private bool m_HasMine;
-    private int m_CurrentValue;
-    private Color m_CurrentValueColor = Color.white;
+    private ICellState m_CellState;
     private IMineDisplayStrategy m_DisplayStrategy;
-    private IMine m_CurrentMine;
-    private MineData m_CurrentMineData;
-
+    private IMineDisplayStrategyFactory m_StrategyFactory;
+    private Sprite m_CurrentMineSprite;
+    
     // Public properties
-    public Vector2Int GridPosition => m_Position;
-    public bool IsRevealed => m_IsRevealed;
-    public bool HasMine => m_HasMine;
+    public Vector2Int GridPosition => m_CellState.Position;
+    public bool CanInteract => !m_CellState.IsFrozen && !m_CellState.IsRevealed;
+    public Vector2Int Position => m_CellState.Position;
+    public bool IsRevealed => m_CellState.IsRevealed;
+    public bool HasMine => m_CellState.HasMine;
     
     // Properties needed by MineDebugger and display strategies
     public SpriteRenderer BackgroundRenderer => m_BackgroundRenderer;
     public SpriteRenderer MineRenderer => m_MineRenderer;
     public MineDisplayConfig DisplayConfig => m_DisplayConfig;
-
-    public bool CanInteract => !m_IsFrozen && !m_IsRevealed;
-    public Vector2Int Position => m_Position;
-    public bool IsFrozen => m_IsFrozen;
+    public bool IsFrozen => m_CellState.IsFrozen;
 
     private void Awake()
     {
+        // Create dependencies with default implementations
+        m_StrategyFactory = new DefaultMineDisplayStrategyFactory();
+        m_CellState = new CellState(Vector2Int.zero);
+        
         SetupRenderers();
-        ResetCell();
+        
+        // Subscribe to state changes
+        ((CellState)m_CellState).OnStateChanged += UpdateVisuals;
     }
 
     private void OnEnable()
@@ -72,6 +195,12 @@ public class CellView : MonoBehaviour, IInteractable
         if (m_DisplayConfig != null)
         {
             m_DisplayConfig.OnConfigChanged -= HandleDisplayConfigChanged;
+        }
+        
+        // Unsubscribe from state changes to prevent memory leaks
+        if (m_CellState is CellState cellState)
+        {
+            cellState.OnStateChanged -= UpdateVisuals;
         }
     }
 
@@ -90,9 +219,9 @@ public class CellView : MonoBehaviour, IInteractable
         }
 
         // Update display strategy with new config
-        if (m_HasMine && m_IsRevealed && m_DisplayStrategy != null)
+        if (m_CellState.HasMine && m_CellState.IsRevealed && m_DisplayStrategy != null)
         {
-            m_DisplayStrategy.UpdateDisplay(m_CurrentMine, m_CurrentMineData, true);
+            m_DisplayStrategy.UpdateDisplay(m_CellState.CurrentMine, m_CellState.CurrentMineData, true);
         }
         else if (m_ValueText != null)
         {
@@ -105,11 +234,10 @@ public class CellView : MonoBehaviour, IInteractable
         if (m_ValueText != null)
         {
             // For empty cells, use EmptyCellValuePosition
-            if (!m_HasMine)
+            if (!m_CellState.HasMine)
             {
                 m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
             }
-            // For mines, let the display strategy handle positioning
         }
     }
 
@@ -149,77 +277,79 @@ public class CellView : MonoBehaviour, IInteractable
 
     public void Initialize(Vector2Int position)
     {
-        m_Position = position;
-        ResetCell();
-    }
-
-    private void ResetCell()
-    {
-        m_IsRevealed = false;
-        m_IsFrozen = false;
-        m_HasMine = false;
-        m_CurrentMineSprite = null;
-        m_CurrentValue = 0;
-        m_DisplayStrategy?.CleanupDisplay();
-        m_DisplayStrategy = null;
+        // Clean up old state if any
+        if (m_CellState is CellState cellState)
+        {
+            cellState.OnStateChanged -= UpdateVisuals;
+        }
+        
+        // Create a new state with the specified position
+        m_CellState = new CellState(position);
+        ((CellState)m_CellState).OnStateChanged += UpdateVisuals;
+        
         UpdateVisuals();
     }
 
     public void UpdateVisuals(bool revealed)
     {
-        bool stateChanged = m_IsRevealed != revealed;
-        m_IsRevealed = revealed;
-        UpdateVisuals();
+        m_CellState.SetRevealed(revealed);
     }
 
-    private void UpdateVisuals()
+    public void UpdateVisuals()
     {
         // Update background sprite
         if (m_BackgroundRenderer != null)
         {
             m_BackgroundRenderer.enabled = true;
-            if (!m_IsRevealed)
+            if (!m_CellState.IsRevealed)
             {
                 m_BackgroundRenderer.sprite = m_HiddenSprite;
                 if (m_ValueText != null)
                 {
                     m_ValueText.enabled = false;
                 }
+                if (m_MineRenderer != null)
+                {
+                    m_MineRenderer.enabled = false;
+                }
             }
-            else if (m_HasMine)
+            else if (m_CellState.HasMine)
             {
                 // Check if it's a monster mine and is defeated
-                var monsterMine = m_CurrentMine as MonsterMine;
-                if (monsterMine != null && monsterMine.IsCollectable)
-                {
-                    m_BackgroundRenderer.sprite = m_DefeatedMonsterSprite;
-                }
-                else
-                {
-                    m_BackgroundRenderer.sprite = m_RevealedMineSprite;
-                }
+                var monsterMine = m_CellState.CurrentMine as MonsterMine;
+                var disguisedMonsterMine = m_CellState.CurrentMine as DisguisedMonsterMine;
+                bool isDefeatedMonster = (monsterMine != null && monsterMine.IsCollectable) || 
+                                         (disguisedMonsterMine != null && disguisedMonsterMine.IsCollectable);
                 
-                // Update display strategy without triggering another visual update
-                m_DisplayStrategy?.UpdateDisplay(m_CurrentMine, m_CurrentMineData, m_IsRevealed);
+                m_BackgroundRenderer.sprite = isDefeatedMonster ? m_DefeatedMonsterSprite : m_RevealedMineSprite;
+                
+                // Update display strategy
+                m_DisplayStrategy?.UpdateDisplay(m_CellState.CurrentMine, m_CellState.CurrentMineData, m_CellState.IsRevealed);
+                
+                // Show mine sprite
+                if (m_MineRenderer != null && m_CurrentMineSprite != null)
+                {
+                    m_MineRenderer.enabled = true;
+                }
             }
             else // Empty cell
             {
                 m_BackgroundRenderer.sprite = m_RevealedEmptySprite;
                 if (m_ValueText != null)
                 {
-                    if (m_CurrentValue == -1)
+                    if (m_CellState.CurrentValue == -1)
                     {
                         // Confusion effect
                         m_ValueText.enabled = true;
                         m_ValueText.text = "?";
-                        m_ValueText.color = m_CurrentValueColor;
+                        m_ValueText.color = ((CellState)m_CellState).CurrentValueColor;
                         m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
                     }
-                    else if (m_CurrentValue > 0)
+                    else if (m_CellState.CurrentValue > 0)
                     {
                         // Show surrounding mine count
                         m_ValueText.enabled = true;
-                        m_ValueText.text = m_CurrentValue.ToString();
+                        m_ValueText.text = m_CellState.CurrentValue.ToString();
                         m_ValueText.color = m_DisplayConfig.DefaultValueColor;
                         m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
                     }
@@ -230,23 +360,17 @@ public class CellView : MonoBehaviour, IInteractable
                 }
             }
         }
-
-        // Update mine sprite - keep it visible for all revealed mines, including defeated monsters
-        if (m_MineRenderer != null)
-        {
-            m_MineRenderer.enabled = m_IsRevealed && m_HasMine && m_CurrentMineSprite != null;
-        }
     }
 
     public void ShowMineSprite(Sprite mineSprite, IMine mine, MineData mineData)
     {
         if (m_MineRenderer == null || mineSprite == null) return;
 
-        m_HasMine = true;
         m_CurrentMineSprite = mineSprite;
         m_MineRenderer.sprite = mineSprite;
-        m_CurrentMine = mine;
-        m_CurrentMineData = mineData;
+        
+        // Set up mine in the cell state
+        m_CellState.SetMine(mine, mineData);
         
         float targetMineSize = m_CellSize * m_MineScale;
         SetSpriteScale(m_MineRenderer, targetMineSize);
@@ -254,48 +378,36 @@ public class CellView : MonoBehaviour, IInteractable
 
         // Set up appropriate display strategy
         m_DisplayStrategy?.CleanupDisplay();
-        m_DisplayStrategy = CreateDisplayStrategy(mine);
+        m_DisplayStrategy = m_StrategyFactory.CreateStrategy(mine);
         m_DisplayStrategy?.SetupDisplay(gameObject, m_ValueText);
 
-        // Let UpdateVisuals control the enabled state
-        m_MineRenderer.enabled = false;
         UpdateVisuals();
-    }
-
-    private IMineDisplayStrategy CreateDisplayStrategy(IMine mine)
-    {
-        if (mine is DisguisedMonsterMine)
-        {
-            return new DisguisedMonsterMineDisplayStrategy();
-        }
-        else if (mine is MonsterMine)
-        {
-            return new MonsterMineDisplayStrategy();
-        }
-        return new StandardMineDisplayStrategy();
     }
 
     public void HandleMineRemoval()
     {
-        if (!m_HasMine || !m_IsRevealed) return;
+        if (!m_CellState.HasMine || !m_CellState.IsRevealed) return;
 
-        m_HasMine = false;
         m_CurrentMineSprite = null;
-        m_DisplayStrategy?.CleanupDisplay();
-        m_DisplayStrategy = null;
+        m_CellState.RemoveMine();
+        
+        if (m_DisplayStrategy != null)
+        {
+            m_DisplayStrategy.CleanupDisplay();
+            m_DisplayStrategy = null;
+        }
+        
         UpdateVisuals();
     }
 
     public void SetValue(int value)
     {
-        SetValue(value, Color.white);
+        m_CellState.SetValue(value, Color.white);
     }
 
     public void SetValue(int value, Color color)
     {
-        m_CurrentValue = value;
-        m_CurrentValueColor = color;
-        UpdateVisuals();
+        m_CellState.SetValue(value, color);
     }
 
     public void ShowDebugHighlight(Color highlightColor)
@@ -317,7 +429,12 @@ public class CellView : MonoBehaviour, IInteractable
 
     public void SetFrozen(bool frozen)
     {
-        m_IsFrozen = frozen;
+        m_CellState.SetFrozen(frozen);
+        ApplyFrozenVisual(frozen);
+    }
+    
+    public void ApplyFrozenVisual(bool frozen)
+    {
         if (m_BackgroundRenderer != null)
         {
             // Add a blue tint to indicate frozen state
@@ -331,19 +448,19 @@ public class CellView : MonoBehaviour, IInteractable
         {
             if (m_DebugMode)
             {
-                Debug.Log($"[CellView] Revealing cell at {m_Position}, CanInteract: {CanInteract}, IsFrozen: {m_IsFrozen}, IsRevealed: {m_IsRevealed}");
+                Debug.Log($"[CellView] Revealing cell at {m_CellState.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellState.IsFrozen}, IsRevealed: {m_CellState.IsRevealed}");
             }
-            GameEvents.RaiseCellRevealed(m_Position);
+            GameEvents.RaiseCellRevealed(m_CellState.Position);
         }
-        else if (m_IsRevealed && m_HasMine)
+        else if (m_CellState.IsRevealed && m_CellState.HasMine)
         {
             if (m_DebugMode)
             {
-                Debug.Log($"[CellView] Interacting with revealed mine at {m_Position}, Mine type: {m_CurrentMine?.GetType().Name}");
+                Debug.Log($"[CellView] Interacting with revealed mine at {m_CellState.Position}, Mine type: {m_CellState.CurrentMine?.GetType().Name}");
             }
             
             // Special handling for disguised monster mines
-            var disguisedMonsterMine = m_CurrentMine as DisguisedMonsterMine;
+            var disguisedMonsterMine = m_CellState.CurrentMine as DisguisedMonsterMine;
             if (disguisedMonsterMine != null)
             {
                 if (disguisedMonsterMine.IsDisguised)
@@ -358,15 +475,15 @@ public class CellView : MonoBehaviour, IInteractable
                     // Force update mine display after revealing
                     if (m_DisplayStrategy != null)
                     {
-                        m_DisplayStrategy.UpdateDisplay(m_CurrentMine, m_CurrentMineData, true);
-                        UpdateVisuals(true);
+                        m_DisplayStrategy.UpdateDisplay(m_CellState.CurrentMine, m_CellState.CurrentMineData, true);
+                        UpdateVisuals();
                     }
                     
                     return;
                 }
                 else if (disguisedMonsterMine.IsCollectable)
                 {
-                    GameEvents.RaiseMineRemovalAttempted(m_Position);
+                    GameEvents.RaiseMineRemovalAttempted(m_CellState.Position);
                     return;
                 }
                 else
@@ -381,12 +498,12 @@ public class CellView : MonoBehaviour, IInteractable
             }
             
             // For regular monster mines, process interaction on every click
-            var monsterMine = m_CurrentMine as MonsterMine;
+            var monsterMine = m_CellState.CurrentMine as MonsterMine;
             if (monsterMine != null)
             {
                 if (monsterMine.IsCollectable)
                 {
-                    GameEvents.RaiseMineRemovalAttempted(m_Position);
+                    GameEvents.RaiseMineRemovalAttempted(m_CellState.Position);
                 }
                 else
                 {
@@ -399,14 +516,14 @@ public class CellView : MonoBehaviour, IInteractable
             }
             else
             {
-                GameEvents.RaiseMineRemovalAttempted(m_Position);
+                GameEvents.RaiseMineRemovalAttempted(m_CellState.Position);
             }
         }
         else
         {
             if (m_DebugMode)
             {
-                Debug.Log($"[CellView] Cannot interact with cell at {m_Position}, CanInteract: {CanInteract}, IsFrozen: {m_IsFrozen}, IsRevealed: {m_IsRevealed}");
+                Debug.Log($"[CellView] Cannot interact with cell at {m_CellState.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellState.IsFrozen}, IsRevealed: {m_CellState.IsRevealed}");
             }
         }
     }
@@ -415,7 +532,7 @@ public class CellView : MonoBehaviour, IInteractable
     {
         if (m_DebugMode)
         {
-            Debug.Log($"Effect applied at position {m_Position}");
+            Debug.Log($"Effect applied at position {m_CellState.Position}");
         }
     }
 
