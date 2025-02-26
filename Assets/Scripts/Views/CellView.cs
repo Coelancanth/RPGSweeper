@@ -479,7 +479,13 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
 
     public void HandleMineRemoval()
     {
-        if (!m_CellState.HasMine || !m_CellState.IsRevealed) return;
+        // The original condition prevents cleanup if HasMine is false
+        // But during teleportation HasMine could already be false while we still need to clean up
+        // if (!m_CellState.HasMine || !m_CellState.IsRevealed) return;
+        
+        // Only check if the cell is revealed, since we need to clean up visual traces
+        // even if HasMine is already false (which is likely the case during teleportation)
+        if (!m_CellState.IsRevealed) return;
 
         m_CurrentMineSprite = null;
         m_CellState.RemoveMine();
@@ -488,6 +494,12 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
         {
             m_DisplayStrategy.CleanupDisplay();
             m_DisplayStrategy = null;
+        }
+        
+        // Make sure the mine renderer is disabled
+        if (m_MineRenderer != null)
+        {
+            m_MineRenderer.enabled = false;
         }
         
         UpdateVisuals();
