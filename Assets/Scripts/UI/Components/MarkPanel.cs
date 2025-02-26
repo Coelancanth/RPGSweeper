@@ -29,8 +29,19 @@ public class MarkPanel : MonoBehaviour
     
     private void Awake()
     {
-        // Get main camera
+        // Get reference to main camera
         m_MainCamera = Camera.main;
+        if (m_MainCamera == null)
+        {
+            Debug.LogError("[MarkPanel] Main camera not found. Panel positioning will not work correctly.");
+        }
+        
+        // Find the InputManager in the scene
+        m_InputManager = FindObjectOfType<InputManager>();
+        if (m_InputManager == null)
+        {
+            Debug.LogWarning("[MarkPanel] InputManager not found in scene. Cell interactions will not be blocked while panel is visible.");
+        }
         
         // Set up raycaster if not assigned
         if (m_Raycaster == null)
@@ -38,28 +49,6 @@ public class MarkPanel : MonoBehaviour
             m_Raycaster = GetComponentInParent<GraphicRaycaster>();
         }
         
-        // Find input manager
-        m_InputManager = FindFirstObjectByType<InputManager>();
-        
-        // Apply configuration
-        ApplyConfiguration();
-        
-        // Setup buttons
-        if (m_FlagButton != null)
-            m_FlagButton.onClick.AddListener(OnFlagButtonClicked);
-            
-        if (m_QuestionButton != null)
-            m_QuestionButton.onClick.AddListener(OnQuestionButtonClicked);
-            
-        if (m_NumbersButton != null)
-            m_NumbersButton.onClick.AddListener(OnNumbersButtonClicked);
-            
-        if (m_CustomInputButton != null)
-            m_CustomInputButton.onClick.AddListener(OnCustomInputButtonClicked);
-            
-        if (m_CloseButton != null)
-            m_CloseButton.onClick.AddListener(HidePanel);
-            
         // Initialize panel hidden
         if (m_CanvasGroup != null)
         {
@@ -67,8 +56,34 @@ public class MarkPanel : MonoBehaviour
             m_CanvasGroup.interactable = false;
             m_CanvasGroup.blocksRaycasts = false;
         }
-            
-        gameObject.SetActive(false);
+        
+        // Initially hide the panel
+        if (gameObject.activeSelf)
+        {
+            gameObject.SetActive(false);
+        }
+        
+        // Verify that we have all required references
+        if (m_PanelRect == null)
+        {
+            m_PanelRect = GetComponent<RectTransform>();
+            if (m_PanelRect == null)
+            {
+                Debug.LogError("[MarkPanel] RectTransform component is missing. Please add one in the inspector.");
+            }
+        }
+        
+        // Apply configuration
+        ApplyConfiguration();
+        
+        // Add event listeners for buttons
+        if (m_FlagButton != null) m_FlagButton.onClick.AddListener(OnFlagButtonClicked);
+        if (m_QuestionButton != null) m_QuestionButton.onClick.AddListener(OnQuestionButtonClicked);
+        if (m_CloseButton != null) m_CloseButton.onClick.AddListener(HidePanel);
+        if (m_NumbersButton != null) m_NumbersButton.onClick.AddListener(OnNumbersButtonClicked);
+        if (m_CustomInputButton != null) m_CustomInputButton.onClick.AddListener(OnCustomInputButtonClicked);
+        
+        if (m_DebugMode) Debug.Log("[MarkPanel] Initialized");
     }
     
     private void OnEnable()
@@ -207,31 +222,56 @@ public class MarkPanel : MonoBehaviour
         m_CurrentCellView = cellView;
         m_CurrentCellPosition = cellView.Position;
         
-        // Position the panel relative to the cell in screen space
-        Vector3 cellWorldPos = cellView.transform.position;
-        Vector3 screenPos = m_MainCamera.WorldToScreenPoint(cellWorldPos);
-        
-        // Apply offset to avoid overlapping the cell
-        Vector2 offset = m_DisplayConfig.Offset;
-        screenPos += new Vector3(offset.x, offset.y, 0);
-        
-        // Convert to canvas space if using a canvas scaler
-        RectTransform canvasRect = transform.parent.GetComponent<RectTransform>();
-        if (canvasRect != null)
+        // Verify camera is available
+        if (m_MainCamera == null)
         {
+            m_MainCamera = Camera.main;
+            if (m_MainCamera == null)
+            {
+                Debug.LogError("[MarkPanel] Main camera not found. Panel positioning will not work correctly.");
+                return;
+            }
+        }
+        
+        // Get canvas for proper conversion
+        Canvas parentCanvas = GetComponentInParent<Canvas>();
+        RectTransform canvasRect = transform.parent.GetComponent<RectTransform>();
+        
+        if (canvasRect != null && parentCanvas != null)
+        {
+            // Get the cell's world position and convert to screen space
+            Vector3 cellWorldPos = cellView.transform.position;
+            Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(m_MainCamera, cellWorldPos);
+            
+            // Convert screen position to canvas local position
+            Vector2 localPos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvasRect, 
                 screenPos, 
-                null, 
-                out Vector2 localPos);
-                
-            m_PanelRect.anchoredPosition = localPos;
+                parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : m_MainCamera, 
+                out localPos);
             
-            if (m_DebugMode) Debug.Log($"[MarkPanel] Positioned at local position: {localPos}");
+            // Now apply the offset in local canvas space
+            localPos += m_DisplayConfig.Offset;
+            
+            // Set the final position
+            if (m_PanelRect != null)
+            {
+                m_PanelRect.anchoredPosition = localPos;
+                
+                if (m_DebugMode)
+                {
+                    Debug.Log($"[MarkPanel] Panel positioned at {localPos} with offset {m_DisplayConfig.Offset}");
+                }
+            }
+            else
+            {
+                Debug.LogError("[MarkPanel] Panel rect transform is null");
+            }
         }
         else
         {
-            if (m_DebugMode) Debug.LogWarning("[MarkPanel] Parent canvas rect not found");
+            Debug.LogError("[MarkPanel] Canvas components not found. Panel positioning will not work correctly.");
         }
         
         // Show the panel

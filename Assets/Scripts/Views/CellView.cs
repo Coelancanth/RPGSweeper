@@ -296,7 +296,20 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
         {
             m_MarkRenderer.enabled = false;
             m_MarkRenderer.sortingOrder = m_MarkSortingOrder;
-            SetSpriteScale(m_MarkRenderer, m_CellSize * 0.7f);
+            
+            // Use the mark scale from config if available, otherwise fallback to default
+            float markScale = (m_MarkDisplayConfig != null) ? m_MarkDisplayConfig.MarkScale : 0.7f;
+            SetSpriteScale(m_MarkRenderer, m_CellSize * markScale);
+            
+            // Apply mark offset if config is available
+            if (m_MarkDisplayConfig != null && m_MarkRenderer.transform != null)
+            {
+                m_MarkRenderer.transform.localPosition = new Vector3(
+                    m_MarkDisplayConfig.MarkOffset.x,
+                    m_MarkDisplayConfig.MarkOffset.y,
+                    m_MarkRenderer.transform.localPosition.z
+                );
+            }
         }
     }
 
@@ -356,7 +369,7 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                     {
                         m_MarkRenderer.enabled = true;
                         
-                        // Get mark sprite using GetMarkSprite, which is safer
+                        // Get mark sprite using GetMarkSprite
                         Sprite markSprite = m_MarkDisplayConfig.GetMarkSprite(m_CellState.MarkType);
                         if (markSprite != null)
                         {
@@ -365,11 +378,35 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                             // Scale the mark based on config
                             float targetMarkSize = m_CellSize * m_MarkDisplayConfig.MarkScale;
                             SetSpriteScale(m_MarkRenderer, targetMarkSize);
+                            
+                            // Apply offset from config
+                            m_MarkRenderer.transform.localPosition = new Vector3(
+                                m_MarkDisplayConfig.MarkOffset.x,
+                                m_MarkDisplayConfig.MarkOffset.y,
+                                m_MarkRenderer.transform.localPosition.z
+                            );
+                            
+                            if (m_DebugMode)
+                            {
+                                Debug.Log($"[CellView] Applied mark type {m_CellState.MarkType} with sprite {markSprite.name}");
+                            }
                         }
-                        else if (m_DebugMode)
+                        else
                         {
-                            Debug.LogWarning($"[CellView] Mark sprite for type {m_CellState.MarkType} is null");
-                            m_MarkRenderer.enabled = false;
+                            if (m_DebugMode)
+                            {
+                                Debug.LogWarning($"[CellView] No sprite found for mark type {m_CellState.MarkType}. Config: {(m_MarkDisplayConfig != null ? m_MarkDisplayConfig.name : "None")}");
+                                
+                                // Check which sprites are actually assigned
+                                if (m_MarkDisplayConfig.FlagMarkSprite == null) Debug.LogWarning("[CellView] Flag mark sprite is null in the config");
+                                if (m_MarkDisplayConfig.QuestionMarkSprite == null) Debug.LogWarning("[CellView] Question mark sprite is null in the config");
+                                if (m_MarkDisplayConfig.NumbersMarkSprite == null) Debug.LogWarning("[CellView] Numbers mark sprite is null in the config");
+                                if (m_MarkDisplayConfig.CustomInputMarkSprite == null) Debug.LogWarning("[CellView] Custom mark sprite is null in the config");
+                            }
+                            
+                            // Show with a placeholder color to indicate missing sprite
+                            m_MarkRenderer.color = new Color(1f, 0.5f, 0.5f);
+                            m_MarkRenderer.enabled = true;
                         }
                     }
                     else if (m_CellState.MarkType != CellMarkType.None)
@@ -662,6 +699,18 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
     {
         if (m_CellState is CellState cellState)
         {
+            // Add debug statements to check what's null
+            Debug.Log($"[CellView] SetMarkType called with markType: {markType}");
+            Debug.Log($"[CellView] m_MarkDisplayConfig is {(m_MarkDisplayConfig == null ? "NULL" : "NOT NULL")}");
+            
+            if (m_MarkDisplayConfig != null)
+            {
+                Debug.Log($"[CellView] CustomInputMarkSprite is {(m_MarkDisplayConfig.CustomInputMarkSprite == null ? "NULL" : "NOT NULL")}");
+                Debug.Log($"[CellView] FlagMarkSprite is {(m_MarkDisplayConfig.FlagMarkSprite == null ? "NULL" : "NOT NULL")}");
+                Debug.Log($"[CellView] QuestionMarkSprite is {(m_MarkDisplayConfig.QuestionMarkSprite == null ? "NULL" : "NOT NULL")}");
+                Debug.Log($"[CellView] NumbersMarkSprite is {(m_MarkDisplayConfig.NumbersMarkSprite == null ? "NULL" : "NOT NULL")}");
+            }
+            
             // Check if we have the required components
             if (m_MarkRenderer == null)
             {
@@ -675,20 +724,57 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                 // Continue anyway, but log the warning
             }
             
-            // If the same mark type is already set, remove it
+            // If the same mark type is already set, remove it (toggle behavior)
             if (cellState.MarkType == markType)
             {
                 cellState.SetMarkType(CellMarkType.None);
+                if (m_DebugMode)
+                {
+                    Debug.Log($"[CellView] Removed mark at position {cellState.Position}");
+                }
             }
             else
             {
+                // Update the mark sprite immediately
+                if (markType != CellMarkType.None && m_MarkDisplayConfig != null)
+                {
+                    Debug.Log($"[CellView] Setting mark type to {markType} - MarkDisplayConfig is valid");
+                    Sprite markSprite = m_MarkDisplayConfig.GetMarkSprite(markType);
+                    if (markSprite != null)
+                    {
+                        m_MarkRenderer.sprite = markSprite;
+                        m_MarkRenderer.enabled = true;
+                        
+                        // Scale the mark based on config
+                        float targetMarkSize = m_CellSize * m_MarkDisplayConfig.MarkScale;
+                        SetSpriteScale(m_MarkRenderer, targetMarkSize);
+                        
+                        // Apply offset from config
+                        m_MarkRenderer.transform.localPosition = new Vector3(
+                            m_MarkDisplayConfig.MarkOffset.x,
+                            m_MarkDisplayConfig.MarkOffset.y,
+                            m_MarkRenderer.transform.localPosition.z
+                        );
+                        
+                        // Reset color in case it was changed
+                        m_MarkRenderer.color = Color.white;
+                        
+                        if (m_DebugMode)
+                        {
+                            Debug.Log($"[CellView] Set mark type to {markType} with sprite {markSprite.name} at position {cellState.Position}");
+                        }
+                    }
+                    else if (m_DebugMode)
+                    {
+                        Debug.LogWarning($"[CellView] Sprite for mark type {markType} is null in config {m_MarkDisplayConfig.name}");
+                    }
+                }
+
                 cellState.SetMarkType(markType);
             }
             
-            if (m_DebugMode)
-            {
-                Debug.Log($"[CellView] Set mark type to {markType} at position {cellState.Position}");
-            }
+            // Ensure visuals are updated
+            UpdateVisuals();
         }
     }
 } 

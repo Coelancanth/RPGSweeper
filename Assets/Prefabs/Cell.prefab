@@ -453,12 +453,11 @@ MonoBehaviour:
   m_RevealedEmptySprite: {fileID: 4200410133095201863, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_RevealedMineSprite: {fileID: -2113823571944582385, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
   m_DefeatedMonsterSprite: {fileID: 7931753803547739155, guid: b6a95709472fd7045aa043edd72b5836, type: 3}
-  m_FlagMarkSprite: {fileID: 938637753, guid: 73d02a58be401d74ea758cdea8f70876, type: 3}
-  m_QuestionMarkSprite: {fileID: 1084158055, guid: 73d02a58be401d74ea758cdea8f70876, type: 3}
   m_CellSize: 1
   m_MineScale: 0.5
   m_MineOffset: {x: 0, y: 0.2, z: -0.1}
   m_DisplayConfig: {fileID: 11400000, guid: 69711f585e609154a98fd90aa923691f, type: 2}
+  m_MarkDisplayConfig: {fileID: 11400000, guid: 415c818d3edd1a4419b1534a16a8b268, type: 2}
   m_BackgroundSortingOrder: 0
   m_MineSortingOrder: 1
   m_ValueSortingOrder: 2
