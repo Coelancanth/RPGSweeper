@@ -24,137 +24,135 @@ public class CellInteractionHandler : ICellInteractionHandler
     
     public void OnInteract()
     {
-        if (CanInteract)
+        // Handle different interaction scenarios based on cell state
+        switch (GetInteractionType())
         {
-            if (m_DebugMode)
-            {
-                Debug.Log($"[CellInteractionHandler] Revealing cell at {m_CellData.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellData.IsFrozen}, IsRevealed: {m_CellData.IsRevealed}");
-            }
-            GameEvents.RaiseCellRevealed(m_CellData.Position);
+            case InteractionType.RevealCell:
+                LogDebugMessage($"Revealing cell at {m_CellData.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellData.IsFrozen}, IsRevealed: {m_CellData.IsRevealed}");
+                GameEvents.RaiseCellRevealed(m_CellData.Position);
+                break;
+                
+            case InteractionType.DisguisedMonsterTrigger:
+                HandleDisguisedMonsterInteraction();
+                break;
+                
+            case InteractionType.MonsterTrigger:
+                HandleMonsterInteraction();
+                break;
+                
+            case InteractionType.None:
+                LogDebugMessage($"Cannot interact with cell at {m_CellData.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellData.IsFrozen}, IsRevealed: {m_CellData.IsRevealed}");
+                break;
         }
-        else if (m_CellData.IsRevealed && m_CellData.HasMine)
+    }
+    
+    private enum InteractionType
+    {
+        None,
+        RevealCell,
+        DisguisedMonsterTrigger,
+        MonsterTrigger
+    }
+    
+    private InteractionType GetInteractionType()
+    {
+        if (CanInteract)
+            return InteractionType.RevealCell;
+            
+        if (m_CellData.IsRevealed && m_CellData.HasMine)
         {
-            if (m_DebugMode)
+            if (m_CellData.CurrentMine is DisguisedMonsterMine)
+                return InteractionType.DisguisedMonsterTrigger;
+                
+            if (m_CellData.CurrentMine is MonsterMine)
+                return InteractionType.MonsterTrigger;
+        }
+        
+        return InteractionType.None;
+    }
+    
+    private void HandleDisguisedMonsterInteraction()
+    {
+        LogDebugMessage($"Interacting with disguised monster at {m_CellData.Position}");
+        
+        var disguisedMonsterMine = m_CellData.CurrentMine as DisguisedMonsterMine;
+        var player = GetPlayer();
+        
+        if (disguisedMonsterMine.IsDisguised)
+        {
+            TriggerMonster(disguisedMonsterMine, player);
+        }
+        else if (disguisedMonsterMine.IsDefeated)
+        {
+            if (disguisedMonsterMine.IsCollectable)
             {
-                Debug.Log($"[CellInteractionHandler] Interacting with revealed mine at {m_CellData.Position}, Mine type: {m_CellData.CurrentMine?.GetType().Name}");
-            }
-            
-            // Special handling for disguised monster mines
-            var disguisedMonsterMine = m_CellData.CurrentMine as DisguisedMonsterMine;
-            if (disguisedMonsterMine != null)
-            {
-                if (disguisedMonsterMine.IsDisguised)
-                {
-                    // Let the mine reveal itself and update visuals
-                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                    if (player != null)
-                    {
-                        disguisedMonsterMine.OnTrigger(player);
-                        
-                        // Explicitly update visuals after the monster is triggered
-                        // This ensures the visual state is updated when a monster is defeated
-                        m_VisualUpdater?.UpdateVisuals();
-                    }
-                    
-                    return;
-                }
-                else if (disguisedMonsterMine.IsDefeated)
-                {
-                    // For defeated disguised monsters
-                    if (disguisedMonsterMine.IsCollectable)
-                    {
-                        // Only collect rewards and remove if it's collectable
-                        Debug.Log($"[CellInteractionHandler] Collecting rewards for defeated disguised monster at {m_CellData.Position}");
-                        var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                        if (player != null)
-                        {
-                            disguisedMonsterMine.OnDestroy();
-                        }
-                        
-                        // Then raise the event to remove the mine
-                        GameEvents.RaiseMineRemovalAttempted(m_CellData.Position);
-                    }
-                    else
-                    {
-                        // Otherwise just trigger to make it collectable
-                        var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                        if (player != null)
-                        {
-                            disguisedMonsterMine.OnTrigger(player);
-                            m_VisualUpdater?.UpdateVisuals();
-                        }
-                    }
-                    return;
-                }
-                else
-                {
-                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                    if (player != null)
-                    {
-                        disguisedMonsterMine.OnTrigger(player);
-                        
-                        // Explicitly update visuals after the monster is triggered
-                        m_VisualUpdater?.UpdateVisuals();
-                    }
-                    return;
-                }
-            }
-            
-            // For regular monster mines, process interaction on every click
-            var monsterMine = m_CellData.CurrentMine as MonsterMine;
-            if (monsterMine != null)
-            {
-                if (monsterMine.IsDefeated)
-                {
-                    // For defeated monsters
-                    if (monsterMine.IsCollectable)
-                    {
-                        // Only collect rewards and remove if it's collectable
-                        Debug.Log($"[CellInteractionHandler] Collecting rewards for defeated monster at {m_CellData.Position}");
-                        var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                        if (player != null)
-                        {
-                            monsterMine.OnDestroy();
-                        }
-                        
-                        // Then raise the event to remove the mine
-                        GameEvents.RaiseMineRemovalAttempted(m_CellData.Position);
-                    }
-                    else
-                    {
-                        // Otherwise just trigger to make it collectable
-                        var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                        if (player != null)
-                        {
-                            monsterMine.OnTrigger(player);
-                            m_VisualUpdater?.UpdateVisuals();
-                        }
-                    }
-                }
-                else
-                {
-                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                    if (player != null)
-                    {
-                        monsterMine.OnTrigger(player);
-                        
-                        // Explicitly update visuals after the monster is triggered
-                        // This helps update the visual state if the monster becomes collectable
-                        m_VisualUpdater?.UpdateVisuals();
-                    }
-                }
+                CollectAndRemoveMine(disguisedMonsterMine);
             }
             else
             {
-                GameEvents.RaiseMineRemovalAttempted(m_CellData.Position);
+                TriggerMonster(disguisedMonsterMine, player);
             }
         }
         else
         {
-            if (m_DebugMode)
+            TriggerMonster(disguisedMonsterMine, player);
+        }
+    }
+    
+    private void HandleMonsterInteraction()
+    {
+        var monsterMine = m_CellData.CurrentMine as MonsterMine;
+        var player = GetPlayer();
+        
+        if (monsterMine.IsDefeated)
+        {
+            if (monsterMine.IsCollectable)
             {
-                Debug.Log($"[CellInteractionHandler] Cannot interact with cell at {m_CellData.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellData.IsFrozen}, IsRevealed: {m_CellData.IsRevealed}");
+                CollectAndRemoveMine(monsterMine);
             }
+            else
+            {
+                TriggerMonster(monsterMine, player);
+            }
+        }
+        else
+        {
+            TriggerMonster(monsterMine, player);
+        }
+    }
+    
+    private void TriggerMonster(MonsterMine monsterMine, PlayerComponent player)
+    {
+        if (player != null)
+        {
+            monsterMine.OnTrigger(player);
+            m_VisualUpdater?.UpdateVisuals();
+        }
+    }
+    
+    private void CollectAndRemoveMine(MonsterMine monsterMine)
+    {
+        LogDebugMessage($"Collecting rewards for defeated monster at {m_CellData.Position}");
+        var player = GetPlayer();
+        
+        if (player != null)
+        {
+            monsterMine.OnDestroy();
+        }
+        
+        GameEvents.RaiseMineRemovalAttempted(m_CellData.Position);
+    }
+    
+    private PlayerComponent GetPlayer()
+    {
+        return GameObject.FindFirstObjectByType<PlayerComponent>();
+    }
+    
+    private void LogDebugMessage(string message)
+    {
+        if (m_DebugMode)
+        {
+            Debug.Log($"[CellInteractionHandler] {message}");
         }
     }
 } 

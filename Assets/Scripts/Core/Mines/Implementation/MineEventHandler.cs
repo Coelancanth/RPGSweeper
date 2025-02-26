@@ -45,7 +45,6 @@ namespace RPGMinesweeper.Core.Mines
 
         public void HandleMineRemoval(Vector2Int position)
         {
-            Debug.Log($"[MineEventHandler] HandleMineRemoval: {position}");
             if (m_MineManager.TryGetMine(position, out IMine mine, out _))
             {
                 mine.OnDestroy();
