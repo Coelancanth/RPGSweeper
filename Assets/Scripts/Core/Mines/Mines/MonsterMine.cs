@@ -14,6 +14,8 @@ public class MonsterMine : IDamagingMine
     private int m_CurrentHp;
     private float m_ElapsedTime;
     private bool m_IsEnraged;
+    private bool m_IsDefeated;
+    private bool m_IsCollectable = false;
     private GameObject m_GameObject;
     
     // Runtime modifiable values
@@ -35,11 +37,20 @@ public class MonsterMine : IDamagingMine
         {
             m_CurrentHp = Mathf.Clamp(value, 0, m_MaxHp);
             OnHpChanged?.Invoke(m_Position, HpPercentage);
+            
+            // Check if monster was just defeated
+            if (m_CurrentHp <= 0 && !m_IsDefeated)
+            {
+                m_IsDefeated = true;
+                // Note: Not setting IsCollectable here - that happens on next interaction
+                OnDefeated?.Invoke(m_Position);
+            }
         }
     }
     public float HpPercentage => (float)m_CurrentHp / m_MaxHp;
     public bool IsEnraged => m_IsEnraged;
-    public bool IsCollectable => m_CurrentHp <= 0;
+    public bool IsDefeated => m_IsDefeated;
+    public bool IsCollectable => m_IsCollectable;
     public MonsterType MonsterType => m_Data.MonsterType;
     
     // Modifiable properties
@@ -77,6 +88,12 @@ public class MonsterMine : IDamagingMine
         get => m_HasEnrageState;
         set => m_HasEnrageState = value;
     }
+
+    // Add method to get MineData
+    public MineData GetMineData()
+    {
+        return m_Data;
+    }
     #endregion
 
     #region Events
@@ -84,6 +101,8 @@ public class MonsterMine : IDamagingMine
     public System.Action<Vector2Int> OnEnraged;
     // Event for when the monster's HP changes
     public System.Action<Vector2Int, float> OnHpChanged;
+    // Event for when the monster is defeated
+    public System.Action<Vector2Int> OnDefeated;
     #endregion
 
     #region Constructor
@@ -99,6 +118,7 @@ public class MonsterMine : IDamagingMine
         m_DamagePerHit = _data.DamagePerHit;
         m_EnrageDamageMultiplier = _data.EnrageDamageMultiplier;
         m_HasEnrageState = _data.HasEnrageState;
+        m_IsDefeated = false;
         
         m_AffectedPositions = GridShapeHelper.GetAffectedPositions(m_Position, m_Data.Shape, m_Data.Radius);
         InitializePersistentEffects();
@@ -125,6 +145,22 @@ public class MonsterMine : IDamagingMine
     #region IMine Implementation
     public void OnTrigger(PlayerComponent _player)
     {
+        // If already defeated but not yet collectable, mark as collectable
+        if (m_IsDefeated && !m_IsCollectable)
+        {
+            m_IsCollectable = true;
+            // Notify of collectable state change
+            OnHpChanged?.Invoke(m_Position, 0); // Trigger update with 0 HP
+            return;
+        }
+        
+        // If already defeated and collectable, don't do anything here
+        // The CellInteractionHandler will handle collecting rewards
+        if (m_IsDefeated && m_IsCollectable)
+        {
+            return;
+        }
+        
         // Deal damage to player
         _player.TakeDamage(CalculateDamage());
         
@@ -163,6 +199,13 @@ public class MonsterMine : IDamagingMine
                 }
             }
         }
+        // Check if monster was just defeated
+        else if (m_CurrentHp <= 0 && !m_IsDefeated)
+        {
+            m_IsDefeated = true;
+            // Note: IsCollectable will be set to true on the next interaction
+            OnDefeated?.Invoke(m_Position);
+        }
     }
 
     public void OnDestroy()
@@ -186,6 +229,7 @@ public class MonsterMine : IDamagingMine
         }
         m_ActivePersistentEffects.Clear();
     }
+    
 
     public void OnRemoveEffects()
     {

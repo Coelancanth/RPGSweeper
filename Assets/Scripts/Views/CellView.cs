@@ -146,23 +146,24 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisualUpdater
     [Header("Debug")]
     [SerializeField] private bool m_DebugMode = false;
 
+    // Encapsulated components
     private CellState m_CellState;
-    private IMineDisplayStrategy m_DisplayStrategy;
+    private CellVisualizer m_Visualizer;
+    private CellInteractionHandler m_InteractionHandler;
     private IMineDisplayStrategyFactory m_StrategyFactory;
-    private Sprite m_CurrentMineSprite;
     
-    // Public properties
-    public Vector2Int GridPosition => m_CellState.Position;
-    public bool CanInteract => !m_CellState.IsFrozen && !m_CellState.IsRevealed;
-    public Vector2Int Position => m_CellState.Position;
-    public bool IsRevealed => m_CellState.IsRevealed;
-    public bool HasMine => m_CellState.HasMine;
+    // Public properties that implement IInteractable
+    public Vector2Int GridPosition => m_CellState?.Position ?? Vector2Int.zero;
+    public bool CanInteract => m_InteractionHandler?.CanInteract ?? false;
+    public Vector2Int Position => m_CellState?.Position ?? Vector2Int.zero;
+    public bool IsRevealed => m_CellState?.IsRevealed ?? false;
+    public bool HasMine => m_CellState?.HasMine ?? false;
     
     // Properties needed by MineDebugger and display strategies
     public SpriteRenderer BackgroundRenderer => m_BackgroundRenderer;
     public SpriteRenderer MineRenderer => m_MineRenderer;
     public MineDisplayConfig DisplayConfig => m_DisplayConfig;
-    public bool IsFrozen => m_CellState.IsFrozen;
+    public bool IsFrozen => m_CellState?.IsFrozen ?? false;
 
     private void Awake()
     {
@@ -170,10 +171,33 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisualUpdater
         m_StrategyFactory = new DefaultMineDisplayStrategyFactory();
         m_CellState = new CellState(Vector2Int.zero);
         
-        SetupRenderers();
+        // Set up visualizer
+        m_Visualizer = new CellVisualizer(
+            m_BackgroundRenderer,
+            m_MineRenderer,
+            m_ValueText,
+            m_MarkRenderer,
+            m_HiddenSprite,
+            m_RevealedEmptySprite,
+            m_RevealedMineSprite,
+            m_DefeatedMonsterSprite,
+            m_DisplayConfig,
+            m_MarkDisplayConfig,
+            m_CellSize,
+            m_MineScale,
+            m_BackgroundSortingOrder,
+            m_MineSortingOrder,
+            m_ValueSortingOrder,
+            m_MarkSortingOrder,
+            m_DebugMode,
+            m_CellState
+        );
+        
+        // Set up handlers AFTER visualizer, so we can pass the visualizer for visual updates
+        m_InteractionHandler = new CellInteractionHandler(m_CellState, m_DebugMode, this);
         
         // Subscribe to state changes
-        m_CellState.OnStateChanged += UpdateVisuals;
+        m_CellState.OnStateChanged += HandleStateChanged;
     }
 
     private void OnEnable()
@@ -194,120 +218,61 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisualUpdater
         // Unsubscribe from state changes to prevent memory leaks
         if (m_CellState != null)
         {
-            m_CellState.OnStateChanged -= UpdateVisuals;
+            m_CellState.OnStateChanged -= HandleStateChanged;
         }
     }
 
-    private void OnDestroy()
+    private void HandleStateChanged()
     {
-        m_DisplayStrategy?.CleanupDisplay();
+        // Update visualizer when state changes
+        m_Visualizer?.UpdateVisuals();
     }
 
     private void HandleDisplayConfigChanged()
     {
-        if (m_MineRenderer != null)
-        {
-            m_MineRenderer.transform.localPosition = m_DisplayConfig.MineOffset;
-            float targetMineSize = m_CellSize * m_MineScale;
-            SetSpriteScale(m_MineRenderer, targetMineSize);
-        }
-
-        // Update display strategy with new config
-        if (m_CellState.HasMine && m_CellState.IsRevealed && m_DisplayStrategy != null)
-        {
-            m_DisplayStrategy.UpdateDisplay(m_CellState.CurrentMine, m_CellState.CurrentMineData, true);
-        }
-        else if (m_ValueText != null)
-        {
-            UpdateValueTextPosition();
-        }
-    }
-
-    private void UpdateValueTextPosition()
-    {
-        if (m_ValueText != null)
-        {
-            // For empty cells, use EmptyCellValuePosition
-            if (!m_CellState.HasMine)
-            {
-                m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
-            }
-        }
-    }
-
-    private void SetupRenderers()
-    {
-        // Setup background renderer
-        if (m_BackgroundRenderer != null)
-        {
-            m_BackgroundRenderer.sprite = m_HiddenSprite;
-            m_BackgroundRenderer.sortingOrder = m_BackgroundSortingOrder;
-            SetSpriteScale(m_BackgroundRenderer, m_CellSize);
-        }
-        
-        // Setup mine renderer
-        if (m_MineRenderer != null)
-        {
-            m_MineRenderer.enabled = false;
-            m_MineRenderer.sortingOrder = m_MineSortingOrder;
-            m_MineRenderer.transform.localPosition = m_MineOffset;
-            float targetMineSize = m_CellSize * m_MineScale;
-            SetSpriteScale(m_MineRenderer, targetMineSize);
-        }
-        
-        // Setup value text
-        if (m_ValueText != null)
-        {
-            m_ValueText.enabled = false;
-            m_ValueText.sortingOrder = m_ValueSortingOrder;
-        }
-        
-        // Setup mark renderer
-        if (m_MarkRenderer != null)
-        {
-            m_MarkRenderer.enabled = false;
-            m_MarkRenderer.sortingOrder = m_MarkSortingOrder;
-            
-            // Use the mark scale from config if available, otherwise fallback to default
-            float markScale = (m_MarkDisplayConfig != null) ? m_MarkDisplayConfig.MarkScale : 0.7f;
-            SetSpriteScale(m_MarkRenderer, m_CellSize * markScale);
-            
-            // Apply mark offset if config is available
-            if (m_MarkDisplayConfig != null && m_MarkRenderer.transform != null)
-            {
-                m_MarkRenderer.transform.localPosition = new Vector3(
-                    m_MarkDisplayConfig.MarkOffset.x,
-                    m_MarkDisplayConfig.MarkOffset.y,
-                    m_MarkRenderer.transform.localPosition.z
-                );
-            }
-        }
-    }
-
-    private void SetSpriteScale(SpriteRenderer renderer, float targetWorldSize)
-    {
-        if (renderer.sprite != null)
-        {
-            float pixelsPerUnit = renderer.sprite.pixelsPerUnit;
-            float spriteSize = renderer.sprite.rect.width / pixelsPerUnit;
-            float scale = targetWorldSize / spriteSize;
-            renderer.transform.localScale = new Vector3(scale, scale, 1f);
-        }
+        // Update visualizer when display config changes
+        m_Visualizer?.UpdateDisplayConfig(m_DisplayConfig);
     }
 
     public void Initialize(Vector2Int position)
     {
-        // Unsubscribe from previous state changes
+        // Clean up previous state if it exists
         if (m_CellState != null)
         {
-            m_CellState.OnStateChanged -= UpdateVisuals;
+            m_CellState.OnStateChanged -= HandleStateChanged;
         }
         
         // Create new state
         m_CellState = new CellState(position);
-        m_CellState.OnStateChanged += UpdateVisuals;
+        m_CellState.OnStateChanged += HandleStateChanged;
         
-        UpdateVisuals();
+        // Re-initialize visualizer with new state
+        m_Visualizer = new CellVisualizer(
+            m_BackgroundRenderer,
+            m_MineRenderer,
+            m_ValueText,
+            m_MarkRenderer,
+            m_HiddenSprite,
+            m_RevealedEmptySprite,
+            m_RevealedMineSprite,
+            m_DefeatedMonsterSprite,
+            m_DisplayConfig,
+            m_MarkDisplayConfig,
+            m_CellSize,
+            m_MineScale,
+            m_BackgroundSortingOrder,
+            m_MineSortingOrder,
+            m_ValueSortingOrder,
+            m_MarkSortingOrder,
+            m_DebugMode,
+            m_CellState
+        );
+        
+        // Update dependencies with new state - pass this as visualizer 
+        m_InteractionHandler = new CellInteractionHandler(m_CellState, m_DebugMode, this);
+        
+        // Force visual update
+        m_Visualizer.UpdateVisuals();
     }
 
     public void UpdateVisuals(bool revealed)
@@ -317,227 +282,25 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisualUpdater
 
     public void UpdateVisuals()
     {
-        // Update background sprite
-        if (m_BackgroundRenderer != null)
-        {
-            m_BackgroundRenderer.enabled = true;
-            if (!m_CellState.IsRevealed)
-            {
-                m_BackgroundRenderer.sprite = m_HiddenSprite;
-                if (m_ValueText != null)
-                {
-                    m_ValueText.enabled = false;
-                }
-                if (m_MineRenderer != null)
-                {
-                    m_MineRenderer.enabled = false;
-                }
-                
-                // Handle mark sprites
-                if (m_MarkRenderer != null)
-                {
-                    if (m_MarkDisplayConfig != null && m_CellState.MarkType != CellMarkType.None)
-                    {
-                        m_MarkRenderer.enabled = true;
-                        
-                        // Get mark sprite using GetMarkSprite
-                        Sprite markSprite = m_MarkDisplayConfig.GetMarkSprite(m_CellState.MarkType);
-                        if (markSprite != null)
-                        {
-                            m_MarkRenderer.sprite = markSprite;
-                            
-                            // Scale the mark based on config
-                            float targetMarkSize = m_CellSize * m_MarkDisplayConfig.MarkScale;
-                            SetSpriteScale(m_MarkRenderer, targetMarkSize);
-                            
-                            // Apply offset from config
-                            m_MarkRenderer.transform.localPosition = new Vector3(
-                                m_MarkDisplayConfig.MarkOffset.x,
-                                m_MarkDisplayConfig.MarkOffset.y,
-                                m_MarkRenderer.transform.localPosition.z
-                            );
-                            
-                            if (m_DebugMode)
-                            {
-                                Debug.Log($"[CellView] Applied mark type {m_CellState.MarkType} with sprite {markSprite.name}");
-                            }
-                        }
-                        else
-                        {
-                            if (m_DebugMode)
-                            {
-                                Debug.LogWarning($"[CellView] No sprite found for mark type {m_CellState.MarkType}. Config: {(m_MarkDisplayConfig != null ? m_MarkDisplayConfig.name : "None")}");
-                                
-                                // Check which sprites are actually assigned
-                                if (m_MarkDisplayConfig.FlagMarkSprite == null) Debug.LogWarning("[CellView] Flag mark sprite is null in the config");
-                                if (m_MarkDisplayConfig.QuestionMarkSprite == null) Debug.LogWarning("[CellView] Question mark sprite is null in the config");
-                                if (m_MarkDisplayConfig.NumbersMarkSprite == null) Debug.LogWarning("[CellView] Numbers mark sprite is null in the config");
-                                if (m_MarkDisplayConfig.CustomInputMarkSprite == null) Debug.LogWarning("[CellView] Custom mark sprite is null in the config");
-                            }
-                            
-                            // Show with a placeholder color to indicate missing sprite
-                            m_MarkRenderer.color = new Color(1f, 0.5f, 0.5f);
-                            m_MarkRenderer.enabled = true;
-                        }
-                    }
-                    else if (m_CellState.MarkType != CellMarkType.None)
-                    {
-                        // Fallback if m_MarkDisplayConfig is null but we have a mark type
-                        m_MarkRenderer.enabled = true;
-                        if (m_DebugMode)
-                        {
-                            Debug.LogWarning($"[CellView] MarkDisplayConfig is null, using default rendering for mark type {m_CellState.MarkType}");
-                        }
-                        
-                        // Set a default color or appearance without using the config
-                        m_MarkRenderer.color = Color.yellow;
-                    }
-                    else
-                    {
-                        m_MarkRenderer.enabled = false;
-                    }
-                }
-                else if (m_DebugMode && m_CellState.MarkType != CellMarkType.None)
-                {
-                    Debug.LogWarning("[CellView] Cannot show mark - m_MarkRenderer is null");
-                }
-            }
-            else if (m_CellState.HasMine)
-            {
-                // Check if it's a monster mine and is defeated
-                var monsterMine = m_CellState.CurrentMine as MonsterMine;
-                var disguisedMonsterMine = m_CellState.CurrentMine as DisguisedMonsterMine;
-                bool isDefeatedMonster = (monsterMine != null && monsterMine.IsCollectable) || 
-                                         (disguisedMonsterMine != null && disguisedMonsterMine.IsCollectable);
-                
-                m_BackgroundRenderer.sprite = isDefeatedMonster ? m_DefeatedMonsterSprite : m_RevealedMineSprite;
-                
-                // Update display strategy
-                m_DisplayStrategy?.UpdateDisplay(m_CellState.CurrentMine, m_CellState.CurrentMineData, m_CellState.IsRevealed);
-                
-                // Show mine sprite
-                if (m_MineRenderer != null && m_CurrentMineSprite != null)
-                {
-                    m_MineRenderer.enabled = true;
-                }
-                
-                // Hide mark if revealed
-                if (m_MarkRenderer != null)
-                {
-                    m_MarkRenderer.enabled = false;
-                }
-            }
-            else // Empty cell
-            {
-                m_BackgroundRenderer.sprite = m_RevealedEmptySprite;
-                if (m_ValueText != null)
-                {
-                    if (m_CellState.CurrentValue == -1)
-                    {
-                        // Confusion effect
-                        m_ValueText.enabled = true;
-                        m_ValueText.text = "?";
-                        m_ValueText.color = m_CellState.CurrentValueColor;
-                        m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
-                    }
-                    else if (m_CellState.CurrentValue > 0)
-                    {
-                        m_ValueText.enabled = true;
-                        m_ValueText.text = m_CellState.CurrentValue.ToString();
-                        m_ValueText.color = m_CellState.CurrentValueColor;
-                        m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
-                    }
-                    else
-                    {
-                        m_ValueText.enabled = false;
-                    }
-                }
-                
-                // Hide mark if revealed
-                if (m_MarkRenderer != null)
-                {
-                    m_MarkRenderer.enabled = false;
-                }
-            }
-        }
-        
-        // Set the value text
-        if (m_ValueText != null)
-        {
-            if (!m_CellState.IsRevealed)
-            {
-                m_ValueText.enabled = false;
-            }
-            else
-            {
-                // Show the value if there is no mine
-                if (!m_CellState.HasMine)
-                {
-                    if (m_CellState.CurrentValue == 0)
-                    {
-                        // Empty cell with no surrounding mines
-                        m_ValueText.enabled = false;
-                    }
-                    else if (m_CellState.CurrentValue > 0)
-                    {
-                        m_ValueText.enabled = true;
-                        m_ValueText.text = m_CellState.CurrentValue.ToString();
-                        m_ValueText.color = m_CellState.CurrentValueColor;
-                        m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
-                    }
-                }
-            }
-        }
+        m_Visualizer.UpdateVisuals();
     }
 
     public void ShowMineSprite(Sprite mineSprite, IMine mine, MineData mineData)
     {
-        if (m_MineRenderer == null || mineSprite == null) return;
-
-        m_CurrentMineSprite = mineSprite;
-        m_MineRenderer.sprite = mineSprite;
-        
-        // Set up mine in the cell state
+        // Set state first
         m_CellState.SetMine(mine, mineData);
-        
-        float targetMineSize = m_CellSize * m_MineScale;
-        SetSpriteScale(m_MineRenderer, targetMineSize);
-        m_MineRenderer.transform.localPosition = m_DisplayConfig.MineOffset;
 
-        // Set up appropriate display strategy
-        m_DisplayStrategy?.CleanupDisplay();
-        m_DisplayStrategy = m_StrategyFactory.CreateStrategy(mine);
-        m_DisplayStrategy?.SetupDisplay(gameObject, m_ValueText);
-
-        UpdateVisuals();
+        // Update visualizer
+        m_Visualizer.ShowMineSprite(mineSprite, mine, mineData, gameObject, m_StrategyFactory);
     }
 
     public void HandleMineRemoval()
     {
-        // The original condition prevents cleanup if HasMine is false
-        // But during teleportation HasMine could already be false while we still need to clean up
-        // if (!m_CellState.HasMine || !m_CellState.IsRevealed) return;
-        
-        // Only check if the cell is revealed, since we need to clean up visual traces
-        // even if HasMine is already false (which is likely the case during teleportation)
-        if (!m_CellState.IsRevealed) return;
-
-        m_CurrentMineSprite = null;
+        // Update state
         m_CellState.RemoveMine();
         
-        if (m_DisplayStrategy != null)
-        {
-            m_DisplayStrategy.CleanupDisplay();
-            m_DisplayStrategy = null;
-        }
-        
-        // Make sure the mine renderer is disabled
-        if (m_MineRenderer != null)
-        {
-            m_MineRenderer.enabled = false;
-        }
-        
-        UpdateVisuals();
+        // Update visualizer
+        m_Visualizer.HandleMineRemoval();
     }
 
     public void SetValue(int value)
@@ -552,120 +315,28 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisualUpdater
 
     public void ShowDebugHighlight(Color highlightColor)
     {
-        if (m_BackgroundRenderer != null)
-        {
-            m_BackgroundRenderer.color = highlightColor;
-        }
+        m_Visualizer.ShowDebugHighlight(highlightColor);
     }
 
     public void HideDebugHighlight()
     {
-        if (m_BackgroundRenderer != null)
-        {
-            m_BackgroundRenderer.color = Color.white;
-            UpdateVisuals();
-        }
+        m_Visualizer.HideDebugHighlight();
     }
 
     public void SetFrozen(bool frozen)
     {
         m_CellState.SetFrozen(frozen);
-        ApplyFrozenVisual(frozen);
+        m_Visualizer.ApplyFrozenVisual(frozen);
     }
     
     public void ApplyFrozenVisual(bool frozen)
     {
-        if (m_BackgroundRenderer != null)
-        {
-            // Add a blue tint to indicate frozen state
-            m_BackgroundRenderer.color = frozen ? new Color(0.8f, 0.8f, 1f) : Color.white;
-        }
+        m_Visualizer.ApplyFrozenVisual(frozen);
     }
 
     public void OnInteract()
     {
-        if (CanInteract)
-        {
-            if (m_DebugMode)
-            {
-                Debug.Log($"[CellView] Revealing cell at {m_CellState.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellState.IsFrozen}, IsRevealed: {m_CellState.IsRevealed}");
-            }
-            GameEvents.RaiseCellRevealed(m_CellState.Position);
-        }
-        else if (m_CellState.IsRevealed && m_CellState.HasMine)
-        {
-            if (m_DebugMode)
-            {
-                Debug.Log($"[CellView] Interacting with revealed mine at {m_CellState.Position}, Mine type: {m_CellState.CurrentMine?.GetType().Name}");
-            }
-            
-            // Special handling for disguised monster mines
-            var disguisedMonsterMine = m_CellState.CurrentMine as DisguisedMonsterMine;
-            if (disguisedMonsterMine != null)
-            {
-                if (disguisedMonsterMine.IsDisguised)
-                {
-                    // Let the mine reveal itself and update visuals
-                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                    if (player != null)
-                    {
-                        disguisedMonsterMine.OnTrigger(player);
-                    }
-                    
-                    // Force update mine display after revealing
-                    if (m_DisplayStrategy != null)
-                    {
-                        m_DisplayStrategy.UpdateDisplay(m_CellState.CurrentMine, m_CellState.CurrentMineData, true);
-                        UpdateVisuals();
-                    }
-                    
-                    return;
-                }
-                else if (disguisedMonsterMine.IsCollectable)
-                {
-                    GameEvents.RaiseMineRemovalAttempted(m_CellState.Position);
-                    return;
-                }
-                else
-                {
-                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                    if (player != null)
-                    {
-                        disguisedMonsterMine.OnTrigger(player);
-                    }
-                    return;
-                }
-            }
-            
-            // For regular monster mines, process interaction on every click
-            var monsterMine = m_CellState.CurrentMine as MonsterMine;
-            if (monsterMine != null)
-            {
-                if (monsterMine.IsCollectable)
-                {
-                    GameEvents.RaiseMineRemovalAttempted(m_CellState.Position);
-                }
-                else
-                {
-                    var player = GameObject.FindFirstObjectByType<PlayerComponent>();
-                    if (player != null)
-                    {
-                        monsterMine.OnTrigger(player);
-                    }
-                }
-            }
-            else
-            {
-                GameEvents.RaiseMineRemovalAttempted(m_CellState.Position);
-            }
-        }
-        else
-        {
-            if (m_DebugMode)
-            {
-                Debug.Log($"[CellView] Cannot interact with cell at {m_CellState.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellState.IsFrozen}, IsRevealed: {m_CellState.IsRevealed}");
-            }
-        }
+        m_InteractionHandler.OnInteract();
     }
 
     public void ApplyEffect()
@@ -678,19 +349,8 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisualUpdater
 
     public void UpdateDisplayConfig(MineDisplayConfig newConfig)
     {
-        if (m_DisplayConfig != null)
-        {
-            m_DisplayConfig.OnConfigChanged -= HandleDisplayConfigChanged;
-        }
-
         m_DisplayConfig = newConfig;
-        
-        if (m_DisplayConfig != null)
-        {
-            m_DisplayConfig.OnConfigChanged += HandleDisplayConfigChanged;
-        }
-
-        HandleDisplayConfigChanged();
+        m_Visualizer.UpdateDisplayConfig(newConfig);
     }
 
     public void SetMarkType(CellMarkType markType)
@@ -698,81 +358,21 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisualUpdater
         if (m_CellState != null)
         {
             // Add debug statements to check what's null
-            Debug.Log($"[CellView] SetMarkType called with markType: {markType}");
-            Debug.Log($"[CellView] m_MarkDisplayConfig is {(m_MarkDisplayConfig == null ? "NULL" : "NOT NULL")}");
-            
-            if (m_MarkDisplayConfig != null)
+            if (m_DebugMode)
             {
-                Debug.Log($"[CellView] CustomInputMarkSprite is {(m_MarkDisplayConfig.CustomInputMarkSprite == null ? "NULL" : "NOT NULL")}");
-                Debug.Log($"[CellView] FlagMarkSprite is {(m_MarkDisplayConfig.FlagMarkSprite == null ? "NULL" : "NOT NULL")}");
-                Debug.Log($"[CellView] QuestionMarkSprite is {(m_MarkDisplayConfig.QuestionMarkSprite == null ? "NULL" : "NOT NULL")}");
-                Debug.Log($"[CellView] NumbersMarkSprite is {(m_MarkDisplayConfig.NumbersMarkSprite == null ? "NULL" : "NOT NULL")}");
-            }
-            
-            // Check if we have the required components
-            if (m_MarkRenderer == null)
-            {
-                Debug.LogWarning($"[CellView] Cannot set mark type to {markType} - MarkRenderer is null");
-                return;
-            }
-            
-            if (m_MarkDisplayConfig == null && markType != CellMarkType.None)
-            {
-                Debug.LogWarning($"[CellView] MarkDisplayConfig is null but attempting to set mark type to {markType}");
-                // Continue anyway, but log the warning
-            }
-            
-            // If the same mark type is already set, remove it (toggle behavior)
-            if (m_CellState.MarkType == markType)
-            {
-                m_CellState.SetMarkType(CellMarkType.None);
-                if (m_DebugMode)
+                Debug.Log($"[CellView] SetMarkType called with markType: {markType}");
+                Debug.Log($"[CellView] m_MarkDisplayConfig is {(m_MarkDisplayConfig == null ? "NULL" : "NOT NULL")}");
+                
+                if (m_MarkDisplayConfig != null)
                 {
-                    Debug.Log($"[CellView] Removed mark at position {m_CellState.Position}");
+                    Debug.Log($"[CellView] CustomInputMarkSprite is {(m_MarkDisplayConfig.CustomInputMarkSprite == null ? "NULL" : "NOT NULL")}");
+                    Debug.Log($"[CellView] FlagMarkSprite is {(m_MarkDisplayConfig.FlagMarkSprite == null ? "NULL" : "NOT NULL")}");
+                    Debug.Log($"[CellView] QuestionMarkSprite is {(m_MarkDisplayConfig.QuestionMarkSprite == null ? "NULL" : "NOT NULL")}");
+                    Debug.Log($"[CellView] NumbersMarkSprite is {(m_MarkDisplayConfig.NumbersMarkSprite == null ? "NULL" : "NOT NULL")}");
                 }
             }
-            else
-            {
-                // Update the mark sprite immediately
-                if (markType != CellMarkType.None && m_MarkDisplayConfig != null)
-                {
-                    Debug.Log($"[CellView] Setting mark type to {markType} - MarkDisplayConfig is valid");
-                    Sprite markSprite = m_MarkDisplayConfig.GetMarkSprite(markType);
-                    if (markSprite != null)
-                    {
-                        m_MarkRenderer.sprite = markSprite;
-                        m_MarkRenderer.enabled = true;
-                        
-                        // Scale the mark based on config
-                        float targetMarkSize = m_CellSize * m_MarkDisplayConfig.MarkScale;
-                        SetSpriteScale(m_MarkRenderer, targetMarkSize);
-                        
-                        // Apply offset from config
-                        m_MarkRenderer.transform.localPosition = new Vector3(
-                            m_MarkDisplayConfig.MarkOffset.x,
-                            m_MarkDisplayConfig.MarkOffset.y,
-                            m_MarkRenderer.transform.localPosition.z
-                        );
-                        
-                        // Reset color in case it was changed
-                        m_MarkRenderer.color = Color.white;
-                        
-                        if (m_DebugMode)
-                        {
-                            Debug.Log($"[CellView] Set mark type to {markType} with sprite {markSprite.name} at position {m_CellState.Position}");
-                        }
-                    }
-                    else if (m_DebugMode)
-                    {
-                        Debug.LogWarning($"[CellView] Sprite for mark type {markType} is null in config {m_MarkDisplayConfig.name}");
-                    }
-                }
-
-                m_CellState.SetMarkType(markType);
-            }
             
-            // Ensure visuals are updated
-            UpdateVisuals();
+            m_CellState.SetMarkType(markType);
         }
     }
-} 
+}

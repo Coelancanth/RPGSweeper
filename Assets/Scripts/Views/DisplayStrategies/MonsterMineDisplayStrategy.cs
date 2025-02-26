@@ -46,6 +46,7 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
         {
             m_MonsterMine.OnHpChanged -= HandleHpChanged;
             m_MonsterMine.OnEnraged -= HandleEnraged;
+            m_MonsterMine.OnDefeated -= HandleDefeated;
         }
 
         m_IsRevealed = isRevealed;
@@ -63,14 +64,23 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
         // Subscribe to new monster's events
         m_MonsterMine.OnHpChanged += HandleHpChanged;
         m_MonsterMine.OnEnraged += HandleEnraged;
+        m_MonsterMine.OnDefeated += HandleDefeated;
 
         // Update text positions
         UpdateTextPositions();
         
-        // Update displays
-        UpdateDamageDisplay();
-        UpdateHPDisplay();
-        UpdateMineValueDisplay(mineData);
+        // If monster is already defeated, update to show defeated state
+        if (m_MonsterMine.IsDefeated)
+        {
+            UpdateDefeatedDisplay(mineData);
+        }
+        else
+        {
+            // Update displays for normal monster state
+            UpdateDamageDisplay();
+            UpdateHPDisplay();
+            UpdateMineValueDisplay(mineData);
+        }
     }
 
     private void UpdateTextPositions()
@@ -92,22 +102,44 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
     private void HandleHpChanged(Vector2Int position, float hpPercentage)
     {
         if (!m_IsRevealed || m_MonsterMine == null) return;
-        UpdateHPDisplay();
         
-        // If monster is defeated, notify the cell view to update its visuals
-        if (m_MonsterMine.IsCollectable)
+        if (m_MonsterMine.IsDefeated)
         {
+            // If monster is now defeated, update to defeated display
+            UpdateDefeatedDisplay(null);
+            
+            // Notify cell view to update its visuals (e.g., change background sprite)
             var cellView = m_StatsText.transform.parent.GetComponent<CellView>();
             if (cellView != null)
             {
                 cellView.UpdateVisuals(m_IsRevealed);
             }
         }
+        else
+        {
+            // Normal HP update
+            UpdateHPDisplay();
+        }
+    }
+
+    private void HandleDefeated(Vector2Int position)
+    {
+        if (!m_IsRevealed || m_MonsterMine == null) return;
+        
+        // Update to show defeated state
+        UpdateDefeatedDisplay(null);
+        
+        // Notify cell view to update its visuals (e.g., change background sprite)
+        var cellView = m_StatsText.transform.parent.GetComponent<CellView>();
+        if (cellView != null)
+        {
+            cellView.UpdateVisuals(m_IsRevealed);
+        }
     }
 
     private void HandleEnraged(Vector2Int position)
     {
-        if (!m_IsRevealed || m_MonsterMine == null) return;
+        if (!m_IsRevealed || m_MonsterMine == null || m_MonsterMine.IsDefeated) return;
         UpdateDamageDisplay();
     }
 
@@ -135,7 +167,7 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
 
     private void UpdateMineValueDisplay(MineData mineData)
     {
-        if (m_MineValueText == null) return;
+        if (m_MineValueText == null || mineData == null) return;
         
         // Only show mine value if it's greater than 0
         if (mineData.Value > 0)
@@ -151,6 +183,49 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
         }
     }
 
+    private void UpdateDefeatedDisplay(MineData mineData)
+    {
+        // Change the display for a defeated monster
+        MineData data = mineData ?? m_MonsterMine.GetMineData();
+        
+        // Update HP display to show 0/MaxHP
+        if (m_StatsText != null)
+        {
+            m_StatsText.enabled = true;
+            m_StatsText.text = $"0/{m_MonsterMine.MaxHp}";
+            m_StatsText.color = m_Config.HPLowColor;
+        }
+        
+        // Show appropriate text based on whether monster is collectable yet
+        if (m_ValueText != null)
+        {
+            m_ValueText.enabled = true;
+            
+            // Different text based on whether the monster is collectable
+            if (m_MonsterMine.IsCollectable)
+            {
+                m_ValueText.text = "Collect!";
+                m_ValueText.color = Color.yellow;
+            }
+            else
+            {
+                m_ValueText.text = "Defeated";
+                m_ValueText.color = Color.white;
+            }
+            
+            m_ValueText.fontStyle = FontStyles.Bold;
+        }
+        
+        // Always show the rewards (mine value) for defeated monsters
+        if (m_MineValueText != null && data != null && data.Value > 0)
+        {
+            m_MineValueText.enabled = true;
+            m_MineValueText.text = $"+{data.Value}";
+            m_MineValueText.color = data.MineValueColor;
+            m_MineValueText.fontStyle = FontStyles.Bold;
+        }
+    }
+
     public void CleanupDisplay()
     {
         // Unsubscribe from events
@@ -158,6 +233,7 @@ public class MonsterMineDisplayStrategy : IMineDisplayStrategy
         {
             m_MonsterMine.OnHpChanged -= HandleHpChanged;
             m_MonsterMine.OnEnraged -= HandleEnraged;
+            m_MonsterMine.OnDefeated -= HandleDefeated;
             m_MonsterMine = null;
         }
 

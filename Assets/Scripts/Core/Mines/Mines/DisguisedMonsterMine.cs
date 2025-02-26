@@ -48,6 +48,21 @@ namespace RPGMinesweeper
                 return;
             }
             
+            // If already defeated but not yet collectable, mark as collectable
+            if (IsDefeated && !IsCollectable)
+            {
+                // Update base implementation to set IsCollectable
+                base.OnTrigger(player);
+                return;
+            }
+            
+            // If already defeated and collectable, don't do anything here
+            // The CellInteractionHandler will handle collecting rewards
+            if (IsDefeated && IsCollectable)
+            {
+                return;
+            }
+            
             // If already revealed, behave like a normal monster
             base.OnTrigger(player);
         }
