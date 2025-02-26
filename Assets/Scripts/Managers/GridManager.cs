@@ -136,11 +136,32 @@ public class GridManager : MonoBehaviour
     {
         if (m_Grid.IsValidPosition(position))
         {
-            CellView cellView = m_CellObjects[position.x, position.y].GetComponent<CellView>();
-            if (cellView != null && !cellView.IsRevealed)
+            GameObject cellObject = m_CellObjects[position.x, position.y];
+            if (cellObject == null)
+            {
+                Debug.LogError($"[GridManager] Cell object at position {position} is null");
+                return;
+            }
+            
+            CellView cellView = cellObject.GetComponent<CellView>();
+            if (cellView == null)
+            {
+                Debug.LogError($"[GridManager] CellView component not found on cell object at position {position}");
+                return;
+            }
+            
+            if (!cellView.IsRevealed)
             {
                 cellView.SetMarkType(markType);
             }
+            else
+            {
+                Debug.LogWarning($"[GridManager] Cannot mark cell at {position} - cell is already revealed");
+            }
+        }
+        else
+        {
+            Debug.LogError($"[GridManager] Invalid position for cell marking: {position}");
         }
     }
 } 

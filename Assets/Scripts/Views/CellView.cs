@@ -160,14 +160,13 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
     [SerializeField] private Sprite m_RevealedEmptySprite;
     [SerializeField] private Sprite m_RevealedMineSprite;
     [SerializeField] private Sprite m_DefeatedMonsterSprite;
-    [SerializeField] private Sprite m_FlagMarkSprite;
-    [SerializeField] private Sprite m_QuestionMarkSprite;
-
+    
     [Header("Visual Settings")]
     [SerializeField] private float m_CellSize = 1f;
     [SerializeField] private float m_MineScale = 0.8f;
     [SerializeField] private Vector3 m_MineOffset = new Vector3(0f, 0.2f, -0.1f);
     [SerializeField] private MineDisplayConfig m_DisplayConfig;
+    [SerializeField] private RPGMinesweeper.MarkPanelDisplayConfig m_MarkDisplayConfig;
     [SerializeField] private int m_BackgroundSortingOrder = 0;
     [SerializeField] private int m_MineSortingOrder = 1;
     [SerializeField] private int m_ValueSortingOrder = 2;
@@ -353,21 +352,46 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                 // Handle mark sprites
                 if (m_MarkRenderer != null)
                 {
-                    switch (m_CellState.MarkType)
+                    if (m_MarkDisplayConfig != null && m_CellState.MarkType != CellMarkType.None)
                     {
-                        case CellMarkType.Flag:
-                            m_MarkRenderer.enabled = true;
-                            m_MarkRenderer.sprite = m_FlagMarkSprite;
-                            break;
-                        case CellMarkType.Question:
-                            m_MarkRenderer.enabled = true;
-                            m_MarkRenderer.sprite = m_QuestionMarkSprite;
-                            break;
-                        case CellMarkType.None:
-                        default:
+                        m_MarkRenderer.enabled = true;
+                        
+                        // Get mark sprite using GetMarkSprite, which is safer
+                        Sprite markSprite = m_MarkDisplayConfig.GetMarkSprite(m_CellState.MarkType);
+                        if (markSprite != null)
+                        {
+                            m_MarkRenderer.sprite = markSprite;
+                            
+                            // Scale the mark based on config
+                            float targetMarkSize = m_CellSize * m_MarkDisplayConfig.MarkScale;
+                            SetSpriteScale(m_MarkRenderer, targetMarkSize);
+                        }
+                        else if (m_DebugMode)
+                        {
+                            Debug.LogWarning($"[CellView] Mark sprite for type {m_CellState.MarkType} is null");
                             m_MarkRenderer.enabled = false;
-                            break;
+                        }
                     }
+                    else if (m_CellState.MarkType != CellMarkType.None)
+                    {
+                        // Fallback if m_MarkDisplayConfig is null but we have a mark type
+                        m_MarkRenderer.enabled = true;
+                        if (m_DebugMode)
+                        {
+                            Debug.LogWarning($"[CellView] MarkDisplayConfig is null, using default rendering for mark type {m_CellState.MarkType}");
+                        }
+                        
+                        // Set a default color or appearance without using the config
+                        m_MarkRenderer.color = Color.yellow;
+                    }
+                    else
+                    {
+                        m_MarkRenderer.enabled = false;
+                    }
+                }
+                else if (m_DebugMode && m_CellState.MarkType != CellMarkType.None)
+                {
+                    Debug.LogWarning("[CellView] Cannot show mark - m_MarkRenderer is null");
                 }
             }
             else if (m_CellState.HasMine)
@@ -626,6 +650,19 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
     {
         if (m_CellState is CellState cellState)
         {
+            // Check if we have the required components
+            if (m_MarkRenderer == null)
+            {
+                Debug.LogWarning($"[CellView] Cannot set mark type to {markType} - MarkRenderer is null");
+                return;
+            }
+            
+            if (m_MarkDisplayConfig == null && markType != CellMarkType.None)
+            {
+                Debug.LogWarning($"[CellView] MarkDisplayConfig is null but attempting to set mark type to {markType}");
+                // Continue anyway, but log the warning
+            }
+            
             // If the same mark type is already set, remove it
             if (cellState.MarkType == markType)
             {
