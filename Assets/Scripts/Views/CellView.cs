@@ -3,37 +3,8 @@ using TMPro;
 using RPGMinesweeper.Input;
 using RPGMinesweeper;
 
-// Interface for cell state management
-public interface ICellState
-{
-    Vector2Int Position { get; }
-    bool IsRevealed { get; }
-    bool IsFrozen { get; }
-    bool HasMine { get; }
-    int CurrentValue { get; }
-    IMine CurrentMine { get; }
-    MineData CurrentMineData { get; }
-    CellMarkType MarkType { get; }
-    
-    void SetRevealed(bool revealed);
-    void SetFrozen(bool frozen);
-    void SetValue(int value, Color color);
-    void SetMine(IMine mine, MineData mineData);
-    void RemoveMine();
-    void SetMarkType(CellMarkType markType);
-}
-
-// Interface for cell visual management
-public interface ICellVisual
-{
-    void UpdateVisuals();
-    void ShowDebugHighlight(Color highlightColor);
-    void HideDebugHighlight();
-    void ApplyFrozenVisual(bool frozen);
-}
-
 // Class responsible for managing cell state
-public class CellState : ICellState
+public class CellState : ICellData, ICellStateModifier
 {
     private Vector2Int m_Position;
     private bool m_IsRevealed;
@@ -147,7 +118,7 @@ public class DefaultMineDisplayStrategyFactory : IMineDisplayStrategyFactory
 }
 
 // Main CellView class focused on visualization and interaction
-public class CellView : MonoBehaviour, IInteractable, ICellVisual
+public class CellView : MonoBehaviour, IInteractable, ICellVisualUpdater
 {
     [Header("References")]
     [SerializeField] private SpriteRenderer m_BackgroundRenderer;
@@ -175,7 +146,7 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
     [Header("Debug")]
     [SerializeField] private bool m_DebugMode = false;
 
-    private ICellState m_CellState;
+    private CellState m_CellState;
     private IMineDisplayStrategy m_DisplayStrategy;
     private IMineDisplayStrategyFactory m_StrategyFactory;
     private Sprite m_CurrentMineSprite;
@@ -202,7 +173,7 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
         SetupRenderers();
         
         // Subscribe to state changes
-        ((CellState)m_CellState).OnStateChanged += UpdateVisuals;
+        m_CellState.OnStateChanged += UpdateVisuals;
     }
 
     private void OnEnable()
@@ -221,9 +192,9 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
         }
         
         // Unsubscribe from state changes to prevent memory leaks
-        if (m_CellState is CellState cellState)
+        if (m_CellState != null)
         {
-            cellState.OnStateChanged -= UpdateVisuals;
+            m_CellState.OnStateChanged -= UpdateVisuals;
         }
     }
 
@@ -326,15 +297,15 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
 
     public void Initialize(Vector2Int position)
     {
-        // Clean up old state if any
-        if (m_CellState is CellState cellState)
+        // Unsubscribe from previous state changes
+        if (m_CellState != null)
         {
-            cellState.OnStateChanged -= UpdateVisuals;
+            m_CellState.OnStateChanged -= UpdateVisuals;
         }
         
-        // Create a new state with the specified position
+        // Create new state
         m_CellState = new CellState(position);
-        ((CellState)m_CellState).OnStateChanged += UpdateVisuals;
+        m_CellState.OnStateChanged += UpdateVisuals;
         
         UpdateVisuals();
     }
@@ -466,15 +437,14 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                         // Confusion effect
                         m_ValueText.enabled = true;
                         m_ValueText.text = "?";
-                        m_ValueText.color = ((CellState)m_CellState).CurrentValueColor;
+                        m_ValueText.color = m_CellState.CurrentValueColor;
                         m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
                     }
                     else if (m_CellState.CurrentValue > 0)
                     {
-                        // Show surrounding mine count
                         m_ValueText.enabled = true;
                         m_ValueText.text = m_CellState.CurrentValue.ToString();
-                        m_ValueText.color = m_DisplayConfig.DefaultValueColor;
+                        m_ValueText.color = m_CellState.CurrentValueColor;
                         m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
                     }
                     else
@@ -487,6 +457,34 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                 if (m_MarkRenderer != null)
                 {
                     m_MarkRenderer.enabled = false;
+                }
+            }
+        }
+        
+        // Set the value text
+        if (m_ValueText != null)
+        {
+            if (!m_CellState.IsRevealed)
+            {
+                m_ValueText.enabled = false;
+            }
+            else
+            {
+                // Show the value if there is no mine
+                if (!m_CellState.HasMine)
+                {
+                    if (m_CellState.CurrentValue == 0)
+                    {
+                        // Empty cell with no surrounding mines
+                        m_ValueText.enabled = false;
+                    }
+                    else if (m_CellState.CurrentValue > 0)
+                    {
+                        m_ValueText.enabled = true;
+                        m_ValueText.text = m_CellState.CurrentValue.ToString();
+                        m_ValueText.color = m_CellState.CurrentValueColor;
+                        m_ValueText.transform.localPosition = m_DisplayConfig.EmptyCellValuePosition;
+                    }
                 }
             }
         }
@@ -697,7 +695,7 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
 
     public void SetMarkType(CellMarkType markType)
     {
-        if (m_CellState is CellState cellState)
+        if (m_CellState != null)
         {
             // Add debug statements to check what's null
             Debug.Log($"[CellView] SetMarkType called with markType: {markType}");
@@ -725,12 +723,12 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
             }
             
             // If the same mark type is already set, remove it (toggle behavior)
-            if (cellState.MarkType == markType)
+            if (m_CellState.MarkType == markType)
             {
-                cellState.SetMarkType(CellMarkType.None);
+                m_CellState.SetMarkType(CellMarkType.None);
                 if (m_DebugMode)
                 {
-                    Debug.Log($"[CellView] Removed mark at position {cellState.Position}");
+                    Debug.Log($"[CellView] Removed mark at position {m_CellState.Position}");
                 }
             }
             else
@@ -761,7 +759,7 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                         
                         if (m_DebugMode)
                         {
-                            Debug.Log($"[CellView] Set mark type to {markType} with sprite {markSprite.name} at position {cellState.Position}");
+                            Debug.Log($"[CellView] Set mark type to {markType} with sprite {markSprite.name} at position {m_CellState.Position}");
                         }
                     }
                     else if (m_DebugMode)
@@ -770,7 +768,7 @@ public class CellView : MonoBehaviour, IInteractable, ICellVisual
                     }
                 }
 
-                cellState.SetMarkType(markType);
+                m_CellState.SetMarkType(markType);
             }
             
             // Ensure visuals are updated
