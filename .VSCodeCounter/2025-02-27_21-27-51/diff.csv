@@ -1,0 +1,11 @@
+"filename", "language", "C#", "comment", "blank", "total"
+"f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Implementation\MineVisualManager.cs", "C#", 13, 1, 2, 16
+"f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Mines\MineType.cs", "C#", 1, 0, 0, 1
+"f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Spawning\IMineSpawnStrategy.cs", "C#", 22, 1, 5, 28
+"f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Spawning\MineSpawner.cs", "C#", 17, 2, 4, 23
+"f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Spawning\Strategies\NeighborSpawnStrategy.cs", "C#", -4, 4, 0, 0
+"f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Spawning\Strategies\SurrondedSpawnStrategy.cs", "C#", 12, 2, 5, 19
+"f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Spawning\Structures\SpawneContext.cs", "C#", 39, 11, 11, 61
+"f:\unity\Minesweeper\Assets\Scripts\Views\CellInteractionHandler.cs", "C#", 18, 0, 5, 23
+"f:\unity\Minesweeper\Assets\Scripts\Views\DisplayStrategies\DisguisedMonsterMineDisplayStrategy.cs", "C#", -1, 1, 0, 0
+"Total", "-", 117, 22, 32, 171

@@ -21,15 +21,15 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  Type: 0
+  Type: 7
   Value: 1
   Shape: 2
   Radius: 1
-  MineSprite: {fileID: 0}
-  FacingUpSprite: {fileID: 0}
-  FacingDownSprite: {fileID: 0}
-  FacingLeftSprite: {fileID: 0}
-  FacingRightSprite: {fileID: 0}
+  MineSprite: {fileID: 577197743252337406, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingUpSprite: {fileID: 577197743252337406, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingDownSprite: {fileID: 577197743252337406, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingLeftSprite: {fileID: 577197743252337406, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingRightSprite: {fileID: 577197743252337406, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_CurrentFacingDirection: 4
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
@@ -37,7 +37,7 @@ MonoBehaviour:
   m_TriggerableEffects: []
   m_MonsterType: 0
   m_MaxHp: 100
-  m_BaseDamage: 20
-  m_DamagePerHit: 25
-  m_HasEnrageState: 1
-  m_EnrageDamageMultiplier: 1.5
+  m_BaseDamage: 100
+  m_DamagePerHit: 100
+  m_HasEnrageState: 0
+  m_EnrageDamageMultiplier: 1

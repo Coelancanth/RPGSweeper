@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5df1cce5e6b07834d97e337ef27886e3, type: 3}
-  m_Name: Skeleton
+  m_Name: Dragon
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -21,23 +21,23 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  Type: 7
-  Value: 3
+  Type: 0
+  Value: 1
   Shape: 2
   Radius: 1
-  MineSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingUpSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingDownSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingLeftSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingRightSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  MineSprite: {fileID: 0}
+  FacingUpSprite: {fileID: 0}
+  FacingDownSprite: {fileID: 0}
+  FacingLeftSprite: {fileID: 0}
+  FacingRightSprite: {fileID: 0}
   m_CurrentFacingDirection: 4
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PersistentEffects: []
   m_TriggerableEffects: []
-  m_MonsterType: 14
-  m_MaxHp: 3
-  m_BaseDamage: 3
-  m_DamagePerHit: 1
-  m_HasEnrageState: 0
-  m_EnrageDamageMultiplier: 1
+  m_MonsterType: 0
+  m_MaxHp: 100
+  m_BaseDamage: 20
+  m_DamagePerHit: 25
+  m_HasEnrageState: 1
+  m_EnrageDamageMultiplier: 1.5

@@ -21,7 +21,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  Type: 0
+  Type: 7
   Value: 10
   Shape: 2
   Radius: 1
@@ -35,9 +35,9 @@ MonoBehaviour:
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PersistentEffects: []
   m_TriggerableEffects: []
-  m_MonsterType: 0
+  m_MonsterType: 26
   m_MaxHp: 10
   m_BaseDamage: 10
-  m_DamagePerHit: 10
+  m_DamagePerHit: 1
   m_HasEnrageState: 0
   m_EnrageDamageMultiplier: 1

@@ -38,6 +38,6 @@ MonoBehaviour:
   m_MonsterType: 20
   m_MaxHp: 4
   m_BaseDamage: 4
-  m_DamagePerHit: 4
+  m_DamagePerHit: 1
   m_HasEnrageState: 0
   m_EnrageDamageMultiplier: 1

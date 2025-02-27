@@ -22,10 +22,10 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   Type: 0
-  Value: 1
+  Value: 0
   Shape: 2
   Radius: 1
-  MineSprite: {fileID: 0}
+  MineSprite: {fileID: 1356743846768177305, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   FacingUpSprite: {fileID: 0}
   FacingDownSprite: {fileID: 0}
   FacingLeftSprite: {fileID: 0}

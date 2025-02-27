@@ -36,9 +36,9 @@ MonoBehaviour:
   m_PersistentEffects: []
   m_TriggerableEffects: []
   m_MonsterType: 3
-  m_MaxHp: 100
-  m_BaseDamage: 20
-  m_DamagePerHit: 25
+  m_MaxHp: 11
+  m_BaseDamage: 11
+  m_DamagePerHit: 11
   m_HasEnrageState: 1
   m_EnrageDamageMultiplier: 1.5
   m_DisguiseSprite: {fileID: 1356743846768177305, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}

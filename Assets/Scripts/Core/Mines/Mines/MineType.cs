@@ -9,5 +9,6 @@ public enum MineType
     ItemSpawner,
     Monster,
     DisguisedMonster,
-    Empty
+    Empty,
+    Item
 } 

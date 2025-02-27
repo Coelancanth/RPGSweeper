@@ -26,10 +26,10 @@ MonoBehaviour:
   Shape: 2
   Radius: 1
   MineSprite: {fileID: 3867296298848744610, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingUpSprite: {fileID: 0}
-  FacingDownSprite: {fileID: 0}
-  FacingLeftSprite: {fileID: 0}
-  FacingRightSprite: {fileID: 0}
+  FacingUpSprite: {fileID: 3867296298848744610, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingDownSprite: {fileID: 3867296298848744610, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingLeftSprite: {fileID: 3867296298848744610, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingRightSprite: {fileID: 3867296298848744610, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_CurrentFacingDirection: 4
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
@@ -38,6 +38,6 @@ MonoBehaviour:
   m_MonsterType: 10
   m_MaxHp: 2
   m_BaseDamage: 2
-  m_DamagePerHit: 2
+  m_DamagePerHit: 1
   m_HasEnrageState: 0
   m_EnrageDamageMultiplier: 1.5

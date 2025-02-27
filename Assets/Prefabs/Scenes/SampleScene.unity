@@ -809,8 +809,8 @@ MonoBehaviour:
     IsEnabled: 1
   - MineData: {fileID: 11400000, guid: fed96ffb8ddafc547ba7f8ace335e3ae, type: 2}
     Description: 
-    SpawnCount: 1
-    SpawnStrategy: 300
+    SpawnCount: 12
+    SpawnStrategy: 100
     TargetMineType: 7
     TargetMonsterType: 0
     SymmetryDirection: 1
@@ -823,7 +823,7 @@ MonoBehaviour:
     MinClusterSize: 2
     MaxClusterSize: 4
     NeighborTypes: []
-    IsEnabled: 0
+    IsEnabled: 1
   - MineData: {fileID: 11400000, guid: 3596c02c22aa62d4f9267f585331fc4d, type: 2}
     Description: 
     SpawnCount: 10
@@ -844,7 +844,7 @@ MonoBehaviour:
   - MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
     Description: 'Vertical '
     SpawnCount: 4
-    SpawnStrategy: 800
+    SpawnStrategy: 750
     TargetMineType: 7
     TargetMonsterType: 0
     SymmetryDirection: 1
@@ -861,7 +861,7 @@ MonoBehaviour:
   - MineData: {fileID: 11400000, guid: 95fa1ab7ed2ec3548ba6b3a8d534d350, type: 2}
     Description: Horizontal
     SpawnCount: 4
-    SpawnStrategy: 800
+    SpawnStrategy: 750
     TargetMineType: 7
     TargetMonsterType: 0
     SymmetryDirection: 1
@@ -878,6 +878,128 @@ MonoBehaviour:
   - MineData: {fileID: 11400000, guid: 9f15497471380414ea6952903161692f, type: 2}
     Description: 
     SpawnCount: 2
+    SpawnStrategy: 100
+    TargetMineType: 7
+    TargetMonsterType: 0
+    SymmetryDirection: 1
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: c311069d526de194597856f16dd1dfd9, type: 2}
+    Description: 
+    SpawnCount: 8
+    SpawnStrategy: 100
+    TargetMineType: 7
+    TargetMonsterType: 0
+    SymmetryDirection: 1
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: 22ed2b4396dbdbb43837314dfa759cc2, type: 2}
+    Description: 
+    SpawnCount: 5
+    SpawnStrategy: 800
+    TargetMineType: 7
+    TargetMonsterType: 5
+    SymmetryDirection: 1
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: 0b84e5e4919a86b44a240ed0aacd6f55, type: 2}
+    Description: 
+    SpawnCount: 1
+    SpawnStrategy: 900
+    TargetMineType: 7
+    TargetMonsterType: 0
+    SymmetryDirection: 1
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: 0961b70ba15e03641a491ec38a86514c, type: 2}
+    Description: 
+    SpawnCount: 1
+    SpawnStrategy: 1000
+    TargetMineType: 7
+    TargetMonsterType: 0
+    SymmetryDirection: 1
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: 45fbfa2753631a64e9453d051136556b, type: 2}
+    Description: 
+    SpawnCount: 4
+    SpawnStrategy: 700
+    TargetMineType: 7
+    TargetMonsterType: 0
+    SymmetryDirection: 1
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 2
+    NeighborTypes:
+    - NeighborMineData: {fileID: 11400000, guid: d4030b82b45db324b92d9fdb81c4bcf8, type: 2}
+      FacingDirection: 3
+      SpawnCount: 1
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: d7688111fa5dca0449eee90874419ecf, type: 2}
+    Description: 
+    SpawnCount: 12
+    SpawnStrategy: 100
+    TargetMineType: 7
+    TargetMonsterType: 0
+    SymmetryDirection: 1
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: d4030b82b45db324b92d9fdb81c4bcf8, type: 2}
+    Description: Chest
+    SpawnCount: 1
     SpawnStrategy: 100
     TargetMineType: 7
     TargetMonsterType: 0
