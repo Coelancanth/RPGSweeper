@@ -15,7 +15,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 return false;
             }
 
-            return context.GetAvailablePositions()
+            return GetAvailablePositions(context)
                 .Any(p => IsCenterPosition(p, context));
         }
 
@@ -26,7 +26,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 return SpawnResult.Failed("Invalid spawn data");
             }
 
-            var availableCenterPositions = context.GetAvailablePositions()
+            var availableCenterPositions = GetAvailablePositions(context)
                 .Where(p => IsCenterPosition(p, context))
                 .ToList();
 

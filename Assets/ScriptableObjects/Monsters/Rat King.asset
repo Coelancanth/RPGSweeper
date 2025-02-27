@@ -25,14 +25,17 @@ MonoBehaviour:
   Value: 5
   Shape: 2
   Radius: 1
-  SpawnStrategy: 1
-  TargetMineType: 7
-  TargetMonsterType: 0
   MineSprite: {fileID: -8373585295449095950, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingUpSprite: {fileID: -8373585295449095950, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingDownSprite: {fileID: -8373585295449095950, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingLeftSprite: {fileID: -8373585295449095950, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingRightSprite: {fileID: -8373585295449095950, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  m_CurrentFacingDirection: 4
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PersistentEffects: []
-  m_TriggerableEffects: []
+  m_TriggerableEffects:
+  - Template: {fileID: 11400000, guid: d1b8ed2475309234d95d975877f22ab1, type: 2}
   m_MonsterType: 2
   m_MaxHp: 5
   m_BaseDamage: 5

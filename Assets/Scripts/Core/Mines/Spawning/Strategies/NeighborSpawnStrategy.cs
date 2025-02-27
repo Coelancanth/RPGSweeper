@@ -119,18 +119,18 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             
             // Place primary mine
             var startPos = availablePositions[Random.Range(0, availablePositions.Count)];
-            Debug.Log($"Placing primary mine of type {m_Relationship.PrimaryMineType.name} at position {startPos}");
+            //Debug.Log($"Placing primary mine of type {m_Relationship.PrimaryMineType.name} at position {startPos}");
             var primaryMine = CreateMine(context, startPos, m_Relationship.PrimaryMineType, FacingDirection.Right);
             clusterMines.Add(primaryMine);
             availablePositions.Remove(startPos);
 
             // Track remaining neighbor types to place
             var remainingNeighborTypes = new List<MineData>(m_Relationship.ValidNeighborTypes);
-            Debug.Log($"Setting up neighbors for primary mine {m_Relationship.PrimaryMineType.name}:");
+            //Debug.Log($"Setting up neighbors for primary mine {m_Relationship.PrimaryMineType.name}:");
             foreach (var neighborType in m_Relationship.ValidNeighborTypes)
             {
                 var facing = m_Relationship.FacingDirections[neighborType];
-                Debug.Log($"  - Will spawn {neighborType.name} facing {facing}");
+                //Debug.Log($"  - Will spawn {neighborType.name} facing {facing}");
             }
 
             // Get all positions within range of primary mine
@@ -147,7 +147,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 var neighborMineData = remainingNeighborTypes[Random.Range(0, remainingNeighborTypes.Count)];
                 remainingNeighborTypes.Remove(neighborMineData);
 
-                Debug.Log($"Selected neighbor type: {neighborMineData.name} at position {pos}, facing {m_Relationship.FacingDirections[neighborMineData]}");
+                //Debug.Log($"Selected neighbor type: {neighborMineData.name} at position {pos}, facing {m_Relationship.FacingDirections[neighborMineData]}");
 
                 var newMine = CreateMine(context, pos, neighborMineData, m_Relationship.FacingDirections[neighborMineData]);
                 clusterMines.Add(newMine);

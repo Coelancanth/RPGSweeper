@@ -17,7 +17,8 @@ namespace RPGMinesweeper.Core.Mines.Spawning
         public void Enqueue(T item, int priority)
         {
             _items.Add((item, priority));
-            _items.Sort((a, b) => a.Priority.CompareTo(b.Priority));
+            // Sort in descending order so highest priority comes first
+            _items.Sort((a, b) => b.Priority.CompareTo(a.Priority));
         }
 
         public T Dequeue()
@@ -78,37 +79,61 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
             InitializeStrategies(spawnData);
             
+            // Track all positions that have been successfully spawned to prevent overwriting
+            var occupiedPositions = new HashSet<Vector2Int>(mines.Keys);
+            
             while (_strategyQueue.Count > 0)
             {
                 var (strategy, data) = _strategyQueue.Dequeue();
                 
                 if (!strategy.CanExecute(context, data))
                 {
+                    Debug.LogWarning($"Strategy {strategy.Priority} cannot execute - not enough valid positions or requirements not met");
                     continue;
                 }
 
                 var result = strategy.Execute(context, data);
                 if (!result.Success)
                 {
-                    Debug.LogWarning($"Strategy failed: {result.ErrorMessage}");
+                    Debug.LogWarning($"Strategy {strategy.Priority} failed: {result.ErrorMessage}");
                     continue;
                 }
 
+                int successfulSpawns = 0;
                 foreach (var spawnedMine in result.Mines)
                 {
-                    context.AddMine(spawnedMine);
+                    // Skip if this position has already been taken by a higher-priority strategy
+                    if (occupiedPositions.Contains(spawnedMine.Position))
+                    {
+                        // Remove debug log and just skip silently
+                        continue;
+                    }
+                    
+                    // Add to context with the strategy's priority and track occupied position
+                    context.AddMine(spawnedMine, strategy.Priority);
+                    occupiedPositions.Add(spawnedMine.Position);
+                    
                     // Add to the provided dictionaries
                     mines[spawnedMine.Position] = spawnedMine.Mine;
                     mineDataMap[spawnedMine.Position] = spawnedMine.MineData;
                     OnMineSpawned?.Invoke(spawnedMine.Position, spawnedMine.Mine, spawnedMine.MineData);
-                    //Debug.Log($"Added mine at {spawnedMine.Position} with facing {spawnedMine.MineData.FacingDirection}");
+                    successfulSpawns++;
+                }
+                
+                // Log summary of spawning results
+                if (successfulSpawns == 0 && result.Mines.Count > 0)
+                {
+                    Debug.LogWarning($"Strategy {strategy.Priority} found {result.Mines.Count} positions but all were already occupied by higher priority strategies");
+                }
+                else if (successfulSpawns < data.SpawnCount)
+                {
+                    Debug.Log($"Strategy {strategy.Priority} spawned {successfulSpawns}/{data.SpawnCount} mines");
                 }
             }
         }
 
         private void InitializeStrategies(List<MineTypeSpawnData> spawnData)
         {
-            //Debug.Log("Initializing strategies");
             _strategyQueue.Clear();
 
             foreach (var data in spawnData.Where(d => d.IsEnabled))
@@ -151,13 +176,11 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 // Special handling for monster mines
                 if (data.MineData is MonsterMineData monsterData)
                 {
-                    // Create a specialized strategy for monster mines if needed
-                    //Debug.Log($"Creating monster spawn strategy for {monsterData.MonsterType}");
-                    //Debug.Log($"Strategy: {strategy}");
                     strategy = new MonsterSpawnStrategy(strategy, monsterData.MonsterType);
                 }
 
-                _strategyQueue.Enqueue((strategy, data), (int)data.SpawnStrategy);
+                // Use the numeric value of enum for priority - higher values = higher priority
+                _strategyQueue.Enqueue((strategy, data), (int)strategy.Priority);
             }
         }
     }

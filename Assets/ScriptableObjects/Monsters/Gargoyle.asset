@@ -22,7 +22,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   Type: 7
-  Value: 1
+  Value: 4
   Shape: 2
   Radius: 1
   MineSprite: {fileID: -6665358864815567359, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
@@ -37,7 +37,7 @@ MonoBehaviour:
   m_TriggerableEffects: []
   m_MonsterType: 20
   m_MaxHp: 4
-  m_BaseDamage: 2
-  m_DamagePerHit: 2
+  m_BaseDamage: 4
+  m_DamagePerHit: 4
   m_HasEnrageState: 0
   m_EnrageDamageMultiplier: 1

@@ -26,6 +26,14 @@ namespace RPGMinesweeper
         Troll,
         Ogre,
         DemonLord,
+        Zombie, 
+        Banshee,
+        Lich,
+        Witch,
+        Werewolf,
+        Mummy,
+        Medusa,
+        Cyclops,
         
     }
 } 

@@ -73,7 +73,13 @@ namespace RPGMinesweeper.Core.Mines
             {
                 //Debug.Log($"Getting directional sprite for {mineData.name}");
                 var sprite = GetDirectionalSprite(mineData);
-                cellView.ShowMineSprite(sprite ?? mineData.MineSprite, mine, mineData);
+                if (sprite == null && mineData != null)
+                {
+                    sprite = mineData.MineSprite;
+                }
+                
+                Debug.Log($"Using sprite for {mineData.name} in UpdateCellView: {(sprite != null ? sprite.name : "null")}");
+                cellView.ShowMineSprite(sprite, mine, mineData);
                 cellView.UpdateVisuals(true);
             }
         }
@@ -113,7 +119,17 @@ namespace RPGMinesweeper.Core.Mines
             //Debug.Log($"directional sprite: {GetDirectionalSprite(mineData)?.name}");
             //Debug.Log($"mineData sprite: {mineData.MineSprite?.name}");
             //Debug.Log($"Showing mine sprite for {position}: {finalSprite?.name}");
-            var finalSprite = GetDirectionalSprite(mineData) ?? sprite;;
+            var finalSprite = GetDirectionalSprite(mineData);
+            if (finalSprite == null)
+            {
+                finalSprite = sprite;
+                if (finalSprite == null && mineData != null)
+                {
+                    finalSprite = mineData.MineSprite;
+                }
+            }
+            
+            //Debug.Log($"Using sprite for {mineData.name}: {(finalSprite != null ? finalSprite.name : "null")}");
             cellView.ShowMineSprite(finalSprite, mine, mineData);
             cellView.UpdateVisuals(true);
         }

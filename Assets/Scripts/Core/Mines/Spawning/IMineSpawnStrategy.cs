@@ -9,13 +9,13 @@ namespace RPGMinesweeper.Core.Mines.Spawning
         Lowest = 0,
         Random = 100,
         Center = 200,
-        Edge = 300,
-        Corner = 400,
-        Surrounded = 500,
         Symmetric = 600,
         Neighbor = 700,
-        Adjacent = 800,
-        Highest = 1000
+        Adjacent = 750,
+        Surrounded = 800,
+        Edge = 900,
+        Corner = 1000,
+        Highest = 1100
     }
 
     public interface IMineSpawnStrategy
@@ -36,13 +36,41 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
         public virtual bool CanExecute(SpawnContext context, MineTypeSpawnData spawnData)
         {
-            return context.RemainingCount > 0 && 
-                   spawnData.IsEnabled && 
-                   spawnData.SpawnCount > 0 &&
-                   context.GetAvailablePositions().Any();
+            if (context.RemainingCount <= 0)
+            {
+                Debug.Log($"Strategy {Priority}: No remaining mines to spawn");
+                return false;
+            }
+            
+            if (!spawnData.IsEnabled)
+            {
+                Debug.Log($"Strategy {Priority}: Spawn data is disabled");
+                return false;
+            }
+            
+            if (spawnData.SpawnCount <= 0)
+            {
+                Debug.Log($"Strategy {Priority}: Spawn count is <= 0");
+                return false;
+            }
+            
+            var availablePositions = GetAvailablePositions(context).ToList();
+            if (!availablePositions.Any())
+            {
+                Debug.Log($"Strategy {Priority}: No available positions");
+                return false;
+            }
+            
+            return true;
         }
 
         public abstract SpawnResult Execute(SpawnContext context, MineTypeSpawnData spawnData);
+
+        // Helper method to get positions available for this strategy's priority
+        protected IEnumerable<Vector2Int> GetAvailablePositions(SpawnContext context)
+        {
+            return context.GetAvailablePositionsForStrategy(Priority);
+        }
 
         // Legacy implementation that delegates to new methods
         public List<SpawnedMine> GetSpawnedMines(GridManager gridManager, Dictionary<Vector2Int, IMine> existingMines, int count)

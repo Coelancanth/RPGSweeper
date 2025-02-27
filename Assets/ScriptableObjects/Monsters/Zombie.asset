@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5df1cce5e6b07834d97e337ef27886e3, type: 3}
-  m_Name: Wizard
+  m_Name: Zombie
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -22,22 +22,22 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   Type: 7
-  Value: 1
+  Value: 5
   Shape: 2
   Radius: 1
-  MineSprite: {fileID: 1938627199184849696, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingUpSprite: {fileID: 1938627199184849696, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingDownSprite: {fileID: 1938627199184849696, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingLeftSprite: {fileID: 1938627199184849696, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
-  FacingRightSprite: {fileID: 1938627199184849696, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  MineSprite: {fileID: -5320096225711308508, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingUpSprite: {fileID: -5320096225711308508, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingDownSprite: {fileID: -5320096225711308508, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingLeftSprite: {fileID: -5320096225711308508, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingRightSprite: {fileID: -5320096225711308508, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
   m_CurrentFacingDirection: 4
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PersistentEffects: []
   m_TriggerableEffects: []
-  m_MonsterType: 5
-  m_MaxHp: 1
-  m_BaseDamage: 1
-  m_DamagePerHit: 1
+  m_MonsterType: 24
+  m_MaxHp: 5
+  m_BaseDamage: 5
+  m_DamagePerHit: 5
   m_HasEnrageState: 0
   m_EnrageDamageMultiplier: 1

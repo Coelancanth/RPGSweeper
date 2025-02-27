@@ -1,0 +1,69 @@
+Date : 2025-02-27 02:01:24
+Directory : f:\unity\Minesweeper\Assets\Scripts
+Total : 29 files,  1245 codes, 120 comments, 243 blanks, all 1608 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C#       |         29 |      1,245 |        120 |        243 |      1,608 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                               | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                  |         29 |      1,245 |        120 |        243 |      1,608 |
+| Core                                                                                               |         10 |        240 |         15 |         37 |        292 |
+| Core (Files)                                                                                       |          2 |         98 |          2 |         15 |        115 |
+| Core\Effects                                                                                       |          1 |         28 |         -1 |         10 |         37 |
+| Core\Events                                                                                        |          1 |          5 |          0 |          1 |          6 |
+| Core\Input                                                                                         |          2 |         64 |          0 |          4 |         68 |
+| Core\Mines                                                                                         |          4 |         45 |         14 |          7 |         66 |
+| Core\Mines\Implementation                                                                          |          1 |         -1 |          0 |          0 |         -1 |
+| Core\Mines\Mines                                                                                   |          3 |         46 |         14 |          7 |         67 |
+| Interfaces                                                                                         |          3 |         42 |         12 |          3 |         57 |
+| Managers                                                                                           |          1 |         32 |          0 |          3 |         35 |
+| ScriptableObjects                                                                                  |          1 |         66 |          5 |         12 |         83 |
+| UI                                                                                                 |          1 |        282 |         33 |         59 |        374 |
+| UI\Components                                                                                      |          1 |        282 |         33 |         59 |        374 |
+| Views                                                                                              |         13 |        583 |         55 |        129 |        767 |
+| Views (Files)                                                                                      |          9 |         80 |         19 |         34 |        133 |
+| Views\DisplayStrategies                                                                            |          4 |        503 |         36 |         95 |        634 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                           | language | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| f:\unity\Minesweeper\Assets\Scripts\Core\CellState.cs                                              | C#       |         82 |          2 |         12 |         96 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Effects\SummonEffect.cs                                   | C#       |         28 |         -1 |         10 |         37 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Events\GameEvents.cs                                      | C#       |          5 |          0 |          1 |          6 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Input\InputManager.cs                                     | C#       |         14 |          0 |          0 |         14 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Input\InteractionHandler.cs                               | C#       |         50 |          0 |          4 |         54 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Implementation\MineEventHandler.cs                  | C#       |         -1 |          0 |          0 |         -1 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Mines\DisguisedMonsterMine.cs                       | C#       |          9 |          4 |          2 |         15 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Mines\MonsterMine.cs                                | C#       |         29 |         10 |          5 |         44 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\Mines\Mines\MonsterType.cs                                | C#       |          8 |          0 |          0 |          8 |
+| f:\unity\Minesweeper\Assets\Scripts\Core\RPGMinesweeperTypes.cs                                    | C#       |         16 |          0 |          3 |         19 |
+| f:\unity\Minesweeper\Assets\Scripts\Interfaces\ICellData.cs                                        | C#       |         17 |          4 |          1 |         22 |
+| f:\unity\Minesweeper\Assets\Scripts\Interfaces\ICellStateModifier.cs                               | C#       |         14 |          4 |          1 |         19 |
+| f:\unity\Minesweeper\Assets\Scripts\Interfaces\ICellVisualUpdater.cs                               | C#       |         11 |          4 |          1 |         16 |
+| f:\unity\Minesweeper\Assets\Scripts\Managers\GridManager.cs                                        | C#       |         32 |          0 |          3 |         35 |
+| f:\unity\Minesweeper\Assets\Scripts\ScriptableObjects\MarkPanelDisplayConfig.cs                    | C#       |         66 |          5 |         12 |         83 |
+| f:\unity\Minesweeper\Assets\Scripts\UI\Components\MarkPanel.cs                                     | C#       |        282 |         33 |         59 |        374 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\CellDisplayConfig.cs                                     | C#       |         41 |          4 |         10 |         55 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\CellInteractionHandler.cs                                | C#       |        133 |          1 |         24 |        158 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\CellView.cs                                              | C#       |        -72 |          7 |          5 |        -60 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\CellVisualizer.cs                                        | C#       |        389 |         43 |         63 |        495 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\DisguisedMonsterMineDisplayStrategy.cs                   | C#       |       -244 |        -26 |        -40 |       -310 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\DisplayStrategies\DisguisedMonsterMineDisplayStrategy.cs | C#       |        244 |         26 |         40 |        310 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\DisplayStrategies\IMineDisplayStrategy.cs                | C#       |          8 |          0 |          1 |          9 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\DisplayStrategies\MonsterMineDisplayStrategy.cs          | C#       |        213 |          8 |         48 |        269 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\DisplayStrategies\StandardMineDisplayStrategy.cs         | C#       |         38 |          2 |          6 |         46 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\IMineDisplayStrategy.cs                                  | C#       |         -8 |          0 |         -1 |         -9 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\MineDisplayStrategyFactory.cs                            | C#       |         23 |          2 |          2 |         27 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\MonsterMineDisplayStrategy.cs                            | C#       |       -144 |        -10 |        -23 |       -177 |
+| f:\unity\Minesweeper\Assets\Scripts\Views\StandardMineDisplayStrategy.cs                           | C#       |        -38 |         -2 |         -6 |        -46 |
+| Total                                                                                              |          |      1,245 |        120 |        243 |      1,608 |
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

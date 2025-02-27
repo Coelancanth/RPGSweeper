@@ -25,18 +25,35 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
         public override bool CanExecute(SpawnContext context, MineTypeSpawnData spawnData)
         {
+            Debug.Log($"SurroundedSpawnStrategy: CanExecute");
             if (!base.CanExecute(context, spawnData))
             {
+                Debug.Log($"SurroundedSpawnStrategy: Base CanExecute returned false");
                 return false;
             }
 
             var targetPositions = context.ExistingMines
                 .Where(kvp => IsTargetMine(kvp.Value))
-                .Select(kvp => kvp.Key);
+                .Select(kvp => kvp.Key)
+                .ToList();
+                
+            if (!targetPositions.Any())
+            {
+                Debug.Log($"SurroundedSpawnStrategy: No target positions found for mine type {m_TargetMineType}" +
+                    (m_TargetMonsterType.HasValue ? $" and monster type {m_TargetMonsterType.Value}" : ""));
+                return false;
+            }
 
-            return targetPositions.Any() && 
-                   targetPositions.SelectMany(pos => GetValidAdjacentPositions(pos, context))
-                   .Any();
+            var anyValidAdjacent = targetPositions
+                .SelectMany(pos => GetValidAdjacentPositions(pos, context))
+                .Any();
+                
+            if (!anyValidAdjacent)
+            {
+                Debug.Log($"SurroundedSpawnStrategy: No valid adjacent positions found");
+            }
+                
+            return anyValidAdjacent;
         }
 
         public override SpawnResult Execute(SpawnContext context, MineTypeSpawnData spawnData)
@@ -57,10 +74,17 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                     (m_TargetMonsterType.HasValue ? $" and monster type {m_TargetMonsterType.Value}" : ""));
             }
 
-            var validPositions = targetPositions
-                .SelectMany(pos => GetValidAdjacentPositions(pos, context))
-                .Distinct()
-                .ToList();
+            Debug.Log($"SurroundedSpawnStrategy: Found {targetPositions.Count} target positions");
+
+            var validPositions = new List<Vector2Int>();
+            foreach (var targetPos in targetPositions)
+            {
+                var adjacentPositions = GetValidAdjacentPositions(targetPos, context).ToList();
+                Debug.Log($"Target at {targetPos} has {adjacentPositions.Count} valid adjacent positions");
+                validPositions.AddRange(adjacentPositions);
+            }
+
+            validPositions = validPositions.Distinct().ToList();
 
             if (validPositions.Count == 0)
             {
@@ -68,6 +92,8 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             }
 
             var spawnCount = Mathf.Min(spawnData.SpawnCount, validPositions.Count);
+            Debug.Log($"SurroundedSpawnStrategy: Found {validPositions.Count} valid positions, spawning {spawnCount}");
+            
             var selectedPositions = validPositions
                 .OrderBy(_ => Random.value)
                 .Take(spawnCount);
@@ -83,18 +109,11 @@ namespace RPGMinesweeper.Core.Mines.Spawning
             return SpawnResult.Successful(mines);
         }
 
-        private IEnumerable<Vector2Int> GetValidAdjacentPositions(Vector2Int center, SpawnContext context)
+        private IEnumerable<Vector2Int> GetValidAdjacentPositions(Vector2Int centerPos, SpawnContext context)
         {
             return s_AdjacentOffsets
-                .Select(offset => center + offset)
-                .Where(pos => IsValidPosition(pos, context));
-        }
-
-        private bool IsValidPosition(Vector2Int pos, SpawnContext context)
-        {
-            return pos.x >= 0 && pos.x < context.GridWidth &&
-                   pos.y >= 0 && pos.y < context.GridHeight &&
-                   !context.ExistingMines.ContainsKey(pos);
+                .Select(offset => centerPos + offset)
+                .Where(pos => context.IsValidPosition(pos) && context.IsPositionAvailableForStrategy(pos, Priority));
         }
 
         private bool IsTargetMine(IMine mine)

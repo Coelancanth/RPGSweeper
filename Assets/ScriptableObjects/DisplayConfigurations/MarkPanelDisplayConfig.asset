@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd71e4c2277870429c050bd635b6f52, type: 3}
   m_Name: MarkPanelDisplayConfig
   m_EditorClassIdentifier: 
-  m_PanelSize: {x: 120, y: 150}
-  m_Offset: {x: 20, y: 20}
-  m_ShowDuration: 0.25
+  m_PanelSize: {x: 187.6, y: 207}
+  m_Offset: {x: 130, y: 22.5}
+  m_ShowDuration: 0
   m_PanelBackgroundColor: {r: 0.2, g: 0.2, b: 0.2, a: 0.9}
-  m_FlagMarkSprite: {fileID: 0}
-  m_QuestionMarkSprite: {fileID: 0}
-  m_NumbersMarkSprite: {fileID: 0}
-  m_CustomMarkSprite: {fileID: 0}
-  m_MarkScale: 0.7
+  m_FlagMarkSprite: {fileID: 938637753, guid: 73d02a58be401d74ea758cdea8f70876, type: 3}
+  m_QuestionMarkSprite: {fileID: 1084158055, guid: 73d02a58be401d74ea758cdea8f70876, type: 3}
+  m_NumbersMarkSprite: {fileID: -1607833699, guid: 73d02a58be401d74ea758cdea8f70876, type: 3}
+  m_CustomInputMarkSprite: {fileID: 0}
+  m_MarkScale: 0.6
   m_MarkOffset: {x: 0, y: 0}
-  m_ButtonSize: {x: 100, y: 30}
-  m_ButtonSpacing: 10
+  m_ButtonSize: {x: 20.58, y: 24.3}
+  m_ButtonSpacing: 0
   m_ButtonColor: {r: 1, g: 1, b: 1, a: 1}
   m_SelectedButtonColor: {r: 0.85, g: 0.85, b: 1, a: 1}

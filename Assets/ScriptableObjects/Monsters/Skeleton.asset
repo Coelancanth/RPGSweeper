@@ -25,18 +25,19 @@ MonoBehaviour:
   Value: 3
   Shape: 2
   Radius: 1
-  SpawnStrategy: 1
-  TargetMineType: 7
-  TargetMonsterType: 0
-  MineSprite: {fileID: 8363364309010103659, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  MineSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingUpSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingDownSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingLeftSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  FacingRightSprite: {fileID: 9153323888757887174, guid: e288c34c899852a4a89259d16b2ecd48, type: 3}
+  m_CurrentFacingDirection: 4
   m_ValueColor: {r: 1, g: 1, b: 1, a: 1}
   m_MineValueColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_PersistentEffects: []
-  m_TriggerableEffects:
-  - Template: {fileID: 11400000, guid: cae04097716564c4e914b912f0cf7bdd, type: 2}
+  m_TriggerableEffects: []
   m_MonsterType: 14
-  m_MaxHp: 100
-  m_BaseDamage: 1
-  m_DamagePerHit: 1
+  m_MaxHp: 3
+  m_BaseDamage: 3
+  m_DamagePerHit: 3
   m_HasEnrageState: 0
   m_EnrageDamageMultiplier: 1

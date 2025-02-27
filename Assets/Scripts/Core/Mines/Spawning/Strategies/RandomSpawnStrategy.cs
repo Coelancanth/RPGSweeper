@@ -15,7 +15,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                 return SpawnResult.Failed("Invalid spawn data");
             }
 
-            var availablePositions = context.GetAvailablePositions().ToList();
+            var availablePositions = GetAvailablePositions(context).ToList();
             if (availablePositions.Count == 0)
             {
                 return SpawnResult.Failed("No available positions");

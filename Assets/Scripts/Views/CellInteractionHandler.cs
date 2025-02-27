@@ -40,6 +40,10 @@ public class CellInteractionHandler : ICellInteractionHandler
                 HandleMonsterInteraction();
                 break;
                 
+            case InteractionType.StandardMineTrigger:
+                HandleStandardMineInteraction();
+                break;
+                
             case InteractionType.None:
                 LogDebugMessage($"Cannot interact with cell at {m_CellData.Position}, CanInteract: {CanInteract}, IsFrozen: {m_CellData.IsFrozen}, IsRevealed: {m_CellData.IsRevealed}");
                 break;
@@ -51,7 +55,8 @@ public class CellInteractionHandler : ICellInteractionHandler
         None,
         RevealCell,
         DisguisedMonsterTrigger,
-        MonsterTrigger
+        MonsterTrigger,
+        StandardMineTrigger
     }
     
     private InteractionType GetInteractionType()
@@ -66,6 +71,9 @@ public class CellInteractionHandler : ICellInteractionHandler
                 
             if (m_CellData.CurrentMine is MonsterMine)
                 return InteractionType.MonsterTrigger;
+                
+            if (m_CellData.CurrentMine is StandardMine)
+                return InteractionType.StandardMineTrigger;
         }
         
         return InteractionType.None;
@@ -118,6 +126,20 @@ public class CellInteractionHandler : ICellInteractionHandler
         else
         {
             TriggerMonster(monsterMine, player);
+        }
+    }
+    
+    private void HandleStandardMineInteraction()
+    {
+        LogDebugMessage($"Interacting with standard mine at {m_CellData.Position}");
+        
+        var standardMine = m_CellData.CurrentMine as StandardMine;
+        var player = GetPlayer();
+        
+        if (player != null)
+        {
+            standardMine.OnTrigger(player);
+            m_VisualUpdater?.UpdateVisuals();
         }
     }
     

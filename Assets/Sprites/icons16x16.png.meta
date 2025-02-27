@@ -738,7 +738,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: icons16x16_17
+      name: Scroll of Desctrution
       rect:
         serializedVersion: 2
         x: 112
@@ -848,7 +848,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: icons16x16_22
+      name: Scroll of Healing
       rect:
         serializedVersion: 2
         x: 32
@@ -892,7 +892,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: icons16x16_24
+      name: Pile of Gold
       rect:
         serializedVersion: 2
         x: 64
@@ -1002,7 +1002,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: icons16x16_29
+      name: Scroll of Detection_Rats
       rect:
         serializedVersion: 2
         x: 144
@@ -1024,7 +1024,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: icons16x16_30
+      name: 1 Gold Coin
       rect:
         serializedVersion: 2
         x: 0
@@ -1046,7 +1046,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: icons16x16_31
+      name: 2 Gold Coins
       rect:
         serializedVersion: 2
         x: 16
@@ -1134,7 +1134,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: icons16x16_35
+      name: Scroll of Removing_Mines
       rect:
         serializedVersion: 2
         x: 80
@@ -3017,6 +3017,13 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      1 Gold Coin: 5106457331288794777
+      2 Gold Coins: -5528964003878956313
+      Pile of Gold: -3722373399770012762
+      Scroll of Desctrution: 5317981966911631573
+      Scroll of Detection_Rats: -733012958844404034
+      Scroll of Healing: -2747396606369281985
+      Scroll of Removing_Mines: -3754464281713780281
       icons16x16_0: -2296519669927308148
       icons16x16_1: -4349477835087684434
       icons16x16_100: 514705880
@@ -3045,27 +3052,20 @@ TextureImporter:
       icons16x16_14: 2583069605927277850
       icons16x16_15: 3445252623414450756
       icons16x16_16: -1941643642686990303
-      icons16x16_17: 5317981966911631573
       icons16x16_18: -3556704931191546196
       icons16x16_19: -1569030668277911799
       icons16x16_2: -5982613789704101964
       icons16x16_20: 7702731105130372832
       icons16x16_21: 6636589403198492469
-      icons16x16_22: -2747396606369281985
       icons16x16_23: -1906581785814928120
-      icons16x16_24: -3722373399770012762
       icons16x16_25: -2068020902424743903
       icons16x16_26: -2930913802559509805
       icons16x16_27: 5890453305404423615
       icons16x16_28: 8171817577236176266
-      icons16x16_29: -733012958844404034
       icons16x16_3: 624775329996945485
-      icons16x16_30: 5106457331288794777
-      icons16x16_31: -5528964003878956313
       icons16x16_32: -2780814320872340763
       icons16x16_33: 3658009922313830410
       icons16x16_34: -606919382565117829
-      icons16x16_35: -3754464281713780281
       icons16x16_36: -4192832211879493686
       icons16x16_37: -7631825225898921733
       icons16x16_38: -2413840882408095933
