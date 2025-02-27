@@ -88,7 +88,8 @@ public class CellInteractionHandler : ICellInteractionHandler
         
         if (disguisedMonsterMine.IsDisguised)
         {
-            TriggerMonster(disguisedMonsterMine, player);
+            disguisedMonsterMine.OnTrigger(player);
+            m_VisualUpdater?.UpdateVisuals();
         }
         else if (disguisedMonsterMine.IsDefeated)
         {

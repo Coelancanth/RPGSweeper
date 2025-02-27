@@ -173,7 +173,7 @@ namespace RPGMinesweeper
                 m_MineRenderer.enabled = true;
                 
                 // Log for debugging
-                Debug.Log($"Setting disguise sprite: {m_DisguisedMonsterMine.DisguiseSprite.name} for mine at position {m_DisguisedMonsterMine?.GetType()?.Name}");
+                //Debug.Log($"Setting disguise sprite: {m_DisguisedMonsterMine.DisguiseSprite.name} for mine at position {m_DisguisedMonsterMine?.GetType()?.Name}");
             }
             else
             {

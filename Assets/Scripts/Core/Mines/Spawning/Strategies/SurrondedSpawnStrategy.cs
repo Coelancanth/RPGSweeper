@@ -25,7 +25,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
 
         public override bool CanExecute(SpawnContext context, MineTypeSpawnData spawnData)
         {
-            Debug.Log($"SurroundedSpawnStrategy: CanExecute");
+            //Debug.Log($"SurroundedSpawnStrategy: CanExecute");
             if (!base.CanExecute(context, spawnData))
             {
                 Debug.Log($"SurroundedSpawnStrategy: Base CanExecute returned false");
@@ -74,7 +74,7 @@ namespace RPGMinesweeper.Core.Mines.Spawning
                     (m_TargetMonsterType.HasValue ? $" and monster type {m_TargetMonsterType.Value}" : ""));
             }
 
-            Debug.Log($"SurroundedSpawnStrategy: Found {targetPositions.Count} target positions");
+            //Debug.Log($"SurroundedSpawnStrategy: Found {targetPositions.Count} target positions");
 
             var validPositions = new List<Vector2Int>();
             foreach (var targetPos in targetPositions)
