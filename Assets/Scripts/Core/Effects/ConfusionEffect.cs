@@ -59,7 +59,7 @@ namespace RPGMinesweeper.Effects
 
         public void Remove(GameObject target)
         {
-            Debug.Log("ConfusionEffect: Remove called");
+            //Debug.Log("ConfusionEffect: Remove called");
             m_IsActive = false;
             UnregisterEffectFromArea();
             PropagateValueChanges();

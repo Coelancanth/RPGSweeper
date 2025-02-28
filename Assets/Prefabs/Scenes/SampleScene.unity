@@ -982,7 +982,7 @@ MonoBehaviour:
     IsEnabled: 1
   - MineData: {fileID: 11400000, guid: d7688111fa5dca0449eee90874419ecf, type: 2}
     Description: 
-    SpawnCount: 12
+    SpawnCount: 1
     SpawnStrategy: 100
     TargetMineType: 7
     TargetMonsterType: 0
@@ -1001,6 +1001,23 @@ MonoBehaviour:
     Description: Chest
     SpawnCount: 1
     SpawnStrategy: 100
+    TargetMineType: 7
+    TargetMonsterType: 0
+    SymmetryDirection: 1
+    SymmetryLinePosition: 0.5
+    MinDistanceToLine: 0
+    MaxDistanceToLine: 0
+    AdjacencyDirection: 0
+    MaxDistance: 1
+    AllowDiagonal: 1
+    MinClusterSize: 2
+    MaxClusterSize: 4
+    NeighborTypes: []
+    IsEnabled: 1
+  - MineData: {fileID: 11400000, guid: b054df68784482c49ae143505de9e13f, type: 2}
+    Description: 
+    SpawnCount: 1
+    SpawnStrategy: 200
     TargetMineType: 7
     TargetMonsterType: 0
     SymmetryDirection: 1

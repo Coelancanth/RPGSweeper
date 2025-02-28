@@ -233,7 +233,6 @@ public class MonsterMine : IDamagingMine
 
     public void OnRemoveEffects()
     {
-
         var player = GameObject.FindFirstObjectByType<PlayerComponent>();
         if (player != null)
         {

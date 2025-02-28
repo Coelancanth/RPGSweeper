@@ -606,6 +606,354 @@ public class PlayerStats
 }
 ```
 
+### Integration with Existing Player and Monster Classes
+
+Looking at the existing `Player.cs` and `MonsterMine.cs` classes, there are several approaches to integrate them with the Entity system:
+
+#### Option 1: Composition Approach (Recommended)
+
+This approach adds an Entity component to existing classes without requiring major refactoring.
+
+```csharp
+// Modified Player class with Entity composition
+public class Player
+{
+    private PlayerStats m_Stats;
+    private readonly int m_BaseMaxHP = 20;
+    private readonly int m_HPIncreasePerLevel = 5;
+    private readonly PlayerEntity m_Entity;
+
+    public event Action OnDeath;
+
+    // Public properties to expose stats
+    public int CurrentHp => m_Stats.CurrentHP;
+    public int MaxHp => m_Stats.MaxHP;
+    public int Level => m_Stats.Level;
+    public int Experience => m_Stats.Experience;
+    
+    // Expose Entity for buff and class systems
+    public Entity Entity => m_Entity;
+
+    public Player()
+    {
+        m_Stats = new PlayerStats(m_BaseMaxHP);
+        m_Entity = new PlayerEntity(this, "Player");
+        
+        m_Stats.OnLevelUp += HandleLevelUp;
+    }
+
+    public void TakeDamage(int _damage)
+    {
+        if (_damage <= 0) return;
+
+        // Apply damage modifiers through Entity system
+        var damageInfo = new DamageInfo(null, m_Entity, _damage, DamageType.Physical);
+        float finalDamage = DamageCalculator.CalculateDamage(damageInfo);
+        
+        m_Stats.ModifyHP(-Mathf.RoundToInt(finalDamage));
+
+        if (m_Stats.CurrentHP <= 0)
+        {
+            OnDeath?.Invoke();
+        }
+    }
+
+    private void HandleLevelUp(int _newLevel)
+    {
+        int newMaxHP = m_BaseMaxHP + (_newLevel - 1) * m_HPIncreasePerLevel;
+        m_Stats.SetMaxHP(newMaxHP);
+        m_Stats.RestoreFullHP();
+        
+        // Update entity attributes
+        m_Entity.SetAttribute(AttributeType.Level, _newLevel);
+    }
+
+    public void GainExperience(int _amount)
+    {
+        if (_amount <= 0) return;
+        m_Stats.AddExperience(_amount);
+    }
+    
+    // Handle buffs through entity
+    public void ApplyBuff(Buff buff)
+    {
+        m_Entity.ApplyBuff(buff);
+    }
+    
+    public void RemoveBuff(Buff buff)
+    {
+        m_Entity.RemoveBuff(buff);
+    }
+    
+    public void OnTurnEnd()
+    {
+        m_Entity.OnTurnEnd();
+    }
+}
+
+// Entity implementation specific to Player
+public class PlayerEntity : Entity
+{
+    private Player m_Player;
+    
+    public PlayerEntity(Player player, string name) : base(name)
+    {
+        m_Player = player;
+    }
+    
+    protected override void InitializeAttributes()
+    {
+        // Initialize with player's stats
+        SetAttribute(AttributeType.MaxHealth, m_Player.MaxHp);
+        SetAttribute(AttributeType.CurrentHealth, m_Player.CurrentHp);
+        SetAttribute(AttributeType.Level, m_Player.Level);
+        SetAttribute(AttributeType.Attack, 10); // Default value
+        SetAttribute(AttributeType.Defense, 5); // Default value
+        // Additional attributes can be set here
+    }
+    
+    // Synchronize HP changes with player
+    public override void ModifyHealth(int amount)
+    {
+        if (amount != 0)
+        {
+            // We don't call the player's TakeDamage method to avoid infinite recursion
+            // Instead, we update the attribute and let the player handle the actual health changes
+            var currentHealth = GetAttribute(AttributeType.CurrentHealth);
+            if (currentHealth != null)
+            {
+                currentHealth.SetBaseValue(currentHealth.CurrentValue + amount);
+            }
+        }
+    }
+}
+```
+
+Similarly for MonsterMine:
+
+```csharp
+// Add to MonsterMine class
+public class MonsterMine : IDamagingMine 
+{
+    // Existing code...
+    
+    private MonsterEntity m_Entity;
+    
+    // Expose Entity for buff and class systems
+    public Entity Entity => m_Entity;
+    
+    public MonsterMine(MonsterMineData _data, Vector2Int _position)
+    {
+        // Existing constructor code...
+        
+        m_Entity = new MonsterEntity(this, _data.Name, _data.MonsterType);
+        InitializeEntityAttributes();
+    }
+    
+    private void InitializeEntityAttributes()
+    {
+        m_Entity.SetAttribute(AttributeType.MaxHealth, m_MaxHp);
+        m_Entity.SetAttribute(AttributeType.CurrentHealth, m_CurrentHp);
+        m_Entity.SetAttribute(AttributeType.Attack, m_BaseDamage);
+        m_Entity.SetAttribute(AttributeType.Defense, m_Data.Defense);
+        // Additional attributes can be set here
+    }
+    
+    // Modify OnTrigger to use damage calculation system
+    public void OnTrigger(PlayerComponent _player)
+    {
+        // If already defeated but not yet collectable, mark as collectable
+        if (m_IsDefeated && !m_IsCollectable)
+        {
+            m_IsCollectable = true;
+            OnHpChanged?.Invoke(m_Position, 0);
+            return;
+        }
+        
+        // If already defeated and collectable, don't do anything here
+        if (m_IsDefeated && m_IsCollectable)
+        {
+            return;
+        }
+        
+        // Use damage calculation system to deal damage to player
+        if (_player.Player != null && _player.Player.Entity != null)
+        {
+            var damageInfo = new DamageInfo(
+                m_Entity, 
+                _player.Player.Entity, 
+                CalculateDamage(), 
+                DamageType.Physical
+            );
+            
+            float finalDamage = DamageCalculator.CalculateDamage(damageInfo);
+            _player.TakeDamage(Mathf.RoundToInt(finalDamage));
+        }
+        else
+        {
+            // Fallback to direct damage if entity not available
+            _player.TakeDamage(CalculateDamage());
+        }
+        
+        // Take damage
+        int previousHp = m_CurrentHp;
+        m_CurrentHp -= m_DamagePerHit;
+        m_Entity.SetAttribute(AttributeType.CurrentHealth, m_CurrentHp);
+        
+        // Rest of existing code...
+    }
+    
+    // Additional methods to apply/remove buffs
+    public void ApplyBuff(Buff buff)
+    {
+        m_Entity.ApplyBuff(buff);
+    }
+    
+    public void RemoveBuff(Buff buff)
+    {
+        m_Entity.RemoveBuff(buff);
+    }
+    
+    public void OnEntityTurnEnd()
+    {
+        m_Entity.OnTurnEnd();
+    }
+}
+
+// Entity implementation specific to Monster
+public class MonsterEntity : Entity
+{
+    private MonsterMine m_Monster;
+    private MonsterType m_MonsterType;
+    
+    public MonsterType MonsterType => m_MonsterType;
+    
+    public MonsterEntity(MonsterMine monster, string name, MonsterType monsterType) : base(name)
+    {
+        m_Monster = monster;
+        m_MonsterType = monsterType;
+    }
+    
+    protected override void InitializeAttributes()
+    {
+        // Attributes will be initialized by MonsterMine.InitializeEntityAttributes()
+    }
+    
+    // Override to sync health changes with monster
+    public override void ModifyHealth(int amount)
+    {
+        // Update the attribute
+        var currentHealth = GetAttribute(AttributeType.CurrentHealth);
+        if (currentHealth != null)
+        {
+            float newHealth = currentHealth.CurrentValue + amount;
+            currentHealth.SetBaseValue(newHealth);
+            
+            // Sync with monster's HP
+            m_Monster.CurrentHp = (int)newHealth;
+        }
+    }
+}
+```
+
+#### Option 2: Interface Adapter Approach
+
+If composition is too invasive, we can create adapter interfaces to bridge the systems:
+
+```csharp
+// Define an adapter interface
+public interface IEntityAdapter
+{
+    Entity Entity { get; }
+}
+
+// Implement for Player
+public class PlayerEntityAdapter : IEntityAdapter
+{
+    private readonly Player m_Player;
+    private readonly Entity m_Entity;
+    
+    public Entity Entity => m_Entity;
+    
+    public PlayerEntityAdapter(Player player)
+    {
+        m_Player = player;
+        m_Entity = new PlayerEntity(player);
+        
+        // Set up synchronization between player and entity
+        // This could involve event subscriptions or periodic sync
+    }
+}
+
+// Similarly for MonsterMine
+public class MonsterEntityAdapter : IEntityAdapter
+{
+    private readonly MonsterMine m_Monster;
+    private readonly Entity m_Entity;
+    
+    public Entity Entity => m_Entity;
+    
+    public MonsterEntityAdapter(MonsterMine monster)
+    {
+        m_Monster = monster;
+        m_Entity = new MonsterEntity(monster);
+    }
+}
+```
+
+#### Option 3: Registry Approach
+
+For minimal code changes, maintain a central registry mapping existing objects to their entity representations:
+
+```csharp
+// Central registry to map game objects to entities
+public static class EntityRegistry
+{
+    private static readonly Dictionary<object, Entity> s_EntityMap = new();
+    
+    public static void Register(object gameObject, Entity entity)
+    {
+        s_EntityMap[gameObject] = entity;
+    }
+    
+    public static void Unregister(object gameObject)
+    {
+        s_EntityMap.Remove(gameObject);
+    }
+    
+    public static Entity GetEntity(object gameObject)
+    {
+        return s_EntityMap.TryGetValue(gameObject, out var entity) ? entity : null;
+    }
+    
+    public static T GetOrCreateEntity<T>(object gameObject) where T : Entity, new()
+    {
+        if (!s_EntityMap.TryGetValue(gameObject, out var entity))
+        {
+            entity = new T();
+            s_EntityMap[gameObject] = entity;
+        }
+        
+        return (T)entity;
+    }
+}
+
+// Usage example:
+// var playerEntity = EntityRegistry.GetOrCreateEntity<PlayerEntity>(player);
+// playerEntity.ApplyBuff(buff);
+```
+
+## Recommended Implementation Approach
+
+For the best balance of flexibility and integration effort, we recommend the Composition approach (Option 1). This approach:
+
+1. Adds Entity objects to existing Player and MonsterMine classes
+2. Updates damage calculation to use the new system when available
+3. Maintains backward compatibility with existing code
+4. Allows for gradual adoption of the buff and class systems
+
+The composition approach minimizes the need for major refactoring while providing all the benefits of the new attribute, buff, and damage calculation systems.
+
 ## Examples
 
 ### Example Buffs
@@ -670,9 +1018,10 @@ enemy.TakeDamage(finalDamage);
    - Create standard damage formulas
 
 4. **Phase 4: Integration**
-   - Refactor PlayerStats to use new Attribute system
-   - Update TurnManager for buff processing
-   - Create standard library of buffs and traits
+   - Create Entity implementations for Player and MonsterMine
+   - Implement composition pattern to add Entity support to existing classes
+   - Update damage interactions to use the new calculation system
+   - Create adapter code for smooth transition
 
 5. **Phase 5: UI and Visualization**
    - Create UI for displaying active buffs
@@ -689,3 +1038,4 @@ Key advantages of this design:
 - Extensible damage calculation with modifier chain
 - Integration with existing systems (Effects, TurnSystem)
 - Flexible trait system for permanent character modifications
+- Non-invasive integration with existing Player and MonsterMine classes
