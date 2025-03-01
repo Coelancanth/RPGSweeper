@@ -35,11 +35,11 @@ namespace RPGMinesweeper.Core.Mines
             {
                 m_VisualManager.ShowMineSprite(position, mineData.MineSprite, mine, mineData);
 
-                var playerComponent = Object.FindFirstObjectByType<PlayerComponent>();
-                if (playerComponent != null)
-                {
-                    mine.OnTrigger(playerComponent);
-                }
+                //var playerComponent = Object.FindFirstObjectByType<PlayerComponent>();
+                //if (playerComponent != null)
+                //{
+                    //mine.OnTrigger(playerComponent);
+                //}
             }
         }
 

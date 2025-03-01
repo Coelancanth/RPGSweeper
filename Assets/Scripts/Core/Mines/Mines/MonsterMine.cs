@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using RPGMinesweeper.Effects;
 using RPGMinesweeper.Grid;
 using RPGMinesweeper;  // For MonsterType
@@ -113,13 +114,16 @@ public class MonsterMine : IDamagingMine
         m_Data = _data;
         m_Position = _position;
         
-        // Create and initialize the monster entity
+        // Create entity for damage and attribute management
         InitializeMonsterEntity();
         
-        // Set initial state
+        // Initialize internal state
         m_IsDefeated = false;
         
+        // Calculate affected positions based on shape and radius
         m_AffectedPositions = GridShapeHelper.GetAffectedPositions(m_Position, m_Data.Shape, m_Data.Radius);
+        
+        // Add effects that should be active from the start
         InitializePersistentEffects();
     }
     
@@ -246,22 +250,26 @@ public class MonsterMine : IDamagingMine
     public int CalculateDamage()
     {
         // Check if we should enter enrage state
-        m_Entity.UpdateEnrageState();
-
-        // Create damage info for a simulated target
-        var damageInfo = new DamageInfo
+        if (m_Entity is MonsterEntity monsterEntity)
         {
-            Source = m_Entity,
-            Type = DamageType.Physical,
-            BaseDamage = m_Entity.GetAttribute(AttributeTypes.BASE_DAMAGE)?.CurrentValue ?? 0,
-            IsEnraged = m_Entity.IsEnraged()
-        };
+            monsterEntity.UpdateEnrageState();
+            
+            // Create damage info using the factory
+            var damageInfo = DamageInfoFactory.CreateMonsterToPlayerDamage(
+                monsterEntity,
+                null, // No specific player target yet
+                DamageType.Physical
+            );
+            
+            // Calculate damage through the damage system
+            damageInfo = DamageSystem.CalculateDamage(damageInfo);
+            
+            // Return calculated damage as an integer
+            return Mathf.RoundToInt(damageInfo.FinalDamage);
+        }
         
-        // Calculate damage through the damage system
-        damageInfo = DamageSystem.CalculateDamage(damageInfo);
-        
-        // Return calculated damage
-        return Mathf.RoundToInt(damageInfo.FinalDamage);
+        // Fallback to base damage if entity isn't a MonsterEntity
+        return Mathf.RoundToInt(m_Entity.GetAttribute(AttributeTypes.BASE_DAMAGE)?.CurrentValue ?? 0);
     }
     #endregion
 
@@ -283,20 +291,11 @@ public class MonsterMine : IDamagingMine
             return;
         }
         
-        // Deal damage to player
-        _player.TakeDamage(CalculateDamage());
-        
-        // Deal damage to monster
+        // Record previous HP value for effect handling
         int previousHp = CurrentHp;
         
-        // Apply damage to monster
-        var currentHp = m_Entity.GetAttribute(AttributeTypes.CURRENT_HP);
-        if (currentHp != null)
-        {
-            float damageValue = m_Entity.GetAttribute(AttributeTypes.DAMAGE_PER_HIT)?.CurrentValue ?? 0;
-            float newHp = currentHp.CurrentValue - damageValue;
-            currentHp.SetBaseValue(newHp);
-        }
+        // Handle combat interaction between monster and player
+        HandleCombatInteraction(_player);
         
         // Notify split effects of HP change if HP changed
         if (previousHp != CurrentHp)
@@ -409,6 +408,39 @@ public class MonsterMine : IDamagingMine
             {
                 effect.Apply(player.gameObject, m_Position);
             }
+        }
+    }
+
+    // Handle combat interaction between monster and player directly using the system
+    private void HandleCombatInteraction(PlayerComponent _player)
+    {
+        if (!(m_Entity is MonsterEntity monsterEntity))
+        {
+            Debug.LogWarning($"Entity for monster at {m_Position} is not a MonsterEntity");
+            return;
+        }
+        
+        // Use the combat interaction system to handle all damage calculations and application
+        var combatResult = Minesweeper.Core.DamageSystem.CombatInteractionSystem.HandleMonsterPlayerInteraction(monsterEntity, _player);
+        
+        // Handle case where interaction handling failed
+        if (combatResult == null)
+        {
+            Debug.LogWarning($"Failed to handle combat interaction for monster at {m_Position}");
+            return;
+        }
+        
+        // Update defeated state based on result
+        if (combatResult.MonsterDefeated && !m_IsDefeated)
+        {
+            m_IsDefeated = true;
+            OnDefeated?.Invoke(m_Position);
+        }
+        
+        // Trigger enraged event if state changed to enraged
+        if (combatResult.EnrageStateChanged && combatResult.IsEnraged)
+        {
+            OnEnraged?.Invoke(m_Position);
         }
     }
     #endregion
