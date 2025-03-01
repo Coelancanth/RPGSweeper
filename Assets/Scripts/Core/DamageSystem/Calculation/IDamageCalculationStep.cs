@@ -1,15 +1,16 @@
 namespace Minesweeper.Core.DamageSystem.Calculation
 {
     /// <summary>
-    /// Interface for a step in the damage calculation pipeline
+    /// Interface for steps in the damage calculation pipeline.
+    /// Each step processes a damage info object and returns an updated version.
     /// </summary>
     public interface IDamageCalculationStep
     {
         /// <summary>
-        /// Processes a damage info object and returns the modified version
+        /// Process a damage info object and update its values
         /// </summary>
-        /// <param name="damageInfo">The damage info to process</param>
+        /// <param name="info">The damage info to process</param>
         /// <returns>The processed damage info</returns>
-        DamageInfo Process(DamageInfo damageInfo);
+        DamageInfo Process(DamageInfo info);
     }
 } 

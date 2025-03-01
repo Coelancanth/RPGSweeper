@@ -4,101 +4,111 @@ using UnityEngine;
 namespace Minesweeper.Core.DamageSystem
 {
     /// <summary>
-    /// Entity representing a monster with attributes
+    /// Entity class specialized for monsters with additional functionality
+    /// for handling monster-specific attributes and behaviors
     /// </summary>
-    public class MonsterEntity : Entity, IDamageSource, IDamageTarget
+    public class MonsterEntity : Entity
     {
         private bool _isEnraged = false;
         
         /// <summary>
-        /// Creates a new monster entity
+        /// Creates a new monster entity with the given name
         /// </summary>
-        /// <param name="name">The name of the monster</param>
-        public MonsterEntity(string name = "Monster") 
-            : base(name)
+        /// <param name="name">The name of the monster entity</param>
+        public MonsterEntity(string name) : base(name)
         {
         }
         
         /// <summary>
-        /// Get the HP percentage of this monster
+        /// Calculates and returns the current HP percentage of the monster
         /// </summary>
+        /// <returns>HP percentage between 0 and 1</returns>
         public float GetHpPercentage()
         {
             var currentHp = GetAttribute(AttributeTypes.CURRENT_HP);
             var maxHp = GetAttribute(AttributeTypes.MAX_HP);
             
-            if (currentHp == null || maxHp == null || maxHp.CurrentValue == 0)
-                return 0;
-                
-            return currentHp.CurrentValue / maxHp.CurrentValue;
-        }
-        
-        /// <summary>
-        /// Check if the monster should be enraged based on HP percentage
-        /// </summary>
-        /// <param name="enrageThreshold">The HP percentage threshold for enrage (default 0.3 = 30%)</param>
-        /// <returns>True if the enrage state changed, false otherwise</returns>
-        public bool UpdateEnrageState(float enrageThreshold = 0.3f)
-        {
-            // Check if this monster has the enrage multiplier attribute
-            if (!HasAttribute(AttributeTypes.ENRAGE_MULTIPLIER))
-                return false;
-                
-            bool shouldBeEnraged = GetHpPercentage() <= enrageThreshold;
-            
-            if (shouldBeEnraged && !_isEnraged)
+            if (currentHp == null || maxHp == null || maxHp.CurrentValue <= 0)
             {
-                _isEnraged = true;
-                return true; // Indicates state changed
+                return 0f;
             }
             
-            return false;
+            return Mathf.Clamp01(currentHp.CurrentValue / maxHp.CurrentValue);
         }
         
         /// <summary>
-        /// Check if monster is currently enraged
+        /// Checks if the monster is currently enraged
         /// </summary>
+        /// <returns>True if the monster is enraged, false otherwise</returns>
         public bool IsEnraged()
         {
             return _isEnraged;
         }
         
         /// <summary>
-        /// Check if the monster is defeated
+        /// Updates the enrage state based on current HP percentage
         /// </summary>
-        public bool IsDefeated()
+        /// <returns>True if the enrage state changed, false otherwise</returns>
+        public bool UpdateEnrageState()
+        {
+            // Only check for enrage if the monster has an enrage multiplier attribute
+            if (!HasAttribute(AttributeTypes.ENRAGE_MULTIPLIER))
+            {
+                return false;
+            }
+            
+            bool wasEnraged = _isEnraged;
+            float hpPercentage = GetHpPercentage();
+            
+            // Enrage when HP drops below 30%
+            _isEnraged = hpPercentage <= 0.3f;
+            
+            // Return true if the enrage state changed
+            return wasEnraged != _isEnraged;
+        }
+        
+        /// <summary>
+        /// Apply damage to this monster entity
+        /// </summary>
+        /// <param name="damage">Amount of damage to apply</param>
+        /// <returns>Actual amount of damage applied</returns>
+        public float ApplyDamage(float damage)
         {
             var currentHp = GetAttribute(AttributeTypes.CURRENT_HP);
-            return currentHp == null || currentHp.CurrentValue <= 0;
-        }
-        
-        /// <summary>
-        /// Create damage info targeting an entity
-        /// </summary>
-        public DamageInfo CreateDamageInfo(IEntity target)
-        {
-            return DamageInfo.Factory.CreateMonsterDamage(this, target);
-        }
-        
-        /// <summary>
-        /// Deal damage to a target using the damage system
-        /// </summary>
-        public void DealDamageTo(IEntity target)
-        {
-            var damageInfo = CreateDamageInfo(target);
-            DamageSystem.CalculateAndApplyDamage(damageInfo);
-        }
-        
-        /// <summary>
-        /// Receive damage from a damage info
-        /// </summary>
-        public void ReceiveDamage(DamageInfo damageInfo)
-        {
-            // Damage info is already targeted at this entity
-            DamageSystem.ApplyDamage(damageInfo);
+            if (currentHp == null)
+            {
+                return 0f;
+            }
             
-            // Update enrage state
-            UpdateEnrageState();
+            float oldHp = currentHp.CurrentValue;
+            float newHp = Mathf.Max(0, oldHp - damage);
+            
+            currentHp.SetBaseValue(newHp);
+            
+            return oldHp - newHp; // Return actual damage dealt
+        }
+        
+        /// <summary>
+        /// Heal the monster by a specified amount
+        /// </summary>
+        /// <param name="amount">Amount to heal</param>
+        /// <returns>Actual amount healed</returns>
+        public float Heal(float amount)
+        {
+            var currentHp = GetAttribute(AttributeTypes.CURRENT_HP);
+            var maxHp = GetAttribute(AttributeTypes.MAX_HP);
+            
+            if (currentHp == null || maxHp == null)
+            {
+                return 0f;
+            }
+            
+            float oldHp = currentHp.CurrentValue;
+            float newHp = Mathf.Min(maxHp.CurrentValue, oldHp + amount);
+            
+            currentHp.SetBaseValue(newHp);
+            
+            return newHp - oldHp; // Return actual amount healed
         }
     }
 } 

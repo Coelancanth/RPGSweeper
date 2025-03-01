@@ -13,13 +13,14 @@ namespace Minesweeper.Core.DamageSystem.Calculation
             if (info.Source is MonsterEntity monster && info.IsEnraged)
             {
                 float enrageMultiplier = monster.GetAttribute(AttributeTypes.ENRAGE_MULTIPLIER)?.CurrentValue ?? 1.0f;
+                info.EnrageMultiplier = enrageMultiplier;
                 info.DamageMultiplier *= enrageMultiplier;
             }
             
             // Handle critical hits
             if (info.IsCritical)
             {
-                info.DamageMultiplier *= 1.5f; // Default critical multiplier
+                info.DamageMultiplier *= info.CriticalMultiplier;
             }
             
             return info;
@@ -72,11 +73,11 @@ namespace Minesweeper.Core.DamageSystem.Calculation
             
             // Apply resistance formula: 
             // Each point of resistance reduces damage by 0.5% (can be adjusted)
-            float resistanceMultiplier = 1f - (resistanceValue * 0.005f * info.ResistanceMultiplier);
-            resistanceMultiplier = Mathf.Clamp(resistanceMultiplier, 0.1f, 2.0f); // Resistance can reduce damage by at most 90%
+            info.ResistanceMultiplier = 1f - (resistanceValue * 0.005f);
+            info.ResistanceMultiplier = Mathf.Clamp(info.ResistanceMultiplier, 0.1f, 2.0f); // Resistance can reduce damage by at most 90%
             
             // Calculate final damage
-            float finalDamage = rawDamage * resistanceMultiplier;
+            float finalDamage = rawDamage * info.ResistanceMultiplier;
             
             // For monsters, we want integers only
             if (info.Target is MonsterEntity)
