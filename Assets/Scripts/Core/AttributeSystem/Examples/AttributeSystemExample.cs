@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Minesweeper.Core.DamageSystem;
+using Minesweeper.Core.DamageSystem.Initializers;
+using Attribute = Minesweeper.Core.DamageSystem.Attribute;
 
 namespace Minesweeper.Core.AttributeSystem.Examples
 {
@@ -15,20 +18,49 @@ namespace Minesweeper.Core.AttributeSystem.Examples
         {
             public PlayerEntity(string name) : base(name)
             {
+                InitializeAttributes();
             }
             
-            protected override void InitializeAttributes()
+            private void InitializeAttributes()
             {
                 // Initialize player attributes with default values
-                AddAttribute(AttributeType.MaxHealth, 100);
-                AddAttribute(AttributeType.CurrentHealth, 100);
-                AddAttribute(AttributeType.Attack, 10);
-                AddAttribute(AttributeType.Defense, 5);
-                AddAttribute(AttributeType.CriticalChance, 5); // 5% critical chance
-                AddAttribute(AttributeType.CriticalDamage, 150); // 150% critical damage
-                AddAttribute(AttributeType.Speed, 10);
-                AddAttribute(AttributeType.Level, 1);
-                AddAttribute(AttributeType.Experience, 0);
+                AddAttribute(new AttributeType("MaxHealth"), 100);
+                AddAttribute(new AttributeType("CurrentHealth"), 100);
+                AddAttribute(new AttributeType("Attack"), 10);
+                AddAttribute(new AttributeType("Defense"), 5);
+                AddAttribute(new AttributeType("CriticalChance"), 5); // 5% critical chance
+                AddAttribute(new AttributeType("CriticalDamage"), 150); // 150% critical damage
+                AddAttribute(new AttributeType("Speed"), 10);
+                AddAttribute(new AttributeType("Level"), 1);
+                AddAttribute(new AttributeType("Experience"), 0);
+            }
+            
+            // Convenience property for common attribute types
+            public AttributeType MaxHealthType => new AttributeType("MaxHealth");
+            public AttributeType CurrentHealthType => new AttributeType("CurrentHealth");
+            public AttributeType AttackType => new AttributeType("Attack");
+            public AttributeType DefenseType => new AttributeType("Defense");
+            public AttributeType CriticalChanceType => new AttributeType("CriticalChance");
+            public AttributeType CriticalDamageType => new AttributeType("CriticalDamage");
+            public AttributeType SpeedType => new AttributeType("Speed");
+            public AttributeType LevelType => new AttributeType("Level");
+            public AttributeType ExperienceType => new AttributeType("Experience");
+            
+            public void ModifyHealth(float amount)
+            {
+                var currentHealth = GetAttribute(CurrentHealthType);
+                if (currentHealth != null)
+                {
+                    float newHealth = currentHealth.CurrentValue + amount;
+                    var maxHealth = GetAttribute(MaxHealthType);
+                    if (maxHealth != null)
+                    {
+                        newHealth = Mathf.Min(newHealth, maxHealth.CurrentValue);
+                    }
+                    
+                    newHealth = Mathf.Max(0, newHealth);
+                    currentHealth.SetBaseValue(newHealth);
+                }
             }
         }
         
@@ -47,34 +79,59 @@ namespace Minesweeper.Core.AttributeSystem.Examples
             public MonsterEntity(string name, MonsterType type) : base(name)
             {
                 Type = type;
+                InitializeAttributes();
             }
             
-            protected override void InitializeAttributes()
+            private void InitializeAttributes()
             {
                 // Base attributes for all monster types
-                AddAttribute(AttributeType.MaxHealth, 50);
-                AddAttribute(AttributeType.CurrentHealth, 50);
-                AddAttribute(AttributeType.Attack, 5);
-                AddAttribute(AttributeType.Defense, 2);
-                AddAttribute(AttributeType.Speed, 5);
+                AddAttribute(new AttributeType("MaxHealth"), 50);
+                AddAttribute(new AttributeType("CurrentHealth"), 50);
+                AddAttribute(new AttributeType("Attack"), 5);
+                AddAttribute(new AttributeType("Defense"), 2);
+                AddAttribute(new AttributeType("Speed"), 5);
                 
                 // Adjust attributes based on monster type
                 switch (Type)
                 {
                     case MonsterType.Elite:
                         // Elite monsters are stronger
-                        GetAttribute(AttributeType.MaxHealth).SetBaseValue(100);
-                        GetAttribute(AttributeType.CurrentHealth).SetBaseValue(100);
-                        GetAttribute(AttributeType.Attack).SetBaseValue(10);
-                        GetAttribute(AttributeType.Defense).SetBaseValue(5);
+                        GetAttribute(new AttributeType("MaxHealth")).SetBaseValue(100);
+                        GetAttribute(new AttributeType("CurrentHealth")).SetBaseValue(100);
+                        GetAttribute(new AttributeType("Attack")).SetBaseValue(10);
+                        GetAttribute(new AttributeType("Defense")).SetBaseValue(5);
                         break;
                     case MonsterType.Boss:
                         // Bosses are much stronger
-                        GetAttribute(AttributeType.MaxHealth).SetBaseValue(200);
-                        GetAttribute(AttributeType.CurrentHealth).SetBaseValue(200);
-                        GetAttribute(AttributeType.Attack).SetBaseValue(15);
-                        GetAttribute(AttributeType.Defense).SetBaseValue(10);
+                        GetAttribute(new AttributeType("MaxHealth")).SetBaseValue(200);
+                        GetAttribute(new AttributeType("CurrentHealth")).SetBaseValue(200);
+                        GetAttribute(new AttributeType("Attack")).SetBaseValue(15);
+                        GetAttribute(new AttributeType("Defense")).SetBaseValue(10);
                         break;
+                }
+            }
+            
+            // Convenience property for common attribute types
+            public AttributeType MaxHealthType => new AttributeType("MaxHealth");
+            public AttributeType CurrentHealthType => new AttributeType("CurrentHealth");
+            public AttributeType AttackType => new AttributeType("Attack");
+            public AttributeType DefenseType => new AttributeType("Defense");
+            public AttributeType SpeedType => new AttributeType("Speed");
+            
+            public void ModifyHealth(float amount)
+            {
+                var currentHealth = GetAttribute(CurrentHealthType);
+                if (currentHealth != null)
+                {
+                    float newHealth = currentHealth.CurrentValue + amount;
+                    var maxHealth = GetAttribute(MaxHealthType);
+                    if (maxHealth != null)
+                    {
+                        newHealth = Mathf.Min(newHealth, maxHealth.CurrentValue);
+                    }
+                    
+                    newHealth = Mathf.Max(0, newHealth);
+                    currentHealth.SetBaseValue(newHealth);
                 }
             }
         }
@@ -84,7 +141,7 @@ namespace Minesweeper.Core.AttributeSystem.Examples
         {
             public string Name { get; }
             public float Duration { get; private set; }
-            private readonly List<AttributeModifier> _modifiers = new List<AttributeModifier>();
+            private readonly List<AttributeModifierEntry> _modifiers = new List<AttributeModifierEntry>();
             
             public Buff(string name, float duration)
             {
@@ -92,16 +149,29 @@ namespace Minesweeper.Core.AttributeSystem.Examples
                 Duration = duration;
             }
             
-            public void AddModifier(AttributeModifier modifier)
+            // Helper class to store the attribute type with the modifier
+            private class AttributeModifierEntry
             {
-                _modifiers.Add(modifier);
+                public AttributeType Type { get; }
+                public AttributeModifier Modifier { get; }
+                
+                public AttributeModifierEntry(AttributeType type, AttributeModifier modifier)
+                {
+                    Type = type;
+                    Modifier = modifier;
+                }
+            }
+            
+            public void AddModifier(AttributeType type, AttributeModifier modifier)
+            {
+                _modifiers.Add(new AttributeModifierEntry(type, modifier));
             }
             
             public void Apply(Entity target)
             {
-                foreach (var modifier in _modifiers)
+                foreach (var entry in _modifiers)
                 {
-                    target.AddModifier(modifier);
+                    target.GetAttribute(entry.Type)?.AddModifier(entry.Modifier);
                 }
                 
                 Debug.Log($"Applied buff {Name} to {target.Name}");
@@ -109,9 +179,9 @@ namespace Minesweeper.Core.AttributeSystem.Examples
             
             public void Remove(Entity target)
             {
-                foreach (var modifier in _modifiers)
+                foreach (var entry in _modifiers)
                 {
-                    target.RemoveModifier(modifier);
+                    target.GetAttribute(entry.Type)?.RemoveModifier(entry.Modifier);
                 }
                 
                 Debug.Log($"Removed buff {Name} from {target.Name}");
@@ -160,13 +230,13 @@ namespace Minesweeper.Core.AttributeSystem.Examples
             var strengthBuff = new Buff("Strength", 3);
             
             // Create a modifier for the buff
-            var attackModifier = AttributeModifier.CreatePercent(
-                AttributeType.Attack,
+            var attackModifier = new AttributeModifier(
+                "StrengthBuff",
                 0.5f, // 50% increase
-                strengthBuff
+                AttributeModifierType.Percentage
             );
             
-            strengthBuff.AddModifier(attackModifier);
+            strengthBuff.AddModifier(_player.AttackType, attackModifier);
             
             // Apply the buff to the player
             strengthBuff.Apply(_player);
@@ -182,13 +252,13 @@ namespace Minesweeper.Core.AttributeSystem.Examples
             var weaknessBuff = new Buff("Weakness", 2);
             
             // Create a modifier for the debuff
-            var defenseModifier = AttributeModifier.CreatePercent(
-                AttributeType.Defense,
+            var defenseModifier = new AttributeModifier(
+                "WeaknessDebuff",
                 -0.3f, // 30% decrease
-                weaknessBuff
+                AttributeModifierType.Percentage
             );
             
-            weaknessBuff.AddModifier(defenseModifier);
+            weaknessBuff.AddModifier(_monster.DefenseType, defenseModifier);
             
             // Apply the debuff to the monster
             weaknessBuff.Apply(_monster);
@@ -201,8 +271,8 @@ namespace Minesweeper.Core.AttributeSystem.Examples
         private void SimulateCombat()
         {
             // Player attacks monster
-            float playerAttack = _player.GetAttribute(AttributeType.Attack).CurrentValue;
-            float monsterDefense = _monster.GetAttribute(AttributeType.Defense).CurrentValue;
+            float playerAttack = _player.GetAttribute(_player.AttackType).CurrentValue;
+            float monsterDefense = _monster.GetAttribute(_monster.DefenseType).CurrentValue;
             
             // Simple damage formula: damage = attack * (100 / (100 + defense))
             float damageReduction = 100f / (100f + monsterDefense);
@@ -212,10 +282,10 @@ namespace Minesweeper.Core.AttributeSystem.Examples
             _monster.ModifyHealth(-damage);
             
             // Monster attacks player if still alive
-            if (_monster.GetAttribute(AttributeType.CurrentHealth).CurrentValue > 0)
+            if (_monster.GetAttribute(_monster.CurrentHealthType).CurrentValue > 0)
             {
-                float monsterAttack = _monster.GetAttribute(AttributeType.Attack).CurrentValue;
-                float playerDefense = _player.GetAttribute(AttributeType.Defense).CurrentValue;
+                float monsterAttack = _monster.GetAttribute(_monster.AttackType).CurrentValue;
+                float playerDefense = _player.GetAttribute(_player.DefenseType).CurrentValue;
                 
                 damageReduction = 100f / (100f + playerDefense);
                 damage = Mathf.RoundToInt(monsterAttack * damageReduction);
@@ -255,14 +325,14 @@ namespace Minesweeper.Core.AttributeSystem.Examples
                 }
             }
             
-            // Log stats after buffs are updated
+            // Log stats after buffs update
             LogEntityStats(_player);
             LogEntityStats(_monster);
         }
         
         private void HandleAttributeValueChanged(Entity entity, Attribute attribute, float oldValue, float newValue)
         {
-            Debug.Log($"{entity.Name}'s {attribute.Type.Id} changed from {oldValue} to {newValue}");
+            Debug.Log($"{entity.Name}'s {attribute.Type.Name} changed from {oldValue} to {newValue}");
         }
         
         private void LogEntityStats(Entity entity)
@@ -271,7 +341,7 @@ namespace Minesweeper.Core.AttributeSystem.Examples
             
             foreach (var attribute in entity.GetAllAttributes())
             {
-                Debug.Log($"{attribute.Type.Id}: {attribute.CurrentValue} (Base: {attribute.BaseValue})");
+                Debug.Log($"{attribute.Type.Name}: {attribute.CurrentValue}");
             }
         }
     }
